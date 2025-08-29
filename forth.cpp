@@ -3,20 +3,25 @@
 #include <vector>
 #include <string>
 
+//#define DEBUG
+
 using namespace std;
 // vector<string> userStrings;
 
 bool showStack();
 bool handleCR();
+bool handleDROP();
 bool handleSWAP();
 bool handleROT();
 bool handleEqual();
 bool handleLower();
 bool handleHigher();
+bool handle2Nums(unsigned char );
 bool handlePlus();
 bool handleMinus();
 bool handleMult();
 bool handleDiv();
+bool handleEMIT();
 bool handlePRINT();
 bool handleUPRINT();
 bool handleDUP();
@@ -40,8 +45,7 @@ bool handleBEGIN();
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
 
-unsigned char dataStack[1024] = { 0 };
-unsigned int dataStackPointer = 0;
+vector<int> dataStack;
 unsigned int intCounter = 0;
 unsigned int floatCounter = 0;
 unsigned int stringCounter = 0;
@@ -56,9 +60,16 @@ enum varAddresses {
   BASE_ADDRESS,
   FREE_ADDRESS,  // You can peek and poke from here
 };
+enum mathTypes {
+  math_PLUS,
+  math_MINUS,
+  math_MULT,
+  math_DIV,
+  math_EQUAL,
+};
 
 struct nativeCommand {
-  bool (*ptr)(void);  // Function pointer
+  bool (*ptr)(void); // Function pointer
   string name;
 };
 
@@ -67,9 +78,11 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
+  { handleEMIT, "EMIT" },
   { handlePRINT, "." },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
+  { handleDROP, "DROP" },
   { handleSWAP, "SWAP" },
   { handleROT, "ROT" },
   { handleOVER, "OVER" },
@@ -109,70 +122,97 @@ enum JumpType {
 
 bool checkTypes(int, unsigned char);
 bool checkTypes(int levels, unsigned char n) {
-  if (dataStackPointer < levels) return false;
+  if (dataStack.size() < levels) return false;
   for (int ix = 0; ix < levels; ix++) {
-    if (dataStack[dataStackPointer - 1 - ix] != n) return false;
+    if (dataStack.at(dataStack.size() - 1 - ix) != n) return false;
   }
   return true;
 }
 
 bool handleBEGIN() {
-  // BEGIN ... <condition> UNTIL
-  cout << endl << "BEGIN at ";
-  jumpStack.push_back(executionPointer + 1);
+// BEGIN ... <condition> UNTIL
+#if defined(DEBUG)
+  cout << endl << "--> BEGIN at ";
+#endif
+  jumpStack.push_back(executionPointer);
   jumpStackType.push_back(xBEGIN);
-  cout << (executionPointer + 1) << endl;
+#if defined(DEBUG)
+  cout << (executionPointer) << endl;
+#endif
   return true;
 }
 
 bool handleUNTIL() {
-  cout << endl << "UNTIL at " << executionPointer << " looping back to ";
+#if defined(DEBUG)
+  cout << endl << "--> UNTIL at " << executionPointer << ". JumpStack size: " << jumpStack.size() << endl;
+#endif
   int i0, type0;
   if (jumpStack.size() == 0) {
+#if defined(DEBUG)
     cout << "handleUNTIL JumpStack overflow!" << endl;
+#endif
     return false;
   }
   type0 = jumpStackType.at(jumpStackType.size() - 1);
   if (type0 != xBEGIN) {
+#if defined(DEBUG)
     cout << "handleUNTIL JumpStackType overflow!" << endl;
+#endif
     return false;
   }
   if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
     cout << "handleUNTIL Stack overflow!" << endl;
+#endif
     return false;
   }
+#if defined(DEBUG)
+  showStack();
+#endif
   if (i0 < 0 || i0 > 1) {
+#if defined(DEBUG)
     cout << "handleUNTIL " << i0 << " is not a BOOLEAN!" << endl;
+#endif
     return false;
   }
+#if defined(DEBUG)
+  cout << "Condition is " << ((i0 == 1) ? "true" : "false") << endl;
+#endif
   if (i0 == 0) {
     executionPointer = jumpStack.at(jumpStack.size() - 1);
-    cout << executionPointer << ". Condition: " << i0 << endl;
+#if defined(DEBUG)
+    cout << " looping back to " << executionPointer << ". Condition: " << i0 << endl;
+#endif
   } else {
     jumpStack.pop_back();
     jumpStackType.pop_back();
-    cout << " Ending BEGIN" << endl;
+#if defined(DEBUG)
+    cout << " Ending BEGIN. Condition: " << i0 << endl;
+#endif
   }
   return true;
 }
 
 bool showStack() {
   int count = 0;
-  if (dataStackPointer == 0) {
+  if (dataStack.size() == 0) {
     cout << "Stack empty! ";
     return true;
   }
-  cout << endl;  // << "showStack " << dataStackPointer;
-  int x = dataStackPointer - 1;
+  cout << endl;  // << "showStack " << dataStack.size();
+  int x = dataStack.size() - 1;
   int myInts = intCounter - 1;
   int myFloats = floatCounter - 1;
   int myStrings = stringCounter - 1;
-  // cout << "\tmyInts\t" << (myInts + 1);
-  // cout << "\tmyFloats\t" << (myFloats + 1);
-  // cout << "\tmyStrings\t" << (myStrings + 1) << endl;
+#if defined(DEBUG)
+  cout << "\tdataStack.size()\t" << (dataStack.size());
+  cout << "\tmyInts\t" << (myInts + 1);
+  cout << "\tmyFloats\t" << (myFloats + 1);
+  cout << "\tmyStrings\t" << (myStrings + 1) << endl;
+#endif
   cout << "+-----------------------+" << endl;
   while (x > -1) {
-    int type0 = dataStack[x];
+    int type0 = dataStack.at(x);
     cout << "| " << (count++) << "\t| ";
     switch (type0) {
       case xINTEGER:
@@ -193,13 +233,17 @@ bool showStack() {
 }
 
 void initForth() {
-  // cout << "init ";
+#if defined(DEBUG)
+  cout << "init ";
+#endif
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   userCmdCount = userCommands.size();
   myRAM[BASE_ADDRESS] = 10;
   string name("0=");
   string code("0 =");
+#if defined(DEBUG)
   cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
   userCommand x = { name, code };
   userCommands.push_back(x);
 }
@@ -210,59 +254,85 @@ bool handleCR() {
 }
 
 bool handleStore() {
-  // cout << "handleStore: intCounter " << intCounter << " dataStackPointer " << dataStackPointer << " ";
+#if defined(DEBUG)
+  cout << "handleStore: intCounter " << intCounter << " dataStack.size() " << dataStack.size() << " ";
+#endif
   if (!checkTypes(2, xINTEGER)) {
+#if defined(DEBUG)
     cout << "handleStore Not enough integers!" << endl;
+#endif
     return false;
   }
   int ad, x;
   if (popIntegerFromStack(&x) == false) {
+#if defined(DEBUG)
     cout << "handleStore1 Stack overflow!" << endl;
+#endif
     return false;
   }
   if (popIntegerFromStack(&ad) == false) {
+#if defined(DEBUG)
     cout << "handleStore2 Stack overflow!" << endl;
+#endif
     return false;
   }
-  // cout << "storing " << x << " into RAM[" << ad << "] ";
+#if defined(DEBUG)
+  cout << "storing " << x << " into RAM[" << ad << "] ";
+#endif
   myRAM[ad] = (unsigned char)x;
   return true;
 }
 
 bool handleRetrieve() {
-  // cout << "handleRetrieve: dataStackPointer " << dataStackPointer << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+#if defined(DEBUG)
+  cout << "handleRetrieve: dataStack.size() " << dataStack.size() << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+#endif
   if (!checkTypes(1, xINTEGER)) {
+#if defined(DEBUG)
     cout << "handleRetrieve Not enough integers!" << endl;
+#endif
     return false;
   }
   int ad;
   if (popIntegerFromStack(&ad) == false) {
+#if defined(DEBUG)
     cout << "handleRetrieve1 Stack overflow!" << endl;
+#endif
     return false;
   }
-  // cout << "handleRetrieve end ";
+#if defined(DEBUG)
+  cout << "handleRetrieve end ";
+#endif
   return putIntegerOnStack(myRAM[ad]);
 }
 
 bool handleBASE() {
-  // cout << "handleBASE ";
+#if defined(DEBUG)
+  cout << "handleBASE ";
+#endif
   return putIntegerOnStack(BASE_ADDRESS);
 }
 
 bool handleBASE2() {
-  // cout << "handleBASE2 ";
+#if defined(DEBUG)
+  cout << "handleBASE2 ";
+#endif
   myRAM[BASE_ADDRESS] = 2;
   return true;
 }
 
 bool handleBASE10() {
-  // cout << "handleBASE10 ";
+#if defined(DEBUG)
+  cout << "handleBASE10 ";
+#endif
   myRAM[BASE_ADDRESS] = 10;
   return true;
 }
 
 bool handleBASE16() {
-  // cout << "handleBASE16 ";
+#if defined(DEBUG)
+  cout << "handleBASE16 ";
+#endif
   myRAM[BASE_ADDRESS] = 16;
   return true;
 }
@@ -290,19 +360,39 @@ bool printOtherBases(int number, int base) {
   return true;
 }
 
-bool handlePRINT() {
-  // cout << "handlePRINT: dataStackPointer " << dataStackPointer << " ";
-  if (dataStackPointer == 0) {
-    cout << "handlePRINT Stack overflow!" << endl;
+bool handleEMIT() {
+  int i0;
+  char c;
+  if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+    cout << "handleOVER1 Stack overflow!" << endl;
+#endif
     return false;
   }
-  unsigned char x = dataStack[dataStackPointer - 1];
+  c = i0;
+  printf("%c", c);
+  return true;
+}
+
+bool handlePRINT() {
+#if defined(DEBUG)
+  cout << "handlePRINT: dataStack.size() " << dataStack.size() << " ";
+#endif
+  if (dataStack.size() == 0) {
+#if defined(DEBUG)
+    cout << "handlePRINT Stack overflow!" << endl;
+#endif
+    return false;
+  }
+  unsigned char x = dataStack.at(dataStack.size() - 1);
   switch (x) {
     case xINTEGER:
       {
         int i0;
         if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
           cout << "handlePRINT1 Stack overflow!" << endl;
+#endif
           return false;
         }
         int base = myRAM[BASE_ADDRESS];
@@ -314,7 +404,9 @@ bool handlePRINT() {
       {
         float f0;
         if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
           cout << "handlePRINT2 Stack overflow!" << endl;
+#endif
           return false;
         }
         printf("%f ", f0);
@@ -325,22 +417,28 @@ bool handlePRINT() {
 }
 
 bool handleUPRINT() {
-  // cout << "handlePRINT: dataStackPointer " << dataStackPointer << " ";
-  if (dataStackPointer == 0) {
+  // cout << "handlePRINT: dataStack.size() " << dataStack.size() << " ";
+  if (dataStack.size() == 0) {
+#if defined(DEBUG)
     cout << "handlePRINT Stack overflow!" << endl;
+#endif
     return false;
   }
   if (myRAM[BASE_ADDRESS] != 10) {
+#if defined(DEBUG)
     cout << "handleUPRINT only works in base 10!" << endl;
+#endif
     return false;
   }
-  unsigned char x = dataStack[dataStackPointer - 1];
+  unsigned char x = dataStack.at(dataStack.size() - 1);
   switch (x) {
     case xINTEGER:
       {
         unsigned int i0;
         if (popIntegerFromStack((int *)&i0) == false) {
+#if defined(DEBUG)
           cout << "handleUPRINT1 Stack overflow!" << endl;
+#endif
           return false;
         }
         cout << i0 << " ";
@@ -348,7 +446,9 @@ bool handleUPRINT() {
       }
     case xFLOAT:
       {
+#if defined(DEBUG)
         cout << "handleUPRINT only works with integers!" << endl;
+#endif
         return false;
       }
   }
@@ -356,11 +456,13 @@ bool handleUPRINT() {
 }
 
 bool handleOVER() {
-  // cout << "handleOVER: dataStackPointer " << dataStackPointer << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
-  unsigned char type0 = dataStack[dataStackPointer - 1];
-  unsigned char type1 = dataStack[dataStackPointer - 2];
+  // cout << "handleOVER: dataStack.size() " << dataStack.size() << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  unsigned char type1 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+#if defined(DEBUG)
     cout << "handleOVER Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1) {
@@ -368,11 +470,15 @@ bool handleOVER() {
       // cout << "2 INTs ";
       int i0, i1;
       if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
         cout << "handleOVER1 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
         cout << "handleOVER2 Stack overflow!" << endl;
+#endif
         return false;
       }
       putIntegerOnStack(i1);
@@ -382,33 +488,60 @@ bool handleOVER() {
     } else {
       float f0, f1;
       if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
         cout << "handleOVER3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
         cout << "handleOVER4 Stack overflow!" << endl;
+#endif
         return false;
       }
-      // cout << "2 FLOATs ";
+#if defined(DEBUG)
+      cout << "2 FLOATs ";
+#endif
       putFloatOnStack(f1);
       putFloatOnStack(f0);
       putFloatOnStack(f1);
       return true;
     }
   } else {
-    // one int one float
+// one int one float
+#if defined(DEBUG)
     cout << "OVER requires 2 ints or 2 floats!" << endl;
+#endif
     return false;
   }
   return false;
 }
 
-bool handleDUP() {
-  if (dataStackPointer == 0) {
-    cout << "handleDUP Stack overflow!" << endl;
+bool handleDROP() {
+  if (dataStack.size() == 0) {
+#if defined(DEBUG)
+    cout << "handleDROP Stack overflow!" << endl;
+#endif
     return false;
   }
-  unsigned char x = dataStack[dataStackPointer - 1];
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+    cout << "handleDROP1 Stack overflow!" << endl;
+#endif
+    return false;
+  }
+  return true;
+}
+
+bool handleDUP() {
+  if (dataStack.size() == 0) {
+#if defined(DEBUG)
+    cout << "handleDUP Stack overflow!" << endl;
+#endif
+    return false;
+  }
+  unsigned char x = dataStack.at(dataStack.size() - 1);
   switch (x) {
     case xINTEGER:
       {
@@ -433,10 +566,12 @@ bool handleDUP() {
 }
 
 bool handleHigher() {
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    cout << "handleEqual Data inconsistent!" << endl;
+#if defined(DEBUG)
+    cout << "handleHigher Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1) {
@@ -444,11 +579,15 @@ bool handleHigher() {
       // cout << "2 INTs ";
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
-        cout << "handleEqual1 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handleHigher1 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
-        cout << "handleEqual2 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handleHigher2 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (i0 > i1) putIntegerOnStack(1);
@@ -457,11 +596,15 @@ bool handleHigher() {
     } else {
       float f0, f1;
       if (popFloatFromStack(&f1) == false) {
-        cout << "handleEqual3 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handleHigher3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f0) == false) {
-        cout << "handleEqual4 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handleHigher4 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (f0 > f1) putIntegerOnStack(1);
@@ -469,17 +612,23 @@ bool handleHigher() {
       return true;
     }
   } else {
-    // one int one float
-    // cout << "1 INT 1 FLOAT ";
+// one int one float
+#if defined(DEBUG)
+    cout << "1 INT 1 FLOAT ";
+#endif
     int i0, i1;
     float f0;
     if (popFloatFromStack(&f0) == false) {
-      cout << "handleEqual5 Stack overflow!" << endl;
+#if defined(DEBUG)
+      cout << "handleHigher5 Stack overflow!" << endl;
+#endif
       return false;
     }
     i1 = (int)f0;
     if (popIntegerFromStack(&i0) == false) {
-      cout << "handleEqual6 Stack overflow!" << endl;
+#if defined(DEBUG)
+      cout << "handleHigher6 Stack overflow!" << endl;
+#endif
       return false;
     }
     if (i0 > i1) putIntegerOnStack(1);
@@ -490,22 +639,30 @@ bool handleHigher() {
 }
 
 bool handleLower() {
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+#if defined(DEBUG)
     cout << "handleEqual Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      // cout << "2 INTs ";
+#if defined(DEBUG)
+      cout << "2 INTs ";
+#endif
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
         cout << "handleEqual1 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
         cout << "handleEqual2 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (i0 < i1) putIntegerOnStack(1);
@@ -514,11 +671,15 @@ bool handleLower() {
     } else {
       float f0, f1;
       if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
         cout << "handleEqual3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
         cout << "handleEqual4 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (f0 < f1) putIntegerOnStack(1);
@@ -526,17 +687,23 @@ bool handleLower() {
       return true;
     }
   } else {
-    // one int one float
-    // cout << "1 INT 1 FLOAT ";
+// one int one float
+#if defined(DEBUG)
+    cout << "1 INT 1 FLOAT ";
+#endif
     int i0, i1;
     float f0;
     if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
       cout << "handleEqual5 Stack overflow!" << endl;
+#endif
       return false;
     }
     i1 = (int)f0;
     if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
       cout << "handleEqual6 Stack overflow!" << endl;
+#endif
       return false;
     }
     if (i0 < i1) putIntegerOnStack(1);
@@ -547,22 +714,30 @@ bool handleLower() {
 }
 
 bool handleEqual() {
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+#if defined(DEBUG)
     cout << "handleEqual Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      // cout << "2 INTs ";
+#if defined(DEBUG)
+      cout << "2 INTs ";
+#endif
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
         cout << "handleEqual1 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
         cout << "handleEqual2 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (i0 == i1) putIntegerOnStack(1);
@@ -571,11 +746,15 @@ bool handleEqual() {
     } else {
       float f0, f1;
       if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
         cout << "handleEqual3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
         cout << "handleEqual4 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (f0 == f1) putIntegerOnStack(1);
@@ -583,17 +762,23 @@ bool handleEqual() {
       return true;
     }
   } else {
-    // one int one float
-    // cout << "1 INT 1 FLOAT ";
+// one int one float
+#if defined(DEBUG)
+    cout << "1 INT 1 FLOAT ";
+#endif
     int i0, i1;
     float f0;
     if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
       cout << "handleEqual5 Stack overflow!" << endl;
+#endif
       return false;
     }
     i1 = (int)f0;
     if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
       cout << "handleEqual6 Stack overflow!" << endl;
+#endif
       return false;
     }
     if (i0 == i1) putIntegerOnStack(1);
@@ -603,279 +788,180 @@ bool handleEqual() {
   return false;
 }
 
-bool handlePlus() {
-  // cout << "handlePlus: dataStackPointer " << dataStackPointer << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
+bool handle2Nums(unsigned char X) {
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    cout << "handlePlus Data inconsistent!" << endl;
+#if defined(DEBUG)
+    cout << "handle2Nums Data inconsistent! " << (int)type0 << endl;
+#endif
+    showStack();
     return false;
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      // cout << "2 INTs ";
+#if defined(DEBUG)
+      cout << "2 INTs ";
+#endif
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
-        cout << "handlePlus1 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handle2Nums1 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
-        cout << "handlePlus2 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handle2Nums2 Stack overflow!" << endl;
+#endif
         return false;
       }
-      putIntegerOnStack(i0 + i1);
+      switch (X) {
+        case math_PLUS:
+          putIntegerOnStack(i0 + i1);
+          break;
+        case math_MINUS:
+          putIntegerOnStack(i0 - i1);
+          break;
+        case math_MULT:
+          putIntegerOnStack(i0 * i1);
+          break;
+        case math_DIV:
+          putIntegerOnStack(i0 / i1);
+          break;
+      }
       return true;
     } else {
       float f0, f1;
       if (popFloatFromStack(&f1) == false) {
-        cout << "handlePlus3 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handle2Nums3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f0) == false) {
-        cout << "handlePlus4 Stack overflow!" << endl;
+#if defined(DEBUG)
+        cout << "handle2Nums4 Stack overflow!" << endl;
+#endif
         return false;
       }
-      // cout << "2 FLOATs ";
-      putFloatOnStack(f0 + f1);
+#if defined(DEBUG)
+      cout << "2 FLOATs ";
+#endif
+      switch (X) {
+        case math_PLUS:
+          putFloatOnStack(f0 + f1);
+          break;
+        case math_MINUS:
+          putFloatOnStack(f0 - f1);
+          break;
+        case math_MULT:
+          putFloatOnStack(f0 * f1);
+          break;
+        case math_DIV:
+          putFloatOnStack(f0 / f1);
+          break;
+      }
       return true;
     }
   } else {
-    // one int one float
-    // cout << "1 INT 1 FLOAT ";
+// one int one float
+#if defined(DEBUG)
+    cout << "1 INT 1 FLOAT ";
+#endif
     int i1;
     float f0;
     if (popFloatFromStack(&f0) == false) {
-      cout << "handlePlus5 Stack overflow!" << endl;
+#if defined(DEBUG)
+      cout << "handle2Nums5 Stack overflow!" << endl;
+#endif
       return false;
     }
     if (popIntegerFromStack(&i1) == false) {
-      cout << "handlePlus6 Stack overflow!" << endl;
+#if defined(DEBUG)
+      cout << "handle2Nums6 Stack overflow!" << endl;
+#endif
       return false;
     }
-    putFloatOnStack(f0 + i1);
+    switch (X) {
+      case math_PLUS:
+        putFloatOnStack(f0 + i1);
+        break;
+      case math_MINUS:
+        putFloatOnStack(f0 - i1);
+        break;
+      case math_MULT:
+        putFloatOnStack(f0 * i1);
+        break;
+      case math_DIV:
+        putFloatOnStack(f0 / i1);
+        break;
+    }
     return true;
   }
   return false;
+}
+
+bool handlePlus() {
+  return handle2Nums(math_PLUS);
 }
 
 bool handleMinus() {
-  if (dataStackPointer < 2) {
-    cout << "handleMinus Stack overflow!" << endl;
-    return false;
-  }
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    cout << "handleMinus Data inconsistent!" << endl;
-    return false;
-  }
-  dataStackPointer -= 2;
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      if (intCounter < 2) {
-        cout << "handleMinus1 Stack overflow!" << endl;
-        return false;
-      }
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-        cout << "handleMinus2 Stack overflow!" << endl;
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-        cout << "handleMinus3 Stack overflow!" << endl;
-        return false;
-      }
-      putIntegerOnStack(i0 - i1);
-      return true;
-    } else {
-      if (floatCounter < 2) {
-        cout << "handleMinus4 Stack overflow!" << endl;
-        return false;
-      }
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-        cout << "handleMinus5 Stack overflow!" << endl;
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-        cout << "handleMinus6 Stack overflow!" << endl;
-        return false;
-      }
-      putFloatOnStack(f0 - f1);
-      return true;
-    }
-  } else {
-    // one int one float
-    float f0;
-    int i0;
-    if (popFloatFromStack(&f0) == false) {
-      cout << "handlePlus5 Stack overflow!" << endl;
-      return false;
-    }
-    if (popIntegerFromStack(&i0) == false) {
-      cout << "handleMinus2 Stack overflow!" << endl;
-      return false;
-    }
-    if (type0 == xINTEGER) putFloatOnStack(i0 - f0);
-    else putFloatOnStack(f0 - i0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_MINUS);
 }
-
 bool handleMult() {
-  if (dataStackPointer < 2) {
-    cout << "handleMult Stack overflow!" << endl;
-    return false;
-  }
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    cout << "handleMultData inconsistent!" << endl;
-    return false;
-  }
-  dataStackPointer -= 2;
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-        cout << "handlePlus1 Stack overflow!" << endl;
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-        cout << "handlePlus2 Stack overflow!" << endl;
-        return false;
-      }
-      putIntegerOnStack(i0 * i1);
-      return true;
-    } else {
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-        cout << "handlePlus3 Stack overflow!" << endl;
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-        cout << "handlePlus4 Stack overflow!" << endl;
-        return false;
-      }
-      // cout << "2 FLOATs ";
-      putFloatOnStack(f0 * f1);
-      return true;
-    }
-  } else {
-    // one int one float
-    float f0;
-    int i0;
-    if (popIntegerFromStack(&i0) == false) {
-      cout << "handlePlus2 Stack overflow!" << endl;
-      return false;
-    }
-    if (popFloatFromStack(&f0) == false) {
-      cout << "handlePlus4 Stack overflow!" << endl;
-      return false;
-    }
-    putFloatOnStack(f0 * i0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_MULT);
 }
 
 bool handleDiv() {
-  if (dataStackPointer < 2) {
-    cout << "handleDiv Stack overflow!" << endl;
-    return false;
-  }
-  unsigned char type1 = dataStack[dataStackPointer - 1];
-  unsigned char type0 = dataStack[dataStackPointer - 2];
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    cout << "handleDiv Data inconsistent!" << endl;
-    return false;
-  }
-  dataStackPointer -= 2;
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      if (intCounter < 2) {
-        cout << "handleDiv1 Stack overflow!" << endl;
-        return false;
-      }
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-        cout << "handleDiv2 Stack overflow!" << endl;
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-        cout << "handleDiv3 Stack overflow!" << endl;
-        return false;
-      }
-      putIntegerOnStack(i0 - i1);
-      return true;
-    } else {
-      if (floatCounter < 2) {
-        cout << "handleDiv4 Stack overflow!" << endl;
-        return false;
-      }
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-        cout << "handleDiv5 Stack overflow!" << endl;
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-        cout << "handleDiv6 Stack overflow!" << endl;
-        return false;
-      }
-      putFloatOnStack(f0 - f1);
-      return true;
-    }
-  } else {
-    // one int one float
-    float f0;
-    int i0;
-    if (popFloatFromStack(&f0) == false) {
-      cout << "handlePlus5 Stack overflow!" << endl;
-      return false;
-    }
-    if (popIntegerFromStack(&i0) == false) {
-      cout << "handleDiv2 Stack overflow!" << endl;
-      return false;
-    }
-    if (type0 == xINTEGER) putFloatOnStack(i0 / f0);
-    else putFloatOnStack(f0 / i0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_DIV);
 }
 
 bool handleROT() {
-  // cout << "handleSWAP: dataStackPointer " << dataStackPointer << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
-  if (dataStackPointer < 3) {
+#if defined(DEBUG)
+  cout << "handleSWAP: dataStack.size() " << dataStack.size() << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+#endif
+  if (dataStack.size() < 3) {
+#if defined(DEBUG)
     cout << "handleROT Stack overflow!" << endl;
+#endif
     return false;
   }
-  unsigned char type0 = dataStack[dataStackPointer - 1];
-  unsigned char type1 = dataStack[dataStackPointer - 2];
-  unsigned char type2 = dataStack[dataStackPointer - 3];
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  unsigned char type1 = dataStack.at(dataStack.size() - 2);
+  unsigned char type2 = dataStack.at(dataStack.size() - 3);
   if (
     type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID || type2 == xSTRING || type2 == xINVALID) {
+#if defined(DEBUG)
     cout << "handleROT Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1 && type0 == type2) {
     if (type0 == xINTEGER) {
       if (intCounter < 3) {
+#if defined(DEBUG)
         cout << "handleROT1 Stack overflow!" << endl;
+#endif
         return false;
       }
       int i0, i1, i2;
       if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
         cout << "handleROT2 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
         cout << "handleROT3 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i2) == false) {
+#if defined(DEBUG)
         cout << "handleROT4 Stack overflow!" << endl;
+#endif
         return false;
       }
       putIntegerOnStack(i0);
@@ -885,15 +971,21 @@ bool handleROT() {
     } else {
       float f0, f1, f2;
       if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
         cout << "handleROT6 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
         cout << "handleROT7 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f2) == false) {
+#if defined(DEBUG)
         cout << "handleROT8 Stack overflow!" << endl;
+#endif
         return false;
       }
       putFloatOnStack(f0);
@@ -908,30 +1000,42 @@ bool handleROT() {
 }
 
 bool handleSWAP() {
-  // cout << "handleSWAP: dataStackPointer " << dataStackPointer << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
-  if (dataStackPointer < 2) {
+#if defined(DEBUG)
+  cout << "handleSWAP: dataStack.size() " << dataStack.size() << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+#endif
+  if (dataStack.size() < 2) {
+#if defined(DEBUG)
     cout << "handleSWAP Stack overflow!" << endl;
+#endif
     return false;
   }
-  unsigned char type0 = dataStack[dataStackPointer - 1];
-  unsigned char type1 = dataStack[dataStackPointer - 2];
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  unsigned char type1 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+#if defined(DEBUG)
     cout << "handleSWAP Data inconsistent!" << endl;
+#endif
     return false;
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
       if (intCounter < 2) {
+#if defined(DEBUG)
         cout << "handleSWAP1 Stack overflow!" << endl;
+#endif
         return false;
       }
       int i0, i1;
       if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
         cout << "handleSWAP2 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
         cout << "handleSWAP3 Stack overflow!" << endl;
+#endif
         return false;
       }
       putIntegerOnStack(i0);
@@ -939,16 +1043,22 @@ bool handleSWAP() {
       return true;
     } else {
       if (floatCounter < 2) {
+#if defined(DEBUG)
         cout << "handleSWAP4 Stack overflow!" << endl;
+#endif
         return false;
       }
       float f0, f1;
       if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
         cout << "handleSWAP5 Stack overflow!" << endl;
+#endif
         return false;
       }
       if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
         cout << "handleSWAP6 Stack overflow!" << endl;
+#endif
         return false;
       }
       putFloatOnStack(f0);
@@ -962,7 +1072,7 @@ bool handleSWAP() {
 bool putStringOnStack(string n) {
   enum dataType type = xSTRING;
   userStrings.push_back(n);
-  dataStack[dataStackPointer++] = type;
+  dataStack.push_back(type);
   stringCounter += 1;
   return true;
 }
@@ -970,7 +1080,7 @@ bool putStringOnStack(string n) {
 bool putIntegerOnStack(int n) {
   enum dataType type = xINTEGER;
   userIntegers.push_back(n);
-  dataStack[dataStackPointer++] = type;
+  dataStack.push_back(type);
   intCounter += 1;
   return true;
 }
@@ -982,8 +1092,8 @@ bool popIntegerFromStack(int *value) {
   enum dataType type = xINTEGER;
   *value = userIntegers.at(intCounter - 1);
   userIntegers.pop_back();
+  dataStack.pop_back();
   intCounter -= 1;
-  dataStackPointer -= 1;
   return true;
 }
 
@@ -995,28 +1105,36 @@ bool popFloatFromStack(float *value) {
   *value = userFloats.at(floatCounter - 1);
   userFloats.pop_back();
   floatCounter -= 1;
-  dataStackPointer -= 1;
+  dataStack.pop_back();
   return true;
 }
 
 bool putFloatOnStack(float n) {
   enum dataType type = xFLOAT;
   userFloats.push_back(n);
-  dataStack[dataStackPointer++] = type;
+  dataStack.push_back(type);
   floatCounter += 1;
   return true;
 }
 
 bool lookupUC(string c) {
+#if defined(DEBUG)
   cout << "lookupUC " << c << " ";
+#endif
   for (int ix = 0; ix < userCommands.size(); ix++) {
+#if defined(DEBUG)
     cout << userCommands[ix].name << " ";
+#endif
     if (c == userCommands[ix].name) {
       char code[256];
       strcpy(code, userCommands[ix].command.c_str());
-      // cout << "tokenize " << userCommands[ix].command << " ";
-      vector<string> chunks = tokenize(code);
-      evaluate(chunks);
+#if defined(DEBUG)
+      cout << "tokenize " << userCommands[ix].command << " ";
+#endif
+      int savedExecutionPointer = executionPointer;
+      vector<string> myChunks = tokenize(code);
+      evaluate(myChunks);
+      executionPointer = savedExecutionPointer;
       return true;
     }
   }
@@ -1024,7 +1142,9 @@ bool lookupUC(string c) {
 }
 
 bool lookup(string c, bool *r) {
-  // cout << "Analyzing " << c << " ";
+  // #if defined(DEBUG)
+  //   cout << "Analyzing " << c << " ";
+  // #endif
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     if (c == nativeCommands[ix].name) {
       *r = nativeCommands[ix].ptr();
@@ -1038,7 +1158,9 @@ bool isInteger(string c, int *i0) {
   int sign = 1;
   if (c.length() == 0) return false;
   int base = myRAM[BASE_ADDRESS];
-  // cout << "isInteger/" << base << "/" << c << " ";
+#if defined(DEBUG)
+  cout << "isInteger/" << base << "/" << c << " ";
+#endif
   string nums("0123456789ABCDEF");
   nums = nums.substr(0, base);
   if (base == 10 && c.at(0) == '-') {
@@ -1048,33 +1170,49 @@ bool isInteger(string c, int *i0) {
   string::const_iterator it = c.begin();
   while (it != c.end() && nums.find(*it) != string::npos) ++it;
   if (c.empty() || it != c.end()) {
-    // cout << c << " is not an int." << endl;
+#if defined(DEBUG)
+    cout << c << " is not an int." << endl;
+#endif
     return false;
   }
   try {
     *i0 = stoi(c, nullptr, base) * sign;
     return true;
   } catch (const std::invalid_argument &e) {
-    // cout << "Invalid argument for 'abc': " << e.what() << std::endl;
+#if defined(DEBUG)
+    cout << "Invalid argument for 'abc': " << e.what() << std::endl;
+#endif
   } catch (const std::out_of_range &e) {
-    // cout << "Out of range for 'abc': " << e.what() << std::endl;
+#if defined(DEBUG)
+    cout << "Out of range for 'abc': " << e.what() << std::endl;
+#endif
   }
   return false;
 }
 
 bool isFloat(string c, float *f0) {
   if (c.length() == 0) return false;
-  // cout << "isFloat: " << c << "? ";
+#if defined(DEBUG)
+  cout << "isFloat: " << c << "? ";
+#endif
   if (myRAM[BASE_ADDRESS] == 10) {
     try {
       *f0 = stof(c);
       return true;
     } catch (const std::invalid_argument &e) {
-      // cout << "Invalid argument for `" << c << "`: " << e.what() << endl;
+#if defined(DEBUG)
+      cout << "Invalid argument for `" << c << "`: " << e.what() << endl;
+#endif
     } catch (const std::out_of_range &e) {
-      // cout << "Out of range for " << c << ": " << e.what() << endl;
+#if defined(DEBUG)
+      cout << "Out of range for " << c << ": " << e.what() << endl;
+#endif
     }
-  } else cout << "Only works for base 10!" << endl;
+  } else {
+#if defined(DEBUG)
+    cout << "Only works for base 10!" << endl;
+#endif
+  }
   return false;
 }
 
@@ -1082,30 +1220,46 @@ void evaluate(vector<string> chunks) {
   bool r;
   int i0;
   float f0;
-  cout << endl
-       << "Evaluating:" << endl;
+#if defined(DEBUG)
+  cout << endl << "Evaluating:" << endl;
   for (auto it = chunks.cbegin(); it != chunks.cend(); ++it) cout << *it << " ";
   cout << endl;
+  showStack();
+#endif
   // for (auto it = chunks.cbegin(); it != chunks.cend(); ++it) {
-  for (executionPointer = 0; executionPointer < chunks.size(); executionPointer++) {
+  executionPointer = 0;
+  while (executionPointer < chunks.size()) {
     // executionPointer is global so that BEGIN – and later others – can change it.
     string c = chunks.at(executionPointer);
-    // string c = *it;
-    // cout << endl << "evaluating '" << c << "' len " << c.length() << " ";
+#if defined(DEBUG)
+    cout << endl << "evaluating '" << c << "' executionPointer: " << executionPointer << endl;
+    for (int xx = 0; xx < chunks.size(); xx++) {
+      cout << xx;
+      if (xx == executionPointer) cout << "*";
+      else cout << " ";
+      cout << "\t| " << chunks.at(xx) << "\t|" << endl;
+    }
+#endif
     if (c == ":") {
       // creation of a word
       executionPointer += 1;
       bool done = false, error = true;
       string miniChunks, dictName;
       dictName = chunks.at(executionPointer++);
+#if defined(DEBUG)
       cout << "WORD name: " << dictName << ": ";
+#endif
       while (executionPointer < chunks.size() && !done) {
         c = chunks.at(executionPointer);
+#if defined(DEBUG)
         cout << c << " " << executionPointer << "/" << chunks.size() << " ";
+#endif
         if (c == ";") {
           done = true;
           error = false;
+#if defined(DEBUG)
           cout << " got a ;! ";
+#endif
         } else {
           miniChunks.append(c);
           miniChunks.append(" ");
@@ -1113,10 +1267,14 @@ void evaluate(vector<string> chunks) {
         }
       }
       if (error) {
+#if defined(DEBUG)
         cout << "Missing ; after : sequence! " << miniChunks << endl;
+#endif
         return;
       }
+#if defined(DEBUG)
       cout << "Adding word " << dictName << " with `" << miniChunks << "`." << endl;
+#endif
       userCommand x = { dictName, miniChunks };
       userCommands.push_back(x);
     } else {
@@ -1125,16 +1283,27 @@ void evaluate(vector<string> chunks) {
           cout << c << " returned false. Aborting!" << endl;
           return;
         }
+        executionPointer += 1;
       } else if (lookupUC(c)) {
+#if defined(DEBUG)
         cout << c << " lookupUC " << endl;
+#endif
+        executionPointer += 1;
       } else if (isInteger(c, &i0)) {
         putIntegerOnStack(i0);
-        // cout << c << " is an int " << i0 << endl;
+        executionPointer += 1;
+#if defined(DEBUG)
+        cout << c << " is an int " << i0 << endl;
+#endif
       } else if (isFloat(c, &f0)) {
         putFloatOnStack(f0);
-        // cout << c << " is an int " << i0 << endl;
+        executionPointer += 1;
+#if defined(DEBUG)
+        cout << c << " is an int " << i0 << endl;
+#endif
       } else {
         cout << endl << "ERROR! Unknown: " << c << endl;
+        return;
       }
     }
   }
@@ -1153,7 +1322,9 @@ vector<string> tokenize(char *code) {
       if (buffIndex > 0) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
-        // printf(" * Adding `%s`\n", buffer);
+#if defined(DEBUG)
+        printf(" * Adding `%s`\n", buffer);
+#endif
         memset(buffer, 0, 256);
         buffIndex = 0;
       }
@@ -1163,7 +1334,9 @@ vector<string> tokenize(char *code) {
   }
   if (buffIndex > 0) {
     buffer[buffIndex + 1] = 0;
+#if defined(DEBUG)
     printf(" • Adding `%s`\n", buffer);
+#endif
     chunks.push_back(buffer);
   }
   return chunks;
@@ -1172,26 +1345,26 @@ vector<string> tokenize(char *code) {
 int main() {
   initForth();
   char code[256] = { 0 };
-//   strcpy(code, "1 2 3 4 5 .S DUP ROT + + / * + 13.22 .S + . CR");
-//   vector<string> chunks = tokenize(code);
-//   evaluate(chunks);
-// 
-//   strcpy(code, "BASE 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR");
-//   chunks = tokenize(code);
-//   evaluate(chunks);
-// 
-//   cout << "OVER" << endl;
-//   strcpy(code, "1 2 .S OVER .S CR 1.2 2.1 .S OVER .S CR");
-//   chunks = tokenize(code);
-//   evaluate(chunks);
-// 
-//   cout << ": ++ + + ;" << endl;
-//   strcpy(code, ": ++ + + ; 1 1 1 .S ++ . CR");
-//   chunks = tokenize(code);
-//   evaluate(chunks);
+  //   strcpy(code, "1 2 3 4 5 .S DUP ROT + + / * + 13.22 .S + . CR");
+  //   vector<string> chunks = tokenize(code);
+  //   evaluate(chunks);
+  //
+  //   strcpy(code, "BASE 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR");
+  //   chunks = tokenize(code);
+  //   evaluate(chunks);
+  //
+  //   cout << "OVER" << endl;
+  //   strcpy(code, "1 2 .S OVER .S CR 1.2 2.1 .S OVER .S CR");
+  //   chunks = tokenize(code);
+  //   evaluate(chunks);
+  //
+  //   cout << ": ++ + + ;" << endl;
+  //   strcpy(code, ": ++ + + ; 1 1 1 .S ++ . CR");
+  //   chunks = tokenize(code);
+  //   evaluate(chunks);
 
-  cout << "10 .S BEGIN DUP . 1 - DUP 0= UNTIL" << endl;
-  strcpy(code, "-10 .S BEGIN DUP . 1 .S + DUP 0 = UNTIL CR");
+  strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S");
+  cout << code << endl;
   vector<string> chunks = tokenize(code);
   evaluate(chunks);
 
