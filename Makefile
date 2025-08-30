@@ -8,5 +8,7 @@ test: ddforth
 	./ddforth $(TEST)
 
 clean:
-	rm -f ddforth
+	rm -f ddforth ddforth_debug
 
+debug: ddforth.cpp
+	$(CPP) -DDEBUG ddforth.cpp -o ddforth_debug

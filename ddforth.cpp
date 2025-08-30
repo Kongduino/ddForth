@@ -434,24 +434,32 @@ bool handleBASE16() {
   return true;
 }
 
-bool printOtherBases(int number, int base) {
+bool printOtherBases(int number, unsigned int base) {
   if (base > 16) {
     StoreINT(BASE_ADDRESS, 16);
     base = 16;
   }
   unsigned int uNumber = number;
+#if defined(DEBUG)
+  cout << " Printing " << uNumber << " in base " << base << endl;
+#endif
   char buffer[32] = { 0 };
   unsigned char ix = 0;
-  while (number >= base) {
+  while (uNumber >= base) {
     int q = uNumber % base;
     uNumber = uNumber / base;
     buffer[ix++] = numerics[q];
   }
   buffer[ix] = numerics[uNumber];
-  for (unsigned char n = 0; n < (ix >> 1); n++) {
+#if defined(DEBUG)
+  cout << numerics[uNumber] << endl;
+#endif
+  int n = 0;
+  while (n < (ix>>1)) {
     unsigned char b = buffer[n];
     buffer[n] = buffer[ix - n];
     buffer[ix - n] = b;
+    n += 1;
   }
   printf("%s ", buffer);
   return true;
