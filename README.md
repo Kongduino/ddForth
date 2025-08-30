@@ -137,6 +137,8 @@ Fact~	~Test
 
 ## DEBUG VERSION
 
+(TL,DR: Boring stuff)
+
 ```
 > make clean; make debug
 rm -f ddforth ddforth_debug
