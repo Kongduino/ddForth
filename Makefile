@@ -12,3 +12,5 @@ clean:
 
 debug: ddforth.cpp
 	$(CPP) -DDEBUG ddforth.cpp -o ddforth_debug
+
+all: ddforth debug
