@@ -1527,7 +1527,18 @@ vector<string> tokenize(char *code) {
         buffIndex = 0;
       }
     } else if (c == '\\' && insideString) {
-      buffer[buffIndex++] = code[ix++];
+      char esc = code[ix++];
+      if (esc == 'n') esc = '\n';
+      else if (esc == 'r') esc = '\r';
+      else if (esc == '0') esc = '\0';
+      else if (esc == 't') esc = '\t';
+      else if (esc == 'x') {
+        char xxx[3] = {0};
+        xxx[0] = code[ix++];
+        xxx[1] = code[ix++];
+        esc = stoi(string(xxx), nullptr, 16);
+      }
+      buffer[buffIndex++] = esc;
     } else if (c == '"' && insideString /* && code[ix + 1] < '!'*/) {
 #if defined(DEBUG)
       cout << "Ending \"" << endl;
