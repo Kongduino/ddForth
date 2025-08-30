@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <map>
 
 //#define DEBUG
 
@@ -10,6 +11,7 @@ using namespace std;
 // vector<string> userStrings;
 
 bool showStack();
+bool showVars();
 bool handleCR();
 bool handleDROP();
 bool handleSWAP();
@@ -49,7 +51,7 @@ bool handleUNTIL();
 bool handleBEGIN();
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
-void StoreINT(int, int);
+void StoreINT(string, int);
 bool checkTypes(int, unsigned char);
 
 vector<int> dataStack;
@@ -64,11 +66,8 @@ vector<int> userIntegers;
 vector<float> userFloats;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
-enum varAddresses {
-  BASE_ADDRESS,
-  BASE_ADDRESS1,
-  FREE_ADDRESS,  // You can peek and poke from here
-};
+map<string, int> varAddresses;
+vector<int> myVARs;
 
 enum mathTypes {
   math_PLUS,
@@ -103,9 +102,10 @@ nativeCommand nativeCommands[] = {
   { handleBASE10, "DEC" },
   { handleBASE16, "HEX" },
   { handleStore, "!" },
-  { handleRetrieve, "?" },
+  { handleRetrieve, "@" },
   { handleCR, "CR" },
   { showStack, ".S" },
+  { showVars, ".V" },
   { handleEqual, "=" },
   { handleLower, "<" },
   { handleHigher, ">" },
@@ -134,18 +134,39 @@ enum JumpType {
   xBEGIN
 };
 
-void StoreINT(int addr, int value) {
-  unsigned char x = value & 0xFF;
-  myRAM[addr] = x;
-  x = (value >> 8) & 0xFF;
-  myRAM[addr + 1] = x;
+void StoreINT(string name, int value) {
+  map<string, int>::iterator it;
+  it = varAddresses.find(name);
+  if (it != varAddresses.end()) {
+    myVARs.at(it->second) = value;
+  } else {
+    myVARs.push_back(value);
+    varAddresses[name] = myVARs.size() - 1;
+  }  
 }
 
-int GetINT(int addr) {
-  unsigned char x = myRAM[addr];
-  unsigned char y = myRAM[addr + 1];
-  int i0 = (y << 8) + x;
-  return i0;
+void StoreINTaddress(int ad, int value) {
+  myVARs.at(ad) = value;
+}
+
+int GetINT(string name) {
+  map<string, int>::iterator it;
+  it = varAddresses.find(name);
+  if (it != varAddresses.end()) {
+    return myVARs.at(it->second);
+  } else {
+    return -1;
+  }  
+}
+
+int GetINTaddress(string name) {
+  map<string, int>::iterator it;
+  it = varAddresses.find(name);
+  if (it != varAddresses.end()) {
+    return it->second;
+  } else {
+    return -1;
+  }  
 }
 
 bool checkTypes(int levels, unsigned char n) {
@@ -162,7 +183,7 @@ void initForth() {
 #endif
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   userCmdCount = userCommands.size();
-  StoreINT(BASE_ADDRESS, 10);
+  StoreINT("BASE", 10);
   string name("0=");
   string code("0 =");
 #if defined(DEBUG)
@@ -170,6 +191,14 @@ void initForth() {
 #endif
   userCommand x = { name, code };
   userCommands.push_back(x);
+  name = "?";
+  code = "@ .";
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  x = { name, code };
+  userCommands.push_back(x);
+  StoreINT("VER.", 1051);
 }
 
 bool handleFact() {
@@ -306,13 +335,35 @@ bool handleWHILE() {
   return true;
 }
 
+bool showVars() {
+  if (myVARs.size() == 0) {
+    cout << "No vars!" << endl;
+    return true;
+  }
+  cout << endl << "+-------------------------------+" << endl;
+  cout << "| Num\t| Name\t| Addr\t| Value\t|";
+  cout << endl << "+-------------------------------+" << endl;
+  map<string, int>::iterator it;
+  it = varAddresses.begin();
+  int ix = 0;
+  while (it != varAddresses.end()) {
+    cout << "| " << (ix++) << "\t| ";
+    cout << it->first << "\t| ";
+    cout << it->second << "\t|";
+    cout << myVARs.at(it->second) << "\t|" << endl;
+    it++;
+  }
+  cout << "+-------------------------------+" << endl;
+  return true;
+}
+
 bool showStack() {
   int count = 0;
   if (dataStack.size() == 0) {
     cout << "Stack empty! ";
     return true;
   }
-  cout << endl;  // << "showStack " << dataStack.size();
+  cout << endl; // << "showStack " << dataStack.size();
   int x = dataStack.size() - 1;
   int myInts = intCounter - 1;
   int myFloats = floatCounter - 1;
@@ -374,9 +425,9 @@ bool handleStore() {
     return false;
   }
 #if defined(DEBUG)
-  cout << "storing " << x << " into RAM[" << ad << "] ";
+  cout << "storing " << x << " into myVARs[" << ad << "] ";
 #endif
-  myRAM[ad] = (unsigned char)x;
+  myVARs.at(ad) = x;
   return true;
 }
 
@@ -400,21 +451,21 @@ bool handleRetrieve() {
 #if defined(DEBUG)
   cout << "handleRetrieve end ";
 #endif
-  return putIntegerOnStack(myRAM[ad]);
+  return putIntegerOnStack(myVARs.at(ad));
 }
 
 bool handleBASE() {
 #if defined(DEBUG)
   cout << "handleBASE ";
 #endif
-  return putIntegerOnStack(BASE_ADDRESS);
+  return putIntegerOnStack(GetINTaddress("BASE"));
 }
 
 bool handleBASE2() {
 #if defined(DEBUG)
   cout << "handleBASE2 ";
 #endif
-  StoreINT(BASE_ADDRESS, 2);
+  StoreINT("BASE", 2);
   return true;
 }
 
@@ -422,7 +473,7 @@ bool handleBASE10() {
 #if defined(DEBUG)
   cout << "handleBASE10 ";
 #endif
-  StoreINT(BASE_ADDRESS, 10);
+  StoreINT("BASE", 10);
   return true;
 }
 
@@ -430,13 +481,13 @@ bool handleBASE16() {
 #if defined(DEBUG)
   cout << "handleBASE16 ";
 #endif
-  StoreINT(BASE_ADDRESS, 16);
+  StoreINT("BASE", 16);
   return true;
 }
 
 bool printOtherBases(int number, unsigned int base) {
   if (base > 16) {
-    StoreINT(BASE_ADDRESS, 16);
+    StoreINT("BASE", 16);
     base = 16;
   }
   unsigned int uNumber = number;
@@ -505,7 +556,7 @@ bool handlePRINT() {
 #endif
           return false;
         }
-        int base = GetINT(BASE_ADDRESS);
+        int base = GetINT("BASE");
         if (base == 10) cout << i0 << " ";
         else printOtherBases(i0, base);
         break;
@@ -534,7 +585,7 @@ bool handleUPRINT() {
 #endif
     return false;
   }
-  if (myRAM[BASE_ADDRESS] != 10) {
+  if (GetINT("BASE") != 10) {
 #if defined(DEBUG)
     cout << "handleUPRINT only works in base 10!" << endl;
 #endif
@@ -1342,7 +1393,7 @@ bool lookup(string c, bool *r) {
 bool isInteger(string c, int *i0) {
   int sign = 1;
   if (c.length() == 0) return false;
-  int base = GetINT(BASE_ADDRESS);
+  int base = GetINT("BASE");
 #if defined(DEBUG)
   cout << "isInteger/" << base << "/" << c << " ";
 #endif
@@ -1380,7 +1431,7 @@ bool isFloat(string c, float *f0) {
 #if defined(DEBUG)
   cout << "isFloat: " << c << "? ";
 #endif
-  if (myRAM[BASE_ADDRESS] == 10) {
+  if (GetINT("BASE") == 10) {
     try {
       *f0 = stof(c);
       return true;

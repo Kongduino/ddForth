@@ -8,13 +8,11 @@
 rm -f ddforth ddforth_debug
 g++ -O3 ddforth.cpp -o ddforth
 > ./tests.sh 
-./ddforth -f test.fs
 Running code:
 	." \"中文也行\"" CR ." ¥Á¥!"
 "中文也行" 
 ¥Á¥! 
 
-./ddforth -f test0.fs
 Running code:
 	1 2 3 4 5 .S DUP ROT + + / * + 13.22 .S + . CR
 
@@ -33,7 +31,6 @@ Running code:
 14.220000 
 
 
-./ddforth -f test1.fs
 Running code:
 	CR ." OUTSIDE LOOP" CR -10 BEGIN DUP . DUP -1 * CR ." > INSIDE LOOP" CR BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP CR 1 + DUP 0= UNTIL . .S CR
 
@@ -71,9 +68,12 @@ OUTSIDE LOOP
 0 Stack empty! 
 
 
-./ddforth -f test2.fs
 Running code:
-	BASE 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR BASE ? . CR
+	BASE .S 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR BASE ? .V CR
+
++-----------------------+
+| 0	| INT.	| 0	|
++-----------------------+
 165 
 
 +-----------------------+
@@ -83,11 +83,17 @@ Running code:
 +-----------------------+
 -13 4294967283 fffffff3 
 10 
++-------------------------------+
+| Num	| Name	| Addr	| Value	|
++-------------------------------+
+| 0	| BASE	| 0	|10	|
+| 1	| VER.	| 1	|1051	|
++-------------------------------+
 
 
-./ddforth -f test3.fs
+
 Running code:
-	1 2 .S OVER .S CR 1.2 2.1 .S OVER .S CR + + + + DROP .S
+	1 2 .S OVER .S CR 1.2 2.1 .S OVER .S CR
 
 +-----------------------+
 | 0	| INT.	| 2	|
@@ -119,20 +125,18 @@ Running code:
 +-----------------------+
 
 
-+-----------------------+
-libc++abi: terminating due to uncaught exception of type std::out_of_range: vector
-| 0	| INT.	| ./tests.sh: line 2: 29797 Abort trap: 6           ./ddforth -f $x
-./ddforth -f test4.fs
+
 Running code:
-	." Fact\x7e\t\x7eTest" CR 3 BEGIN DUP DUP . ." ! =" FACT U. CR 1 + DUP 10 = UNTIL CR
-Fact~	~Test 
+	." Fact Test" CR 3 BEGIN DUP DUP . ." ! =" FACT U. CR 1 + DUP 10 = UNTIL CR
+Fact Test 
 3 ! = 6 
 4 ! = 24 
 5 ! = 120 
 6 ! = 720 
 7 ! = 5040 
 8 ! = 40320 
-9 ! = 362880
+9 ! = 362880 
+
 ```
 
 ## DEBUG VERSION
