@@ -1,3 +1,4 @@
+#include <fstream> // For ifstream
 #include <iostream>
 #include <stdio.h>
 #include <vector>
@@ -14,15 +15,18 @@ bool handleDROP();
 bool handleSWAP();
 bool handleROT();
 bool handleEqual();
+bool handleDifferent();
 bool handleLower();
 bool handleHigher();
-bool handle2Nums(unsigned char );
+bool handle2Nums(unsigned char);
 bool handlePlus();
 bool handleMinus();
 bool handleMult();
 bool handleDiv();
+bool handleFact();
 bool handleEMIT();
 bool handlePRINT();
+bool handlePRINTSTRING();
 bool handleUPRINT();
 bool handleDUP();
 bool handleOVER();
@@ -40,10 +44,13 @@ bool handleBASE();
 bool handleBASE2();
 bool handleBASE10();
 bool handleBASE16();
+bool handleWHILE();
 bool handleUNTIL();
 bool handleBEGIN();
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
+void StoreINT(int, int);
+bool checkTypes(int, unsigned char);
 
 vector<int> dataStack;
 unsigned int intCounter = 0;
@@ -56,10 +63,13 @@ vector<string> userStrings;
 vector<int> userIntegers;
 vector<float> userFloats;
 unsigned char myRAM[64 * 1024] = { 0 };
+bool isPrinting = false;
 enum varAddresses {
   BASE_ADDRESS,
+  BASE_ADDRESS1,
   FREE_ADDRESS,  // You can peek and poke from here
 };
+
 enum mathTypes {
   math_PLUS,
   math_MINUS,
@@ -69,7 +79,7 @@ enum mathTypes {
 };
 
 struct nativeCommand {
-  bool (*ptr)(void); // Function pointer
+  bool (*ptr)(void);  // Function pointer
   string name;
 };
 
@@ -78,8 +88,10 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
+  { handleFact, "FACT" },
   { handleEMIT, "EMIT" },
   { handlePRINT, "." },
+  { handlePRINTSTRING, ".\"" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -97,8 +109,10 @@ nativeCommand nativeCommands[] = {
   { handleEqual, "=" },
   { handleLower, "<" },
   { handleHigher, ">" },
+  { handleDifferent, "<>" },
   { handleBEGIN, "BEGIN" },
   { handleUNTIL, "UNTIL" },
+  { handleWHILE, "WHILE" },
 };
 int nativeCmdCount = 0;
 struct userCommand {
@@ -120,12 +134,60 @@ enum JumpType {
   xBEGIN
 };
 
-bool checkTypes(int, unsigned char);
+void StoreINT(int addr, int value) {
+  unsigned char x = value & 0xFF;
+  myRAM[addr] = x;
+  x = (value >> 8) & 0xFF;
+  myRAM[addr + 1] = x;
+}
+
+int GetINT(int addr) {
+  unsigned char x = myRAM[addr];
+  unsigned char y = myRAM[addr + 1];
+  int i0 = (y << 8) + x;
+  return i0;
+}
+
 bool checkTypes(int levels, unsigned char n) {
   if (dataStack.size() < levels) return false;
   for (int ix = 0; ix < levels; ix++) {
     if (dataStack.at(dataStack.size() - 1 - ix) != n) return false;
   }
+  return true;
+}
+
+void initForth() {
+#if defined(DEBUG)
+  cout << "init ";
+#endif
+  nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
+  userCmdCount = userCommands.size();
+  StoreINT(BASE_ADDRESS, 10);
+  string name("0=");
+  string code("0 =");
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  userCommand x = { name, code };
+  userCommands.push_back(x);
+}
+
+bool handleFact() {
+  int factorial = 1;
+  int n;
+  if (popIntegerFromStack(&n) == false) {
+#if defined(DEBUG)
+    cout << "handleFact Stack overflow!" << endl;
+#endif
+    return false;
+  }
+  if (n < 0) {
+    std::cout << "Factorial is not defined for negative numbers." << std::endl;
+    return false;
+  }
+  for (int i = 1; i <= n; ++i)
+    factorial *= i;
+  putIntegerOnStack(factorial);
   return true;
 }
 
@@ -193,6 +255,57 @@ bool handleUNTIL() {
   return true;
 }
 
+bool handleWHILE() {
+#if defined(DEBUG)
+  cout << endl << "--> WHILE at " << executionPointer << ". JumpStack size: " << jumpStack.size() << endl;
+#endif
+  int i0, type0;
+  if (jumpStack.size() == 0) {
+#if defined(DEBUG)
+    cout << "handleWHILE JumpStack overflow!" << endl;
+#endif
+    return false;
+  }
+  type0 = jumpStackType.at(jumpStackType.size() - 1);
+  if (type0 != xBEGIN) {
+#if defined(DEBUG)
+    cout << "handleWHILE JumpStackType overflow!" << endl;
+#endif
+    return false;
+  }
+  if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+    cout << "handleWHILE Stack overflow!" << endl;
+#endif
+    return false;
+  }
+#if defined(DEBUG)
+  showStack();
+#endif
+  if (i0 < 0 || i0 > 1) {
+#if defined(DEBUG)
+    cout << "handleWHILE " << i0 << " is not a BOOLEAN!" << endl;
+#endif
+    return false;
+  }
+#if defined(DEBUG)
+  cout << "Condition is " << ((i0 == 1) ? "true" : "false") << endl;
+#endif
+  if (i0 == 1) {
+    executionPointer = jumpStack.at(jumpStack.size() - 1);
+#if defined(DEBUG)
+    cout << " looping back to " << executionPointer << ". Condition: " << i0 << endl;
+#endif
+  } else {
+    jumpStack.pop_back();
+    jumpStackType.pop_back();
+#if defined(DEBUG)
+    cout << " Ending BEGIN. Condition: " << i0 << endl;
+#endif
+  }
+  return true;
+}
+
 bool showStack() {
   int count = 0;
   if (dataStack.size() == 0) {
@@ -230,22 +343,6 @@ bool showStack() {
   }
   cout << "+-----------------------+" << endl;
   return true;
-}
-
-void initForth() {
-#if defined(DEBUG)
-  cout << "init ";
-#endif
-  nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
-  userCmdCount = userCommands.size();
-  myRAM[BASE_ADDRESS] = 10;
-  string name("0=");
-  string code("0 =");
-#if defined(DEBUG)
-  cout << "Adding word " << name << " with `" << code << "`" << endl;
-#endif
-  userCommand x = { name, code };
-  userCommands.push_back(x);
 }
 
 bool handleCR() {
@@ -317,7 +414,7 @@ bool handleBASE2() {
 #if defined(DEBUG)
   cout << "handleBASE2 ";
 #endif
-  myRAM[BASE_ADDRESS] = 2;
+  StoreINT(BASE_ADDRESS, 2);
   return true;
 }
 
@@ -325,7 +422,7 @@ bool handleBASE10() {
 #if defined(DEBUG)
   cout << "handleBASE10 ";
 #endif
-  myRAM[BASE_ADDRESS] = 10;
+  StoreINT(BASE_ADDRESS, 10);
   return true;
 }
 
@@ -333,13 +430,13 @@ bool handleBASE16() {
 #if defined(DEBUG)
   cout << "handleBASE16 ";
 #endif
-  myRAM[BASE_ADDRESS] = 16;
+  StoreINT(BASE_ADDRESS, 16);
   return true;
 }
 
 bool printOtherBases(int number, int base) {
   if (base > 16) {
-    myRAM[BASE_ADDRESS] = 16;
+    StoreINT(BASE_ADDRESS, 16);
     base = 16;
   }
   unsigned int uNumber = number;
@@ -374,6 +471,11 @@ bool handleEMIT() {
   return true;
 }
 
+bool handlePRINTSTRING() {
+  isPrinting = true;
+  return true;
+}
+
 bool handlePRINT() {
 #if defined(DEBUG)
   cout << "handlePRINT: dataStack.size() " << dataStack.size() << " ";
@@ -395,7 +497,7 @@ bool handlePRINT() {
 #endif
           return false;
         }
-        int base = myRAM[BASE_ADDRESS];
+        int base = GetINT(BASE_ADDRESS);
         if (base == 10) cout << i0 << " ";
         else printOtherBases(i0, base);
         break;
@@ -643,7 +745,7 @@ bool handleLower() {
   unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
 #if defined(DEBUG)
-    cout << "handleEqual Data inconsistent!" << endl;
+    cout << "handleLower Data inconsistent!" << endl;
 #endif
     return false;
   }
@@ -655,13 +757,13 @@ bool handleLower() {
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
 #if defined(DEBUG)
-        cout << "handleEqual1 Stack overflow!" << endl;
+        cout << "handleLower1 Stack overflow!" << endl;
 #endif
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
 #if defined(DEBUG)
-        cout << "handleEqual2 Stack overflow!" << endl;
+        cout << "handleLower2 Stack overflow!" << endl;
 #endif
         return false;
       }
@@ -672,13 +774,13 @@ bool handleLower() {
       float f0, f1;
       if (popFloatFromStack(&f1) == false) {
 #if defined(DEBUG)
-        cout << "handleEqual3 Stack overflow!" << endl;
+        cout << "handleLower3 Stack overflow!" << endl;
 #endif
         return false;
       }
       if (popFloatFromStack(&f0) == false) {
 #if defined(DEBUG)
-        cout << "handleEqual4 Stack overflow!" << endl;
+        cout << "handleLower4 Stack overflow!" << endl;
 #endif
         return false;
       }
@@ -695,14 +797,14 @@ bool handleLower() {
     float f0;
     if (popFloatFromStack(&f0) == false) {
 #if defined(DEBUG)
-      cout << "handleEqual5 Stack overflow!" << endl;
+      cout << "handleLower5 Stack overflow!" << endl;
 #endif
       return false;
     }
     i1 = (int)f0;
     if (popIntegerFromStack(&i0) == false) {
 #if defined(DEBUG)
-      cout << "handleEqual6 Stack overflow!" << endl;
+      cout << "handleLower6 Stack overflow!" << endl;
 #endif
       return false;
     }
@@ -782,6 +884,81 @@ bool handleEqual() {
       return false;
     }
     if (i0 == i1) putIntegerOnStack(1);
+    else putIntegerOnStack(0);
+    return true;
+  }
+  return false;
+}
+
+bool handleDifferent() {
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+#if defined(DEBUG)
+    cout << "handleDifferent Data inconsistent!" << endl;
+#endif
+    return false;
+  }
+  if (type0 == type1) {
+    if (type0 == xINTEGER) {
+#if defined(DEBUG)
+      cout << "2 INTs ";
+#endif
+      int i0, i1;
+      if (popIntegerFromStack(&i1) == false) {
+#if defined(DEBUG)
+        cout << "handleDifferent1 Stack overflow!" << endl;
+#endif
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+        cout << "handleDifferent2 Stack overflow!" << endl;
+#endif
+        return false;
+      }
+      if (i0 != i1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    } else {
+      float f0, f1;
+      if (popFloatFromStack(&f1) == false) {
+#if defined(DEBUG)
+        cout << "handleDifferent3 Stack overflow!" << endl;
+#endif
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
+        cout << "handleDifferent4 Stack overflow!" << endl;
+#endif
+        return false;
+      }
+      if (f0 != f1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    }
+  } else {
+// one int one float
+#if defined(DEBUG)
+    cout << "1 INT 1 FLOAT ";
+#endif
+    int i0;
+    float f0, f1;
+    if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
+      cout << "handleDifferent5 Stack overflow!" << endl;
+#endif
+      return false;
+    }
+    if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+      cout << "handleDifferent6 Stack overflow!" << endl;
+#endif
+      return false;
+    }
+    f1 = i0;
+    if (f0 != f1) putIntegerOnStack(1);
     else putIntegerOnStack(0);
     return true;
   }
@@ -1157,7 +1334,7 @@ bool lookup(string c, bool *r) {
 bool isInteger(string c, int *i0) {
   int sign = 1;
   if (c.length() == 0) return false;
-  int base = myRAM[BASE_ADDRESS];
+  int base = GetINT(BASE_ADDRESS);
 #if defined(DEBUG)
   cout << "isInteger/" << base << "/" << c << " ";
 #endif
@@ -1240,7 +1417,13 @@ void evaluate(vector<string> chunks) {
       cout << "\t| " << chunks.at(xx) << "\t|" << endl;
     }
 #endif
-    if (c == ":") {
+    if (isPrinting && c.back() == '"') {
+      // print that
+      c.pop_back();
+      cout << c << " ";
+      isPrinting = false;
+      executionPointer += 1;
+    } else if (c == ":") {
       // creation of a word
       executionPointer += 1;
       bool done = false, error = true;
@@ -1302,7 +1485,7 @@ void evaluate(vector<string> chunks) {
         cout << c << " is an int " << i0 << endl;
 #endif
       } else {
-        cout << endl << "ERROR! Unknown: " << c << endl;
+        cout << endl << "ERROR! Unknown: " << c << " at executionPointer " << executionPointer << endl;
         return;
       }
     }
@@ -1314,21 +1497,49 @@ vector<string> tokenize(char *code) {
   vector<string> chunks;
   char buffer[256] = { 0 };
   unsigned int buffIndex = 0;
+  bool insideString = false;
   while (ix < ln) {
     char c = code[ix++];
-    if (c < '!') {
+    if (c < '!' && !insideString) {
       // skip if not yet in a string
       // else add chunk
       if (buffIndex > 0) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
+        if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
+          insideString = true;
+#if defined(DEBUG)
+          cout << "inside string" << endl;
+#endif
+        }
 #if defined(DEBUG)
         printf(" * Adding `%s`\n", buffer);
 #endif
         memset(buffer, 0, 256);
         buffIndex = 0;
       }
+    } else if (c == '\\' && insideString) {
+      buffer[buffIndex++] = code[ix++];
+    } else if (c == '"' && insideString /* && code[ix + 1] < '!'*/) {
+#if defined(DEBUG)
+      cout << "Ending \"" << endl;
+#endif
+      insideString = false;
+      buffer[buffIndex++] = c;
+      buffer[buffIndex] = 0;
+      string ss(buffer);
+      //ss.append("\"");
+      ix += 1;
+#if defined(DEBUG)
+      cout << "ss: " << ss << endl;
+#endif
+      chunks.push_back(ss);
+      memset(buffer, 0, 256);
+      buffIndex = 0;
     } else {
+#if defined(DEBUG)
+      cout << c;
+#endif
       buffer[buffIndex++] = c;
     }
   }
@@ -1342,9 +1553,28 @@ vector<string> tokenize(char *code) {
   return chunks;
 }
 
-int main() {
-  initForth();
+int main(int argc, char **argv) {
   char code[256] = { 0 };
+  initForth();
+  if(argc == 3) {
+    if (strcmp(argv[1], "-f") == 0) {
+      ifstream inputFile(argv[2]);
+      if (!inputFile.is_open()) {
+        std::cerr << "Unable to open file!" << std::endl;
+        return 0;
+      }
+      string line;
+      getline(inputFile, line);
+      strcpy(code, line.c_str());
+    } else {
+      std::cerr << argv[1] << "!= -f" << std::endl;
+      return 0;
+    }
+  } else if(argc == 2) {
+    strcpy(code, argv[1]);
+  } else {
+    strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
+  }
   //   strcpy(code, "1 2 3 4 5 .S DUP ROT + + / * + 13.22 .S + . CR");
   //   vector<string> chunks = tokenize(code);
   //   evaluate(chunks);
@@ -1363,8 +1593,12 @@ int main() {
   //   chunks = tokenize(code);
   //   evaluate(chunks);
 
-  strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S");
-  cout << code << endl;
+  //   strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
+  //   cout << code << endl;
+  //   vector<string> chunks = tokenize(code);
+  //   evaluate(chunks);
+
+  cout << "Running code:" << endl << "\t" << code << endl;
   vector<string> chunks = tokenize(code);
   evaluate(chunks);
 
