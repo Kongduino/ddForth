@@ -1,0 +1,1 @@
+12.12 CONST GAG 21.21 VAR GOG .V GOG GAG @ GOG @ + .S ! .S .V GOG ? CR
