@@ -374,7 +374,7 @@ bool showVars() {
     cout << "| " << (ix++) << "\t| ";
     cout << it->first << "\t\t| ";
     cout << (it->second) << "\t|";
-    cout << myFVARs.at(it->second - 128) << "\t|" << endl;
+    cout << myFVARs.at(it->second) << "\t|" << endl;
     it++;
   }
   cout << "+---------------------------------------+" << endl;
@@ -392,7 +392,7 @@ bool showVars() {
   while (it != constAddresses.end()) {
     cout << "| " << (ix++) << "\t| ";
     cout << it->first << "\t| ";
-    cout << (it->second + 256) << "\t|";
+    cout << (it->second) << "\t|";
     cout << myCONSTs.at(it->second - 256) << "\t|" << endl;
     it++;
   }
@@ -402,7 +402,7 @@ bool showVars() {
   while (it != fconstAddresses.end()) {
     cout << "| " << (ix++) << "\t| ";
     cout << it->first << "\t| ";
-    cout << (it->second + 384) << "\t|";
+    cout << (it->second) << "\t|";
     cout << myFCONSTs.at(it->second - 384) << "\t|" << endl;
     it++;
   }
@@ -1467,14 +1467,14 @@ bool lookupVAR(string name) {
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second + 128);
+    putIntegerOnStack(it->second);
     return true;
   }  
 
   it = constAddresses.find(name);
   if (it != constAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second + 256);
+    putIntegerOnStack(it->second);
     // 0 --> 255 = var
     // 256 --> xxx = const
     return true;
@@ -1482,7 +1482,7 @@ bool lookupVAR(string name) {
   it = fconstAddresses.find(name);
   if (it != fconstAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second + 384);
+    putIntegerOnStack(it->second);
     // 0 --> 255 = var
     // 256 --> xxx = const
     return true;
