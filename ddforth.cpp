@@ -39,6 +39,7 @@ bool putFloatOnStack(float);
 bool popFloatFromStack(float *);
 bool lookup(string);
 bool lookupUC(string);
+bool lookupVAR(string);
 bool putStringOnStack(string);
 void initForth();
 bool handleStore();
@@ -53,6 +54,7 @@ bool handleBEGIN();
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
 void StoreINT(string, int);
+void StoreCONSTINT(string, int);
 bool checkTypes(int, unsigned char);
 
 vector<int> dataStack;
@@ -68,7 +70,9 @@ vector<float> userFloats;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
 map<string, int> varAddresses;
+map<string, int> constAddresses;
 vector<int> myVARs;
+vector<int> myCONSTs;
 
 enum mathTypes {
   math_PLUS,
@@ -135,6 +139,23 @@ enum dataType {
 enum JumpType {
   xBEGIN
 };
+
+
+void StoreCONSTINT(string name, int value) {
+  map<string, int>::iterator it;
+  it = constAddresses.find(name);
+  if (it == constAddresses.end()) {
+    myCONSTs.push_back(value);
+    constAddresses[name] = myCONSTs.size() - 1;
+#if defined(DEBUG)
+    cout << "CONST " << name << " created as " << value << endl;
+#endif
+  } else {
+#if defined(DEBUG)
+    cout << "CONST " << name << " already exists!" << endl;
+#endif
+  }
+}
 
 void StoreINT(string name, int value) {
   map<string, int>::iterator it;
@@ -299,23 +320,43 @@ bool handleWHILE() {
 
 bool showVars() {
   if (myVARs.size() == 0) {
-    cout << "No vars!" << endl;
+    cout << "No VARs!" << endl;
     return true;
-  }
-  cout << endl << "+-------------------------------+" << endl;
-  cout << "| Num\t| Name\t| Addr\t| Value\t|";
-  cout << endl << "+-------------------------------+" << endl;
+  } else {
+  cout << endl << "+---------------------------------------+" << endl;
+  cout << "| Num\t| Name\t\t| Addr\t| Value\t|";
+  cout << endl << "+---------------------------------------+" << endl;
   map<string, int>::iterator it;
   it = varAddresses.begin();
   int ix = 0;
   while (it != varAddresses.end()) {
     cout << "| " << (ix++) << "\t| ";
-    cout << it->first << "\t| ";
+    cout << it->first << "\t\t| ";
     cout << it->second << "\t|";
     cout << myVARs.at(it->second) << "\t|" << endl;
     it++;
   }
-  cout << "+-------------------------------+" << endl;
+  cout << "+---------------------------------------+" << endl;
+  }
+  if (myCONSTs.size() == 0) {
+    cout << "No CONSTs!" << endl;
+    return true;
+  } else {
+  cout << endl << "+---------------------------------------+" << endl;
+  cout << "| Num\t| Name\t\t| Addr\t| Value\t|";
+  cout << endl << "+---------------------------------------+" << endl;
+  map<string, int>::iterator it;
+  it = constAddresses.begin();
+  int ix = 0;
+  while (it != constAddresses.end()) {
+    cout << "| " << (ix++) << "\t| ";
+    cout << it->first << "\t| ";
+    cout << it->second << "\t|";
+    cout << myCONSTs.at(it->second) << "\t|" << endl;
+    it++;
+  }
+  cout << "+---------------------------------------+" << endl;
+  }
   return true;
 }
 
@@ -386,10 +427,17 @@ bool handleStore() {
 #endif
     return false;
   }
+  if (ad < 256) {
 #if defined(DEBUG)
-  cout << "storing " << x << " into myVARs[" << ad << "] ";
+    cout << "storing " << x << " into myVARs[" << ad << "] ";
 #endif
-  myVARs.at(ad) = x;
+    myVARs.at(ad) = x;
+  } else {
+#if defined(DEBUG)
+    cout << "storing " << x << " into myCONSTs[" << (ad - 256) << "] ";
+#endif
+    myCONSTs.at(ad - 256) = x;
+  }
   return true;
 }
 
@@ -413,7 +461,9 @@ bool handleRetrieve() {
 #if defined(DEBUG)
   cout << "handleRetrieve end ";
 #endif
-  return putIntegerOnStack(myVARs.at(ad));
+  if (ad < 256) return putIntegerOnStack(myVARs.at(ad));
+  else return putIntegerOnStack(myCONSTs.at(ad - 256));
+  return true;
 }
 
 bool handleBASE() {
@@ -1340,6 +1390,28 @@ bool putFloatOnStack(float n) {
   return true;
 }
 
+bool lookupVAR(string name) {
+  map<string, int>::iterator it;
+  it = varAddresses.find(name);
+  if (it != varAddresses.end()) {
+    // found it
+    putIntegerOnStack(it->second);
+    return true;
+  }  
+  it = constAddresses.find(name);
+  if (it != constAddresses.end()) {
+    // found it
+    putIntegerOnStack(it->second + 256);
+    // 0 --> 255 = var
+    // 256 --> xxx = const
+    return true;
+  }  
+#if defined(DEBUG)
+  cout << "No such VAR/CONST: " << name << endl;
+#endif
+  return false;
+}
+
 bool lookupUC(string c) {
 #if defined(DEBUG)
   cout << "lookupUC " << c << " ";
@@ -1463,7 +1535,43 @@ void evaluate(vector<string> chunks) {
       cout << "\t| " << chunks.at(xx) << "\t|" << endl;
     }
 #endif
-    if (isPrinting && c.back() == '"') {
+    if (lookupVAR(c)) {
+#if defined(DEBUG)
+      cout << "Put address of " << c << " on stack. ";
+#endif
+      executionPointer += 1;
+    } else if (c == "VARINT" || c == "CONSTINT") {
+      // creation of a variable
+      executionPointer += 1;
+      string d = chunks.at(executionPointer++);
+      int i0;
+      float f0;
+      bool valid = true;
+      if (isInteger(d, &i0)) valid = false;
+      else if (isFloat(d, &f0)) valid = false;
+      if (!valid) {
+        cout << endl << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
+        return;
+      }
+      if (c == "VARINT") {
+#if defined(DEBUG)
+        cout << endl << "VAR name: " << d << " initialized with 0." << endl;
+#endif
+        StoreINT(d, 0);
+      } else if (c == "CONSTINT") {
+        // we need an integer
+        if (popIntegerFromStack(&i0) == false) {
+#if defined(DEBUG)
+          cout << "VARINT Stack overflow!" << endl;
+#endif
+          return;
+        }
+#if defined(DEBUG)
+        cout << endl << "CONST name: " << d << " initialized with " << i0 << "." << endl;
+#endif
+        StoreCONSTINT(d, i0);
+      }
+    } else if (isPrinting && c.back() == '"') {
       // print that
       c.pop_back();
       cout << c << " ";
