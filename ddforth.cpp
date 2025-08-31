@@ -13,6 +13,7 @@ using namespace std;
 bool showStack();
 bool showVars();
 bool handleCR();
+bool handleDEPTH();
 bool handleDROP();
 bool handleSWAP();
 bool handleROT();
@@ -95,6 +96,7 @@ nativeCommand nativeCommands[] = {
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
   { handleSWAP, "SWAP" },
+  { handleDEPTH, "DEPTH" },
   { handleROT, "ROT" },
   { handleOVER, "OVER" },
   { handleBASE, "BASE" },
@@ -521,7 +523,7 @@ bool handleEMIT() {
   char c;
   if (popIntegerFromStack(&i0) == false) {
 #if defined(DEBUG)
-    cout << "handleOVER1 Stack overflow!" << endl;
+    cout << "handleEMIT1 Stack overflow!" << endl;
 #endif
     return false;
   }
@@ -685,14 +687,30 @@ bool handleDROP() {
 #endif
     return false;
   }
-  int i0;
-  if (popIntegerFromStack(&i0) == false) {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  switch (type0) {
+    case xINTEGER:
+      int i0;
+      if (popIntegerFromStack(&i0) == false) {
 #if defined(DEBUG)
-    cout << "handleDROP1 Stack overflow!" << endl;
+        cout << "handleDROP1 Stack overflow!" << endl;
 #endif
-    return false;
+        return false;
+      }
+      return true;
+      break;
+    case xFLOAT:
+      float f0;
+      if (popFloatFromStack(&f0) == false) {
+#if defined(DEBUG)
+        cout << "handleDROP23 Stack overflow!" << endl;
+#endif
+        return false;
+      }
+      return true;
+      break;
   }
-  return true;
+  return false;
 }
 
 bool handleDUP() {
@@ -1152,6 +1170,15 @@ bool handleMult() {
 bool handleDiv() {
   return handle2Nums(math_DIV);
 }
+
+bool handleDEPTH() {
+#if defined(DEBUG)
+  cout << "handleDEPTH: dataStack.size() " << dataStack.size() << " intCounter " << intCounter << " userIntegers.size() " << userIntegers.size() << " ";
+#endif
+  putIntegerOnStack(dataStack.size());
+  return true;
+}
+
 
 bool handleROT() {
 #if defined(DEBUG)
