@@ -1486,6 +1486,7 @@ void evaluate(vector<string> chunks) {
         if (c == ";") {
           done = true;
           error = false;
+          executionPointer += 1;
 #if defined(DEBUG)
           cout << " got a ;! ";
 #endif
@@ -1632,24 +1633,6 @@ int main(int argc, char **argv) {
   } else {
     strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   }
-  //   strcpy(code, "1 2 3 4 5 .S DUP ROT + + / * + 13.22 .S + . CR");
-  //   vector<string> chunks = tokenize(code);
-  //   evaluate(chunks);
-  //
-  //   strcpy(code, "BASE 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR");
-  //   chunks = tokenize(code);
-  //   evaluate(chunks);
-  //
-  //   cout << "OVER" << endl;
-  //   strcpy(code, "1 2 .S OVER .S CR 1.2 2.1 .S OVER .S CR");
-  //   chunks = tokenize(code);
-  //   evaluate(chunks);
-  //
-  //   cout << ": ++ + + ;" << endl;
-  //   strcpy(code, ": ++ + + ; 1 1 1 .S ++ . CR");
-  //   chunks = tokenize(code);
-  //   evaluate(chunks);
-
   //   strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   //   cout << code << endl;
   //   vector<string> chunks = tokenize(code);
