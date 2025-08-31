@@ -235,27 +235,28 @@ bool handleBEGIN() {
   return true;
 }
 
-bool handleUNTIL() {
+bool isUNTIL = true;
+bool handleUNTILWHILE() {
 #if defined(DEBUG)
-  cout << endl << "--> UNTIL at " << executionPointer << ". JumpStack size: " << jumpStack.size() << endl;
+  cout << endl << "--> UNTILWHILE at " << executionPointer << ". JumpStack size: " << jumpStack.size() << endl;
 #endif
   int i0, type0;
   if (jumpStack.size() == 0) {
 #if defined(DEBUG)
-    cout << "handleUNTIL JumpStack overflow!" << endl;
+    cout << "handleUNTILWHILE JumpStack overflow!" << endl;
 #endif
     return false;
   }
   type0 = jumpStackType.at(jumpStackType.size() - 1);
   if (type0 != xBEGIN) {
 #if defined(DEBUG)
-    cout << "handleUNTIL JumpStackType overflow!" << endl;
+    cout << "handleUNTILWHILE JumpStackType overflow!" << endl;
 #endif
     return false;
   }
   if (popIntegerFromStack(&i0) == false) {
 #if defined(DEBUG)
-    cout << "handleUNTIL Stack overflow!" << endl;
+    cout << "handleUNTILWHILE Stack overflow!" << endl;
 #endif
     return false;
   }
@@ -264,14 +265,14 @@ bool handleUNTIL() {
 #endif
   if (i0 < 0 || i0 > 1) {
 #if defined(DEBUG)
-    cout << "handleUNTIL " << i0 << " is not a BOOLEAN!" << endl;
+    cout << "handleUNTILWHILE " << i0 << " is not a BOOLEAN!" << endl;
 #endif
     return false;
   }
 #if defined(DEBUG)
   cout << "Condition is " << ((i0 == 1) ? "true" : "false") << endl;
 #endif
-  if (i0 == 0) {
+  if ((i0 == 0 && isUNTIL) || (i0 == 1 && !isUNTIL)) {
     executionPointer = jumpStack.at(jumpStack.size() - 1);
 #if defined(DEBUG)
     cout << " looping back to " << executionPointer << ". Condition: " << i0 << endl;
@@ -286,55 +287,14 @@ bool handleUNTIL() {
   return true;
 }
 
+bool handleUNTIL() {
+  isUNTIL = true;
+  return handleUNTILWHILE();
+}
+
 bool handleWHILE() {
-#if defined(DEBUG)
-  cout << endl << "--> WHILE at " << executionPointer << ". JumpStack size: " << jumpStack.size() << endl;
-#endif
-  int i0, type0;
-  if (jumpStack.size() == 0) {
-#if defined(DEBUG)
-    cout << "handleWHILE JumpStack overflow!" << endl;
-#endif
-    return false;
-  }
-  type0 = jumpStackType.at(jumpStackType.size() - 1);
-  if (type0 != xBEGIN) {
-#if defined(DEBUG)
-    cout << "handleWHILE JumpStackType overflow!" << endl;
-#endif
-    return false;
-  }
-  if (popIntegerFromStack(&i0) == false) {
-#if defined(DEBUG)
-    cout << "handleWHILE Stack overflow!" << endl;
-#endif
-    return false;
-  }
-#if defined(DEBUG)
-  showStack();
-#endif
-  if (i0 < 0 || i0 > 1) {
-#if defined(DEBUG)
-    cout << "handleWHILE " << i0 << " is not a BOOLEAN!" << endl;
-#endif
-    return false;
-  }
-#if defined(DEBUG)
-  cout << "Condition is " << ((i0 == 1) ? "true" : "false") << endl;
-#endif
-  if (i0 == 1) {
-    executionPointer = jumpStack.at(jumpStack.size() - 1);
-#if defined(DEBUG)
-    cout << " looping back to " << executionPointer << ". Condition: " << i0 << endl;
-#endif
-  } else {
-    jumpStack.pop_back();
-    jumpStackType.pop_back();
-#if defined(DEBUG)
-    cout << " Ending BEGIN. Condition: " << i0 << endl;
-#endif
-  }
-  return true;
+  isUNTIL = false;
+  return handleUNTILWHILE();
 }
 
 bool showVars() {

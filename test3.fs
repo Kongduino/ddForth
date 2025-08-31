@@ -1,1 +1,1 @@
-1 2 .S OVER 1.2 2.1 .S OVER .S CR ." Loop and and drop" CR BEGIN + .S DEPTH 1 = UNTIL DROP .S
+1 2 OVER 1.2 2.1 OVER .S ." Loop and and add" CR BEGIN + DEPTH 1 = UNTIL . CR .S
