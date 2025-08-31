@@ -128,6 +128,17 @@ Fact~	~Test
 Running code:
 	-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR
 -10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty! 
+
+./ddforth -f test6.fs
+Running code:
+	: ++ + + ; 1 1 1 .S ++ . CR
+
++-----------------------+
+| 0	| INT.	| 1	|
+| 1	| INT.	| 1	|
+| 2	| INT.	| 1	|
++-----------------------+
+3 
 ```
 
 ## DEBUG VERSION
@@ -159,29 +170,169 @@ ss: ¥Á¥!"
 See debug_log.txt
 
 
-evaluating 'CR' executionPointer: 23
-0 	| -10	|
-1 	| BEGIN	|
-2 	| DUP	|
-3 	| .	|
-4 	| DUP	|
-5 	| -1	|
-6 	| *	|
-7 	| BEGIN	|
-8 	| 46	|
-9 	| EMIT	|
-10 	| 1	|
-11 	| -	|
-12 	| DUP	|
-13 	| 0=	|
-14 	| UNTIL	|
-15 	| DROP	|
-16 	| 1	|
-17 	| +	|
-18 	| DUP	|
-19 	| 0=	|
-20 	| UNTIL	|
-21 	| .	|
-22 	| .S	|
-23*	| CR	|
+./ddforth_debug  -f test6.fs
+init Adding word 0= with `0 =`
+Adding word ? with `@ .`
+Running code:
+	: ++ + + ; 1 1 1 .S ++ . CR
+: * Adding `:`
+++ * Adding `++`
++ * Adding `+`
++ * Adding `+`
+; * Adding `;`
+1 * Adding `1`
+1 * Adding `1`
+1 * Adding `1`
+.S * Adding `.S`
+++ * Adding `++`
+. * Adding `.`
+CR • Adding `CR`
+
+Evaluating:
+: ++ + + ; 1 1 1 .S ++ . CR 
+Stack empty! 
+evaluating ':' executionPointer: 0
+0*	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+WORD name: ++: + 2/12 + 3/12 ; 4/12  got a ;! Adding word ++ with `+ + `.
+
+evaluating '1' executionPointer: 5
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5*	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '1' executionPointer: 6
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6*	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '1' executionPointer: 7
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7*	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '.S' executionPointer: 8
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8*	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+
+	dataStack.size()	3	myInts	3	myFloats	0	myStrings	0
++-----------------------+
+| 0	| INT.	| 1	|
+| 1	| INT.	| 1	|
+| 2	| INT.	| 1	|
++-----------------------+
+
+evaluating '++' executionPointer: 9
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9*	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC ++ 0= ? ++ tokenize + +  + * Adding `+`
++ * Adding `+`
+
+Evaluating:
++ + 
+
+	dataStack.size()	3	myInts	3	myFloats	0	myStrings	0
++-----------------------+
+| 0	| INT.	| 1	|
+| 1	| INT.	| 1	|
+| 2	| INT.	| 1	|
++-----------------------+
+
+evaluating '+' executionPointer: 0
+0*	| +	|
+1 	| +	|
+2 INTs 
+evaluating '+' executionPointer: 1
+0 	| +	|
+1*	| +	|
+2 INTs ++ lookupUC 
+
+evaluating '.' executionPointer: 10
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10*	| .	|
+11 	| CR	|
+handlePRINT: dataStack.size() 1 3 
+evaluating 'CR' executionPointer: 11
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11*	| CR	|
+
 ```

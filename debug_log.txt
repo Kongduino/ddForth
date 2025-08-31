@@ -1,3 +1,4 @@
+./ddforth_debug  -f test.fs
 init Adding word 0= with `0 =`
 Adding word ? with `@ .`
 Running code:
@@ -13364,7 +13365,7 @@ evaluating 'UNTIL' executionPointer: 22
 
 --> UNTILWHILE at 22. JumpStack size: 2
 
-	dataStack.size()	2	myInts	2	myFloats		0	myStrings	0
+	dataStack.size()	2	myInts	2	myFloats	0	myStrings	0
 +-----------------------+
 | 0	| INT.	| 5	|
 | 1	| INT.	| -6	|
@@ -20058,7 +20059,7 @@ evaluating 'CR' executionPointer: 24
 8 	| DUP	|
 9 	| -1	|
 10 	| *	|
-11 	| CR		|
+11 	| CR	|
 12 	| ."	|
 13 	| > INSIDE LOOP"	|
 14 	| CR	|
@@ -42357,3 +42358,170 @@ evaluating 'CR' executionPointer: 23
 21 	| .	|
 22 	| .S	|
 23*	| CR	|
+
+
+
+./ddforth_debug  -f test6.fs
+init Adding word 0= with `0 =`
+Adding word ? with `@ .`
+Running code:
+	: ++ + + ; 1 1 1 .S ++ . CR
+: * Adding `:`
+++ * Adding `++`
++ * Adding `+`
++ * Adding `+`
+; * Adding `;`
+1 * Adding `1`
+1 * Adding `1`
+1 * Adding `1`
+.S * Adding `.S`
+++ * Adding `++`
+. * Adding `.`
+CR • Adding `CR`
+
+Evaluating:
+: ++ + + ; 1 1 1 .S ++ . CR 
+Stack empty! 
+evaluating ':' executionPointer: 0
+0*	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+WORD name: ++: + 2/12 + 3/12 ; 4/12  got a ;! Adding word ++ with `+ + `.
+
+evaluating '1' executionPointer: 5
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5*	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '1' executionPointer: 6
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6*	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '1' executionPointer: 7
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7*	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC 1 0= ? ++ isInteger/10/1 1 is an int 1
+
+evaluating '.S' executionPointer: 8
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8*	| .S	|
+9 	| ++	|
+10 	| .	|
+11 	| CR	|
+
+	dataStack.size()	3	myInts	3	myFloats	0	myStrings	0
++-----------------------+
+| 0	| INT.	| 1	|
+| 1	| INT.	| 1	|
+| 2	| INT.	| 1	|
++-----------------------+
+
+evaluating '++' executionPointer: 9
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9*	| ++	|
+10 	| .	|
+11 	| CR	|
+lookupUC ++ 0= ? ++ tokenize + +  + * Adding `+`
++ * Adding `+`
+
+Evaluating:
++ + 
+
+	dataStack.size()	3	myInts	3	myFloats	0	myStrings	0
++-----------------------+
+| 0	| INT.	| 1	|
+| 1	| INT.	| 1	|
+| 2	| INT.	| 1	|
++-----------------------+
+
+evaluating '+' executionPointer: 0
+0*	| +	|
+1 	| +	|
+2 INTs 
+evaluating '+' executionPointer: 1
+0 	| +	|
+1*	| +	|
+2 INTs ++ lookupUC 
+
+evaluating '.' executionPointer: 10
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10*	| .	|
+11 	| CR	|
+handlePRINT: dataStack.size() 1 3 
+evaluating 'CR' executionPointer: 11
+0 	| :	|
+1 	| ++	|
+2 	| +	|
+3 	| +	|
+4 	| ;	|
+5 	| 1	|
+6 	| 1	|
+7 	| 1	|
+8 	| .S	|
+9 	| ++	|
+10 	| .	|
+11*	| CR	|
