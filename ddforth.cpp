@@ -10,6 +10,7 @@
 using namespace std;
 // vector<string> userStrings;
 
+bool handleWORDS();
 bool showStack();
 bool showVars();
 bool handleCR();
@@ -78,6 +79,7 @@ vector<int> myVARs;
 vector<float> myFVARs;
 vector<int> myCONSTs;
 vector<float> myFCONSTs;
+vector<string> computedWords;
 
 enum mathTypes {
   math_PLUS,
@@ -93,6 +95,7 @@ struct nativeCommand {
 };
 
 nativeCommand nativeCommands[] = {
+  { handleWORDS, "WORDS" },
   { handlePlus, "+" },
   { handleMinus, "-" },
   { handleMult, "*" },
@@ -259,7 +262,23 @@ void initForth() {
   x = { name, code };
   userCommands.push_back(x);
   StoreINT("VER.", 1051);
+  // words that are handled in code (evaluate)
+  computedWords.push_back("VAR");
+  computedWords.push_back("CONST");
+  computedWords.push_back(": ... ;");
 }
+
+bool handleWORDS() {
+  cout << endl << "WORDS" << endl;
+  for (vector<string>::iterator it = computedWords.begin() ; it != computedWords.end(); ++it)
+    cout << " • " << *it << "     \t (Handled in code)" << endl;
+  for (int ix = 0; ix < nativeCmdCount; ix++)
+    cout << " • " << nativeCommands[ix].name << "     \t (Native command)" << endl;
+  for (vector<userCommand>::iterator it = userCommands.begin() ; it != userCommands.end(); ++it)
+    cout << " • " << it->name << "\t\t" << it->command << endl;
+  return true;
+}
+
 
 bool handleFact() {
   int factorial = 1;
@@ -271,7 +290,7 @@ bool handleFact() {
     return false;
   }
   if (n < 0) {
-    std::cout << "Factorial is not defined for negative numbers." << std::endl;
+    cout << "Factorial is not defined for negative numbers." << endl;
     return false;
   }
   for (int i = 1; i <= n; ++i)
@@ -1584,13 +1603,13 @@ bool isInteger(string c, int *i0) {
   try {
     *i0 = stoi(c, nullptr, base) * sign;
     return true;
-  } catch (const std::invalid_argument &e) {
+  } catch (const invalid_argument &e) {
 #if defined(DEBUG)
-    cout << "Invalid argument for 'abc': " << e.what() << std::endl;
+    cout << "Invalid argument for 'abc': " << e.what() << endl;
 #endif
-  } catch (const std::out_of_range &e) {
+  } catch (const out_of_range &e) {
 #if defined(DEBUG)
-    cout << "Out of range for 'abc': " << e.what() << std::endl;
+    cout << "Out of range for 'abc': " << e.what() << endl;
 #endif
   }
   return false;
@@ -1605,11 +1624,11 @@ bool isFloat(string c, float *f0) {
     try {
       *f0 = stof(c);
       return true;
-    } catch (const std::invalid_argument &e) {
+    } catch (const invalid_argument &e) {
 #if defined(DEBUG)
       cout << "Invalid argument for `" << c << "`: " << e.what() << endl;
 #endif
-    } catch (const std::out_of_range &e) {
+    } catch (const out_of_range &e) {
 #if defined(DEBUG)
       cout << "Out of range for " << c << ": " << e.what() << endl;
 #endif
@@ -1856,14 +1875,14 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "-f") == 0) {
       ifstream inputFile(argv[2]);
       if (!inputFile.is_open()) {
-        std::cerr << "Unable to open file!" << std::endl;
+        cerr << "Unable to open file!" << endl;
         return 0;
       }
       string line;
       getline(inputFile, line);
       strcpy(code, line.c_str());
     } else {
-      std::cerr << argv[1] << "!= -f" << std::endl;
+      cerr << argv[1] << "!= -f" << endl;
       return 0;
     }
   } else if(argc == 2) {
