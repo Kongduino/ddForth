@@ -1367,7 +1367,6 @@ void evaluate(vector<string> chunks) {
   cout << endl;
   showStack();
 #endif
-  // for (auto it = chunks.cbegin(); it != chunks.cend(); ++it) {
   executionPointer = 0;
   while (executionPointer < chunks.size()) {
     // executionPointer is global so that BEGIN – and later others – can change it.
@@ -1588,10 +1587,6 @@ int main(int argc, char **argv) {
   } else {
     strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   }
-  //   strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-  //   cout << code << endl;
-  //   vector<string> chunks = tokenize(code);
-  //   evaluate(chunks);
 
   cout << "Running code:" << endl << "\t" << code << endl;
   vector<string> chunks = tokenize(code);
