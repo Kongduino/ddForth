@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 
-//#define DEBUG
 using namespace std;
 
 bool handleWORDS();
@@ -19,7 +18,7 @@ bool handleROT();
 bool handleEqual();
 bool handleDifferent();
 bool handleLower();
-bool handleHigher();
+bool handleGreater();
 bool handle2Nums(unsigned char);
 bool handlePlus();
 bool handleMinus();
@@ -81,6 +80,7 @@ vector<float> myFVARs;
 vector<int> myCONSTs;
 vector<float> myFCONSTs;
 vector<string> computedWords;
+int xxxxxx;
 
 enum mathTypes {
   math_PLUS,
@@ -88,6 +88,7 @@ enum mathTypes {
   math_MULT,
   math_DIV,
   math_EQUAL,
+  math_GREATER,
 };
 
 struct nativeCommand {
