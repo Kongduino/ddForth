@@ -52,6 +52,9 @@ bool handleUNTIL();
 bool handleBEGIN();
 bool handleDO();
 bool handleLOOP();
+bool handleI();
+bool handleIprime();
+bool handleJ();
 
 vector<string> tokenize(char *);
 void evaluate(vector<string>);

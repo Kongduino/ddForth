@@ -37,6 +37,9 @@ nativeCommand nativeCommands[] = {
   { handleWHILE, "WHILE" },
   { handleDO, "DO" },
   { handleLOOP, "LOOP" },
+  { handleI, "I" },
+  { handleIprime, "I'" },
+  { handleJ, "J" },
 };
 int nativeCmdCount = 0;
 struct userCommand {
@@ -259,27 +262,32 @@ bool handleDO() {
   return true;
 }
 
-// handleLOOP
-// pop two identical-type values
-// compare and loop if needed
-bool handleLOOP() {
-  int min, max, type0;
+bool checkDOLOOPconditions(char *who) {
   if (jumpStack.size() == 0) {
-    xxxxxx = snprintf((char*)msg, 255, "handleLOOP JumpStack overflow!\n");
+    xxxxxx = snprintf((char*)msg, 255, "%s JumpStack overflow!\n", who);
     logThis();
     return false;
   }
   if (loopStack.size() < 2) {
-    xxxxxx = snprintf((char*)msg, 255, "handleLOOP loopStack overflow!\n");
+    xxxxxx = snprintf((char*)msg, 255, "%s loopStack overflow!\n", who);
     logThis();
     return false;
   }
-  type0 = jumpStackType.at(jumpStackType.size() - 1);
+  int type0 = jumpStackType.at(jumpStackType.size() - 1);
   if (type0 != xDO) {
-    xxxxxx = snprintf((char*)msg, 255, "handleLOOP xDO not on JumpStack!\n");
+    xxxxxx = snprintf((char*)msg, 255, "%s xDO not on JumpStack!\n", who);
     logThis();
     return false;
   }
+  return true;
+}
+
+// handleLOOP
+// pop two identical-type values
+// compare and loop if needed
+bool handleLOOP() {
+  int min, max;
+  if (!checkDOLOOPconditions((char*)"handleLOOP")) return false;
   xxxxxx = snprintf(
     (char*)msg, 255,
     "handleLOOP JumpStack: %zu loopStack: %zu\n",
@@ -316,6 +324,25 @@ bool handleLOOP() {
 #if defined(DEBUG)
   showStack();
 #endif
+  return true;
+}
+
+bool handleI() {
+  if (!checkDOLOOPconditions((char*)"handleI")) return false;
+  putIntegerOnStack(loopStack.at(loopStack.size() - 1));
+  return true;
+}
+
+bool handleIprime() {
+  if (!checkDOLOOPconditions((char*)"handleIprime")) return false;
+  putIntegerOnStack(loopStack.at(loopStack.size() - 2));
+  return true;
+}
+
+bool handleJ() {
+  if (!checkDOLOOPconditions((char*)"handleJ")) return false;
+  if (loopStack.size() < 4) return false;
+  putIntegerOnStack(loopStack.at(loopStack.size() - 3));
   return true;
 }
 
