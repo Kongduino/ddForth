@@ -31,6 +31,7 @@ bool handlePRINTSTRING();
 bool handleUPRINT();
 bool handleDUP();
 bool handleOVER();
+bool popFromLoopStack(int *);
 bool putIntegerOnStack(int);
 bool popIntegerFromStack(int *);
 bool putFloatOnStack(float);
@@ -50,6 +51,7 @@ bool handleWHILE();
 bool handleUNTIL();
 bool handleBEGIN();
 bool handleDO();
+bool handleLOOP();
 
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
@@ -68,6 +70,7 @@ unsigned int stringCounter = 0;
 int executionPointer = -1;
 vector<int> jumpStack;
 vector<int> jumpStackType;
+vector<int> loopStack;
 vector<string> userStrings;
 vector<int> userIntegers;
 vector<float> userFloats;
@@ -100,7 +103,7 @@ struct nativeCommand {
   string name;
 };
 
-char *msg[256];
+char msg[256];
 void logThis() {
 #if defined(DEBUG)
   cout << msg;
@@ -109,7 +112,7 @@ void logThis() {
 
 void logStack(char *who) {
 #if defined(DEBUG)
-  snprintf(
+  xxxxxx = snprintf(
     (char*)msg, 255, 
     "%s: dataStack.size() %zu intCounter %d userIntegers.size() %zu ",
     who, dataStack.size(), intCounter, userIntegers.size());
@@ -119,14 +122,14 @@ void logStack(char *who) {
 
 void logInconsistent(char *who) {
 #if defined(DEBUG)
-  snprintf((char*)msg, 255, "%s Data inconsistent!\n", who);
+  xxxxxx = snprintf((char*)msg, 255, "%s Data inconsistent!\n", who);
   cout << msg;
 #endif
 }
 
 void logStackOverflow(char *who) {
 #if defined(DEBUG)
-  snprintf((char*)msg, 255, "%s Stack overflow!\n", who);
+  xxxxxx = snprintf((char*)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
 #endif
 }
