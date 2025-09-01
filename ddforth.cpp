@@ -1512,8 +1512,8 @@ vector<string> tokenize(char *code) {
       if (buffIndex > 0) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
-        // if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
-        if (isPrinting && !insideString) {
+        if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
+        // if (isPrinting && !insideString) {
           insideString = true;
           snprintf((char*)msg, 255, "inside string\n");
           logThis();
