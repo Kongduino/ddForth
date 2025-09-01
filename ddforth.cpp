@@ -254,6 +254,39 @@ void initForth() {
 #endif
   userCommand x = { name, code };
   userCommands.push_back(x);
+
+  name = "0>";
+  code = "0 >";
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  x = { name, code };
+  userCommands.push_back(x);
+
+  name = "0<";
+  code = "0 <";
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  x = { name, code };
+  userCommands.push_back(x);
+
+  name = "TRUE";
+  code = "1 =";
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  x = { name, code };
+  userCommands.push_back(x);
+
+  name = "FALSE";
+  code = "0 =";
+#if defined(DEBUG)
+  cout << "Adding word " << name << " with `" << code << "`" << endl;
+#endif
+  x = { name, code };
+  userCommands.push_back(x);
+
   name = "?";
   code = "@ .";
 #if defined(DEBUG)
