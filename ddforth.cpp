@@ -62,10 +62,10 @@ void StoreCONSTFLOAT(string name, float value) {
   if (it == fconstAddresses.end()) {
     myFCONSTs.push_back(value);
     fconstAddresses[name] = myFCONSTs.size() - 1 + 384;
-    xxxxxx = snprintf((char*)msg, 255, "FCONST %s created as %f\n", name.c_str(), value);
+    snprintf((char*)msg, 255, "FCONST %s created as %f\n", name.c_str(), value);
     logThis();
   } else {
-    xxxxxx = snprintf((char*)msg, 255, "FCONST %s already exists!\n", name.c_str());
+    snprintf((char*)msg, 255, "FCONST %s already exists!\n", name.c_str());
     logThis();
   }
 }
@@ -76,10 +76,10 @@ void StoreCONSTINT(string name, int value) {
   if (it == constAddresses.end()) {
     myCONSTs.push_back(value);
     constAddresses[name] = myCONSTs.size() - 1 + 256;
-    xxxxxx = snprintf((char*)msg, 255, "CONST %s created as %d\n", name.c_str(), value);
+    snprintf((char*)msg, 255, "CONST %s created as %d\n", name.c_str(), value);
     logThis();
   } else {
-    xxxxxx = snprintf((char*)msg, 255, "CONST %s already exists!\n", name.c_str());
+    snprintf((char*)msg, 255, "CONST %s already exists!\n", name.c_str());
     logThis();
   }
 }
@@ -88,13 +88,13 @@ void StoreFLOAT(string name, float value) {
   map<string, int>::iterator it;
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
-    xxxxxx = snprintf((char*)msg, 255, "FVAR %s found at %d\n", name.c_str(), (it->second));
+    snprintf((char*)msg, 255, "FVAR %s found at %d\n", name.c_str(), (it->second));
     logThis();
     myFVARs.at(it->second) = value;
   } else {
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
-    xxxxxx = snprintf((char*)msg, 255, "FVAR %s created at %d\n", name.c_str(), (fvarAddresses[name]));
+    snprintf((char*)msg, 255, "FVAR %s created at %d\n", name.c_str(), (fvarAddresses[name]));
     logThis();
   }  
 }
@@ -143,49 +143,49 @@ bool checkTypes(int levels, unsigned char n) {
 }
 
 void initForth() {
-  xxxxxx = snprintf((char*)msg, 255, "init ");
+  snprintf((char*)msg, 255, "init ");
   logThis();
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   userCmdCount = userCommands.size();
   StoreINT("BASE", 10);
   string name("0=");
   string code("0 =");
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   userCommand x = { name, code };
   userCommands.push_back(x);
 
   name = "0>";
   code = "0 >";
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   x = { name, code };
   userCommands.push_back(x);
 
   name = "0<";
   code = "0 <";
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   x = { name, code };
   userCommands.push_back(x);
 
   name = "TRUE";
   code = "1 =";
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   x = { name, code };
   userCommands.push_back(x);
 
   name = "FALSE";
   code = "0 =";
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   x = { name, code };
   userCommands.push_back(x);
 
   name = "?";
   code = "@ .";
-  xxxxxx = snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
+  snprintf((char*)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
   logThis();
   x = { name, code };
   userCommands.push_back(x);
@@ -216,7 +216,7 @@ bool handleFact() {
     return false;
   }
   if (n < 0) {
-    xxxxxx = snprintf((char*)msg, 255, "Factorial is not defined for negative numbers.");
+    snprintf((char*)msg, 255, "Factorial is not defined for negative numbers.");
     logThis();
     return false;
   }
@@ -228,28 +228,28 @@ bool handleFact() {
 
 bool handleBEGIN() {
 // BEGIN ... <condition> UNTIL
-  xxxxxx = snprintf((char*)msg, 255, "\n\n--> BEGIN at ");
+  snprintf((char*)msg, 255, "\n\n--> BEGIN at ");
   logThis();
   jumpStack.push_back(executionPointer);
   jumpStackType.push_back(xBEGIN);
-  xxxxxx = snprintf((char*)msg, 255, "%d\n", executionPointer);
+  snprintf((char*)msg, 255, "%d\n", executionPointer);
   logThis();
   return true;
 }
 
 bool isUNTIL = true;
 bool handleUNTILWHILE() {
-  xxxxxx = snprintf((char*)msg, 255, "\n--> UNTILWHILE at %d. JumpStack size: %zu\n", executionPointer, jumpStack.size());
+  snprintf((char*)msg, 255, "\n--> UNTILWHILE at %d. JumpStack size: %zu\n", executionPointer, jumpStack.size());
   logThis();
   int i0, type0;
   if (jumpStack.size() == 0) {
-    xxxxxx = snprintf((char*)msg, 255, "handleUNTILWHILE JumpStack overflow!\n");
+    snprintf((char*)msg, 255, "handleUNTILWHILE JumpStack overflow!\n");
     logThis();
     return false;
   }
   type0 = jumpStackType.at(jumpStackType.size() - 1);
   if (type0 != xBEGIN) {
-    xxxxxx = snprintf((char*)msg, 255, "handleUNTILWHILE xBEGIN not on JumpStack!\n");
+    snprintf((char*)msg, 255, "handleUNTILWHILE xBEGIN not on JumpStack!\n");
     logThis();
     return false;
   }
@@ -261,20 +261,20 @@ bool handleUNTILWHILE() {
   showStack();
 #endif
   if (i0 < 0 || i0 > 1) {
-    xxxxxx = snprintf((char*)msg, 255, "handleUNTILWHILE %d is not a BOOLEAN!\n", i0);
+    snprintf((char*)msg, 255, "handleUNTILWHILE %d is not a BOOLEAN!\n", i0);
     logThis();
     return false;
   }
-  xxxxxx = snprintf((char*)msg, 255, "Condition is %s\n", ((i0 == 1) ? "true" : "false"));
+  snprintf((char*)msg, 255, "Condition is %s\n", ((i0 == 1) ? "true" : "false"));
   logThis();
   if ((i0 == 0 && isUNTIL) || (i0 == 1 && !isUNTIL)) {
     executionPointer = jumpStack.at(jumpStack.size() - 1);
-    xxxxxx = snprintf((char*)msg, 255, " looping back to %d. Condition: %d.\n", executionPointer, i0);
+    snprintf((char*)msg, 255, " looping back to %d. Condition: %d.\n", executionPointer, i0);
     logThis();
   } else {
     jumpStack.pop_back();
     jumpStackType.pop_back();
-    xxxxxx = snprintf((char*)msg, 255, " Ending BEGIN. Condition: %d.\n", i0);
+    snprintf((char*)msg, 255, " Ending BEGIN. Condition: %d.\n", i0);
     logThis();
   }
   return true;
@@ -389,7 +389,7 @@ bool handleCR() {
 }
 
 bool handleStore() {
-  xxxxxx = snprintf((char*)msg, 255, "handleStore: intCounter %d dataStack.size() %zu ", intCounter, dataStack.size());
+  snprintf((char*)msg, 255, "handleStore: intCounter %d dataStack.size() %zu ", intCounter, dataStack.size());
   logThis();
   if (dataStack.size() < 2) {
     logStackOverflow((char*)"handleStore");
@@ -402,27 +402,27 @@ bool handleStore() {
   float fx;
   if (dataStack.at(dataStack.size() - 1) == xINTEGER) {
     if (popIntegerFromStack(&x) == false) {
-      xxxxxx = snprintf((char*)msg, 255, "handleStore on top!\n");
+      snprintf((char*)msg, 255, "handleStore on top!\n");
       logThis();
       return false;
     }
-    xxxxxx = snprintf((char*)msg, 255, "handleStore pop Int successful!\n");
+    snprintf((char*)msg, 255, "handleStore pop Int successful!\n");
     logThis();
   } else if (dataStack.at(dataStack.size() - 1) == xFLOAT) {
     if (popFloatFromStack(&fx) == false) {
-      xxxxxx = snprintf((char*)msg, 255, "handleStore No Float on top!\n");
+      snprintf((char*)msg, 255, "handleStore No Float on top!\n");
       logThis();
       return false;
     }
-    xxxxxx = snprintf((char*)msg, 255, "handleStore pop Float successful!\n");
+    snprintf((char*)msg, 255, "handleStore pop Float successful!\n");
     logThis();
   } else {
-    xxxxxx = snprintf((char*)msg, 255, "handleStore no Int nor Float on top!\n");
+    snprintf((char*)msg, 255, "handleStore no Int nor Float on top!\n");
     logThis();
     return true;
   }
   if (dataStack.at(dataStack.size() - 1) != xINTEGER) {
-    xxxxxx = snprintf((char*)msg, 255, "handleStore No Int Address!\n");
+    snprintf((char*)msg, 255, "handleStore No Int Address!\n");
     logThis();
     return false;
   }
@@ -430,22 +430,22 @@ bool handleStore() {
     logStackOverflow((char*)"handleStore2");
     return false;
   }
-  xxxxxx = snprintf((char*)msg, 255, "handleStore Int Address : %d.\n", ad);
+  snprintf((char*)msg, 255, "handleStore Int Address : %d.\n", ad);
   logThis();
   if (ad < 128) {
-    xxxxxx = snprintf((char*)msg, 255, "storing %d into myVARs[%d].\n", x, ad);
+    snprintf((char*)msg, 255, "storing %d into myVARs[%d].\n", x, ad);
     logThis();
     myVARs.at(ad) = x;
   } else if (ad < 256) {
-    xxxxxx = snprintf((char*)msg, 255, "storing %f into myFVARs[%d].\n", fx, ad);
+    snprintf((char*)msg, 255, "storing %f into myFVARs[%d].\n", fx, ad);
     logThis();
     myFVARs.at(ad - 128) = fx;
   } else if (ad < 384) {
-    xxxxxx = snprintf((char*)msg, 255, "storing %d into myCONSTs[%d].\n", x, ad);
+    snprintf((char*)msg, 255, "storing %d into myCONSTs[%d].\n", x, ad);
     logThis();
     myCONSTs.at(ad - 256) = x;
   } else {
-    xxxxxx = snprintf((char*)msg, 255, "storing %f into myFCONSTs[%d].\n", fx, ad);
+    snprintf((char*)msg, 255, "storing %f into myFCONSTs[%d].\n", fx, ad);
     logThis();
     myFCONSTs.at(ad - 384) = fx;
   }
@@ -455,7 +455,7 @@ bool handleStore() {
 bool handleRetrieve() {
   logStack((char*)"handleRetrieve");
   if (!checkTypes(1, xINTEGER)) {
-    xxxxxx = snprintf((char*)msg, 255, "handleRetrieve Not enough integers!\n");
+    snprintf((char*)msg, 255, "handleRetrieve Not enough integers!\n");
     logThis();
     return false;
   }
@@ -464,7 +464,7 @@ bool handleRetrieve() {
     logStackOverflow((char*)"handleRetrieve1");
     return false;
   }
-  xxxxxx = snprintf((char*)msg, 255, "handleRetrieve end %d ", ad);
+  snprintf((char*)msg, 255, "handleRetrieve end %d ", ad);
   logThis();
   if (ad < 128) return putIntegerOnStack(myVARs.at(ad));
   else if (ad < 256) return putFloatOnStack(myFVARs.at(ad - 128));
@@ -474,27 +474,27 @@ bool handleRetrieve() {
 }
 
 bool handleBASE() {
-  xxxxxx = snprintf((char*)msg, 255, "handleBASE ");
+  snprintf((char*)msg, 255, "handleBASE ");
   logThis();
   return putIntegerOnStack(GetINTaddress("BASE"));
 }
 
 bool handleBASE2() {
-  xxxxxx = snprintf((char*)msg, 255, "handleBASE2 ");
+  snprintf((char*)msg, 255, "handleBASE2 ");
   logThis();
   StoreINT("BASE", 2);
   return true;
 }
 
 bool handleBASE10() {
-  xxxxxx = snprintf((char*)msg, 255, "handleBASE10 ");
+  snprintf((char*)msg, 255, "handleBASE10 ");
   logThis();
   StoreINT("BASE", 10);
   return true;
 }
 
 bool handleBASE16() {
-  xxxxxx = snprintf((char*)msg, 255, "handleBASE16 ");
+  snprintf((char*)msg, 255, "handleBASE16 ");
   logThis();
   StoreINT("BASE", 16);
   return true;
@@ -506,7 +506,7 @@ bool printOtherBases(int number, unsigned int base) {
     base = 16;
   }
   unsigned int uNumber = number;
-  xxxxxx = snprintf((char*)msg, 255, " Printing %d in base %d\n", uNumber, base);
+  snprintf((char*)msg, 255, " Printing %d in base %d\n", uNumber, base);
   logThis();
   char buffer[32] = { 0 };
   unsigned char ix = 0;
@@ -585,7 +585,7 @@ bool handleUPRINT() {
     return false;
   }
   if (GetINT("BASE") != 10) {
-    xxxxxx = snprintf((char*)msg, 255, "handleUPRINT only works in base 10!\n");
+    snprintf((char*)msg, 255, "handleUPRINT only works in base 10!\n");
     logThis();
     return false;
   }
@@ -603,7 +603,7 @@ bool handleUPRINT() {
       }
     case xFLOAT:
       {
-        xxxxxx = snprintf((char*)msg, 255, "handleUPRINT only works with integers!\n");
+        snprintf((char*)msg, 255, "handleUPRINT only works with integers!\n");
         logThis();
         return false;
       }
@@ -645,7 +645,7 @@ bool handleOVER() {
         logStackOverflow((char*)"handleOVER4");
         return false;
       }
-      xxxxxx = snprintf((char*)msg, 255, "2 FLOATs ");
+      snprintf((char*)msg, 255, "2 FLOATs ");
       logThis();
       putFloatOnStack(f1);
       putFloatOnStack(f0);
@@ -654,7 +654,7 @@ bool handleOVER() {
     }
   } else {
 // one int one float
-    xxxxxx = snprintf((char*)msg, 255, "OVER requires 2 ints or 2 floats!\n");
+    snprintf((char*)msg, 255, "OVER requires 2 ints or 2 floats!\n");
     logThis();
     return false;
   }
@@ -718,19 +718,237 @@ bool handleDUP() {
 }
 
 bool handleGreater() {
-  return handle2Nums(math_GREATER);
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+    logInconsistent((char*)"handleHigher");
+    return false;
+  }
+  if (type0 == type1) {
+    if (type0 == xINTEGER) {
+      // cout << "2 INTs ";
+      int i0, i1;
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char*)"handleHigher1");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char*)"handleHigher2");
+        return false;
+      }
+      if (i0 > i1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    } else {
+      float f0, f1;
+      if (popFloatFromStack(&f1) == false) {
+        logStackOverflow((char*)"handleHigher3");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char*)"handleHigher4");
+        return false;
+      }
+      if (f0 > f1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    }
+  } else {
+// one int one float
+    snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
+    logThis();
+    int i0, i1;
+    float f0;
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char*)"handleHigher5");
+      return false;
+    }
+    i1 = (int)f0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char*)"handleHigher6");
+      return false;
+    }
+    if (i0 > i1) putIntegerOnStack(1);
+    else putIntegerOnStack(0);
+    return true;
+  }
+  return false;
 }
 
 bool handleLower() {
-  return handle2Nums(math_LOWER);
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+    logInconsistent((char*)"handleLower");
+    return false;
+  }
+  if (type0 == type1) {
+    if (type0 == xINTEGER) {
+      snprintf((char*)msg, 255, "2 INTs ");
+      logThis();
+      int i0, i1;
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char*)"handleLower");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char*)"handleLower1");
+        return false;
+      }
+      if (i0 < i1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    } else {
+      float f0, f1;
+      if (popFloatFromStack(&f1) == false) {
+        logStackOverflow((char*)"handleLower2");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char*)"handleLower3");
+        return false;
+      }
+      if (f0 < f1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    }
+  } else {
+// one int one float
+    snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
+    logThis();
+    int i0, i1;
+    float f0;
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char*)"handleLower4");
+      return false;
+    }
+    i1 = (int)f0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char*)"handleLower5");
+      return false;
+    }
+    if (i0 < i1) putIntegerOnStack(1);
+    else putIntegerOnStack(0);
+    return true;
+  }
+  return false;
 }
 
 bool handleEqual() {
-  return handle2Nums(math_EQUAL);
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+    logInconsistent((char*)"handleEqual");
+    return false;
+  }
+  if (type0 == type1) {
+    if (type0 == xINTEGER) {
+      snprintf((char*)msg, 255, "2 INTs ");
+      logThis();
+      int i0, i1;
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char*)"handleEqual1");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char*)"handleEqual2");
+        return false;
+      }
+      if (i0 == i1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    } else {
+      float f0, f1;
+      if (popFloatFromStack(&f1) == false) {
+        logStackOverflow((char*)"handleEqual3");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char*)"handleEqual4");
+        return false;
+      }
+      if (f0 == f1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    }
+  } else {
+// one int one float
+    snprintf((char*)msg, 255, "1 INT 1 FLOAT");
+    logThis();
+    int i0, i1;
+    float f0;
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char*)"handleEqual5");
+      return false;
+    }
+    i1 = (int)f0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char*)"handleEqual6");
+      return false;
+    }
+    if (i0 == i1) putIntegerOnStack(1);
+    else putIntegerOnStack(0);
+    return true;
+  }
+  return false;
 }
 
 bool handleDifferent() {
-  return handle2Nums(math_DIFFERENT);
+  unsigned char type1 = dataStack.at(dataStack.size() - 1);
+  unsigned char type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
+    logInconsistent((char*)"handleLower");
+    return false;
+  }
+  if (type0 == type1) {
+    if (type0 == xINTEGER) {
+      snprintf((char*)msg, 255, "2 INTs ");
+      int i0, i1;
+      if (popIntegerFromStack(&i1) == false) {
+      logStackOverflow((char*)"handleDifferent1");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char*)"handleDifferent2");
+        return false;
+      }
+      if (i0 != i1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    } else {
+      float f0, f1;
+      if (popFloatFromStack(&f1) == false) {
+      logStackOverflow((char*)"handleDifferent3");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char*)"handleDifferent4");
+        return false;
+      }
+      if (f0 != f1) putIntegerOnStack(1);
+      else putIntegerOnStack(0);
+      return true;
+    }
+  } else {
+// one int one float
+    snprintf((char*)msg, 255, "1 INT 1 FLOAT");
+    logThis();
+    int i0, i1;
+    float f0, f1;
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char*)"handleDifferent5");
+      return false;
+    }
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char*)"handleDifferent6");
+      return false;
+    }
+    f1 = i0;
+    if (f0 != f1) putIntegerOnStack(1);
+    else putIntegerOnStack(0);
+    return true;
+  }
+  return false;
 }
 
 bool handle2Nums(unsigned char X) {
@@ -743,11 +961,11 @@ bool handle2Nums(unsigned char X) {
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      xxxxxx = snprintf((char*)msg, 255, "2 INTs ");
+      snprintf((char*)msg, 255, "2 INTs ");
       logThis();
       int i0, i1;
       if (popIntegerFromStack(&i1) == false) {
-        logStackOverflow((char*)"handle2Nums1");
+      logStackOverflow((char*)"handle2Nums1");
         return false;
       }
       if (popIntegerFromStack(&i0) == false) {
@@ -767,18 +985,6 @@ bool handle2Nums(unsigned char X) {
         case math_DIV:
           putIntegerOnStack(i0 / i1);
           break;
-        case math_GREATER:
-          putIntegerOnStack(i0 > i1);
-          break;
-        case math_LOWER:
-          putIntegerOnStack(i0 < i1);
-          break;
-        case math_EQUAL:
-          putIntegerOnStack(i0 == i1);
-          break;
-        case math_DIFFERENT:
-          putIntegerOnStack(i0 != i1);
-          break;
       }
       return true;
     } else {
@@ -791,7 +997,7 @@ bool handle2Nums(unsigned char X) {
         logStackOverflow((char*)"handle2Nums4");
         return false;
       }
-      xxxxxx = snprintf((char*)msg, 255, "2 FLOATs ");
+      snprintf((char*)msg, 255, "2 FLOATs ");
       logThis();
       switch (X) {
         case math_PLUS:
@@ -806,31 +1012,15 @@ bool handle2Nums(unsigned char X) {
         case math_DIV:
           putFloatOnStack(f0 / f1);
           break;
-        case math_GREATER:
-          putIntegerOnStack(f0 > f1);
-          break;
-        case math_LOWER:
-          putIntegerOnStack(f0 < f1);
-          break;
-        case math_EQUAL:
-          putIntegerOnStack(f0 == f1);
-          break;
-        case math_DIFFERENT:
-          putIntegerOnStack(f0 != f1);
-          break;
       }
       return true;
     }
   } else {
 // one int one float
-      xxxxxx = snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
+      snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
       logThis();
     int i1;
-    float f0, f1;
-    bool floatFirst = (dataStack.at(dataStack.size() - 1) == xFLOAT);
-    xxxxxx = snprintf((char*)msg, 255, "FLOAT is first: %c", (floatFirst ? 'y' : 'n'));
-    logThis();
-    // for greater/lower
+    float f0;
     if (popFloatFromStack(&f0) == false) {
       logStackOverflow((char*)"handle2Nums5");
       return false;
@@ -851,22 +1041,6 @@ bool handle2Nums(unsigned char X) {
         break;
       case math_DIV:
         putFloatOnStack(f0 / i1);
-        break;
-      case math_GREATER:
-        f1 = i1;
-        cout <<f0 << " vs " << f1 << endl;
-        if (floatFirst) putIntegerOnStack(f0 < f1);
-        else putIntegerOnStack(f1 < f0);
-        break;
-      case math_EQUAL:
-        f1 = i1;
-        cout <<f0 << " vs " << f1 << endl;
-        putIntegerOnStack(f0 == f1);
-        break;
-      case math_DIFFERENT:
-        float f1 = i1;
-        cout <<f0 << " vs " << f1 << endl;
-        putIntegerOnStack(f0 == f1);
         break;
     }
     return true;
@@ -894,6 +1068,7 @@ bool handleDEPTH() {
   putIntegerOnStack(dataStack.size());
   return true;
 }
+
 
 bool handleROT() {
   logStack((char*)"handleROT");
@@ -1091,21 +1266,21 @@ bool lookupVAR(string name) {
     // 256 --> xxx = const
     return true;
   }  
-  xxxxxx = snprintf((char*)msg, 255, "No such VAR/CONST: %s\n", name.c_str());
+  snprintf((char*)msg, 255, "No such VAR/CONST: %s\n", name.c_str());
   logThis();
   return false;
 }
 
 bool lookupUC(string c) {
-  xxxxxx = snprintf((char*)msg, 255, "lookupUC %s ", c.c_str());
+  snprintf((char*)msg, 255, "lookupUC %s ", c.c_str());
   logThis();
   for (int ix = 0; ix < userCommands.size(); ix++) {
-    xxxxxx = snprintf((char*)msg, 255, "%s ", userCommands[ix].name.c_str());
+    snprintf((char*)msg, 255, "%s ", userCommands[ix].name.c_str());
     logThis();
     if (c == userCommands[ix].name) {
       char code[256];
       strcpy(code, userCommands[ix].command.c_str());
-      xxxxxx = snprintf((char*)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
+      snprintf((char*)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
       logThis();
       int savedExecutionPointer = executionPointer;
       vector<string> myChunks = tokenize(code);
@@ -1131,7 +1306,7 @@ bool isInteger(string c, int *i0) {
   int sign = 1;
   if (c.length() == 0) return false;
   int base = GetINT("BASE");
-  xxxxxx = snprintf((char*)msg, 255, "isInteger/%d/%s", base, c.c_str());
+  snprintf((char*)msg, 255, "isInteger/%d/%s", base, c.c_str());
   logThis();
   string nums("0123456789ABCDEF");
   nums = nums.substr(0, base);
@@ -1142,7 +1317,7 @@ bool isInteger(string c, int *i0) {
   string::const_iterator it = c.begin();
   while (it != c.end() && nums.find(*it) != string::npos) ++it;
   if (c.empty() || it != c.end()) {
-    xxxxxx = snprintf((char*)msg, 255, "%s is not an int.\n", c.c_str());
+    snprintf((char*)msg, 255, "%s is not an int.\n", c.c_str());
     logThis();
     return false;
   }
@@ -1150,10 +1325,10 @@ bool isInteger(string c, int *i0) {
     *i0 = stoi(c, nullptr, base) * sign;
     return true;
   } catch (const invalid_argument &e) {
-    xxxxxx = snprintf((char*)msg, 255, "Invalid argument for '%s': %s\n", c.c_str(), e.what());
+    snprintf((char*)msg, 255, "Invalid argument for '%s': %s\n", c.c_str(), e.what());
     logThis();
   } catch (const out_of_range &e) {
-    xxxxxx = snprintf((char*)msg, 255, "Out of range for '%s': %s\n", c.c_str(), e.what());
+    snprintf((char*)msg, 255, "Out of range for '%s': %s\n", c.c_str(), e.what());
     logThis();
   }
   return false;
@@ -1161,21 +1336,21 @@ bool isInteger(string c, int *i0) {
 
 bool isFloat(string c, float *f0) {
   if (c.length() == 0) return false;
-    xxxxxx = snprintf((char*)msg, 255, "isFloat: %s?\n", c.c_str());
+    snprintf((char*)msg, 255, "isFloat: %s?\n", c.c_str());
     logThis();
   if (GetINT("BASE") == 10) {
     try {
       *f0 = stof(c);
       return true;
     } catch (const invalid_argument &e) {
-      xxxxxx = snprintf((char*)msg, 255, "Invalid argument for '%s': %s\n", c.c_str(), e.what());
+      snprintf((char*)msg, 255, "Invalid argument for '%s': %s\n", c.c_str(), e.what());
       logThis();
     } catch (const out_of_range &e) {
-      xxxxxx = snprintf((char*)msg, 255, "Out of range for '%s': %s\n", c.c_str(), e.what());
+      snprintf((char*)msg, 255, "Out of range for '%s': %s\n", c.c_str(), e.what());
       logThis();
     }
   } else {
-    xxxxxx = snprintf((char*)msg, 255, "Only works for base 10!\n");
+    snprintf((char*)msg, 255, "Only works for base 10!\n");
     logThis();
   }
   return false;
@@ -1185,7 +1360,7 @@ void evaluate(vector<string> chunks) {
   bool r;
   int i0;
   float f0;
-  xxxxxx = snprintf((char*)msg, 255, "Evaluating:\n");
+  snprintf((char*)msg, 255, "Evaluating:\n");
   logThis();
 #if defined(DEBUG)
   for (auto it = chunks.cbegin(); it != chunks.cend(); ++it) cout << *it << " ";
@@ -1196,7 +1371,7 @@ void evaluate(vector<string> chunks) {
   while (executionPointer < chunks.size()) {
     // executionPointer is global so that BEGIN – and later others – can change it.
     string c = chunks.at(executionPointer);
-    xxxxxx = snprintf((char*)msg, 255, "Evaluating '%s' executionPointer: %d \n", c.c_str(), executionPointer);
+    snprintf((char*)msg, 255, "Evaluating '%s' executionPointer: %d \n", c.c_str(), executionPointer);
     logThis();
 #if defined(DEBUG)
     for (int xx = 0; xx < chunks.size(); xx++) {
@@ -1207,7 +1382,7 @@ void evaluate(vector<string> chunks) {
     }
 #endif
     if (lookupVAR(c)) {
-      xxxxxx = snprintf((char*)msg, 255, "Put address of %s on stack. ", c.c_str());
+      snprintf((char*)msg, 255, "Put address of %s on stack. ", c.c_str());
       logThis();
       executionPointer += 1;
     } else if (c == "VAR" || c == "CONST") {
@@ -1227,10 +1402,10 @@ void evaluate(vector<string> chunks) {
       bool thisIsFloat = false;
       // we need a number
       if (popIntegerFromStack(&i0) == false) {
-        xxxxxx = snprintf((char*)msg, 255, "No INT on the stack!\n");
+        snprintf((char*)msg, 255, "No INT on the stack!\n");
         logThis();
         if (popFloatFromStack(&f0) == false) {
-          xxxxxx = snprintf((char*)msg, 255, "No FLOAT on the stack either!\n");
+          snprintf((char*)msg, 255, "No FLOAT on the stack either!\n");
           logThis();
         } else {
           thisIsFloat = true;
@@ -1238,19 +1413,19 @@ void evaluate(vector<string> chunks) {
       } else thisIsInt = true;
       if (!thisIsFloat && !thisIsInt) return;
       if (c == "VAR" && thisIsInt) {
-        xxxxxx = snprintf((char*)msg, 255, "VAR name: %s initialized with %d\n", d.c_str(), i0);
+        snprintf((char*)msg, 255, "VAR name: %s initialized with %d\n", d.c_str(), i0);
         logThis();
         StoreINT(d, i0);
       } else if (c == "VAR" && thisIsFloat) {
-        xxxxxx = snprintf((char*)msg, 255, "VAR name: %s initialized with %f\n", d.c_str(), f0);
+        snprintf((char*)msg, 255, "VAR name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreFLOAT(d, f0);
       } else if (c == "CONST" && thisIsInt) {
-        xxxxxx = snprintf((char*)msg, 255, "CONST name: %s initialized with %d\n", d.c_str(), i0);
+        snprintf((char*)msg, 255, "CONST name: %s initialized with %d\n", d.c_str(), i0);
         logThis();
         StoreCONSTINT(d, i0);
       } else if (c == "CONST" && thisIsFloat) {
-        xxxxxx = snprintf((char*)msg, 255, "CONST name: %s initialized with %f\n", d.c_str(), f0);
+        snprintf((char*)msg, 255, "CONST name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreCONSTFLOAT(d, f0);
       }
@@ -1266,17 +1441,17 @@ void evaluate(vector<string> chunks) {
       bool done = false, error = true;
       string miniChunks, dictName;
       dictName = chunks.at(executionPointer++);
-      xxxxxx = snprintf((char*)msg, 255, "WORD name: %s: ", dictName.c_str());
+      snprintf((char*)msg, 255, "WORD name: %s: ", dictName.c_str());
       logThis();
       while (executionPointer < chunks.size() && !done) {
         c = chunks.at(executionPointer);
-        xxxxxx = snprintf((char*)msg, 255, "%s %d / %zu ", c.c_str(), executionPointer, chunks.size());
+        snprintf((char*)msg, 255, "%s %d / %zu ", c.c_str(), executionPointer, chunks.size());
         logThis();
         if (c == ";") {
           done = true;
           error = false;
           executionPointer += 1;
-          xxxxxx = snprintf((char*)msg, 255, " got a ;! ");
+          snprintf((char*)msg, 255, " got a ;! ");
           logThis();
         } else {
           miniChunks.append(c);
@@ -1285,11 +1460,11 @@ void evaluate(vector<string> chunks) {
         }
       }
       if (error) {
-        xxxxxx = snprintf((char*)msg, 255, "Missing ; after : sequence! %s\n", miniChunks.c_str());
+        snprintf((char*)msg, 255, "Missing ; after : sequence! %s\n", miniChunks.c_str());
         logThis();
         return;
       }
-      xxxxxx = snprintf((char*)msg, 255, "Adding word `%s` with `%s`\n", dictName.c_str(), miniChunks.c_str());
+      snprintf((char*)msg, 255, "Adding word `%s` with `%s`\n", dictName.c_str(), miniChunks.c_str());
       logThis();
       userCommand x = { dictName, miniChunks };
       userCommands.push_back(x);
@@ -1301,21 +1476,21 @@ void evaluate(vector<string> chunks) {
         }
         executionPointer += 1;
       } else if (lookupUC(c)) {
-        xxxxxx = snprintf((char*)msg, 255, "%s lookupUC\n", c.c_str());
+        snprintf((char*)msg, 255, "%s lookupUC\n", c.c_str());
         logThis();
         executionPointer += 1;
       } else if (isInteger(c, &i0)) {
         putIntegerOnStack(i0);
         executionPointer += 1;
-        xxxxxx = snprintf((char*)msg, 255, "%s is an INT %d ", c.c_str(), i0);
+        snprintf((char*)msg, 255, "%s is an INT %d ", c.c_str(), i0);
         logThis();
       } else if (isFloat(c, &f0)) {
         putFloatOnStack(f0);
         executionPointer += 1;
-        xxxxxx = snprintf((char*)msg, 255, "%s is a FLOAT %f ", c.c_str(), f0);
+        snprintf((char*)msg, 255, "%s is a FLOAT %f ", c.c_str(), f0);
         logThis();
       } else {
-        xxxxxx = snprintf((char*)msg, 255, "\nERROR! Unknown: %s at executionPointer %d\n", c.c_str(), executionPointer);
+        snprintf((char*)msg, 255, "\nERROR! Unknown: %s at executionPointer %d\n", c.c_str(), executionPointer);
         logThis();
         return;
       }
@@ -1337,13 +1512,14 @@ vector<string> tokenize(char *code) {
       if (buffIndex > 0) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
-        if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
+        // if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
+        if (isPrinting && !insideString) {
           insideString = true;
-          xxxxxx = snprintf((char*)msg, 255, "inside string\n");
+          snprintf((char*)msg, 255, "inside string\n");
           logThis();
           cout << "" << endl;
         }
-        xxxxxx = snprintf((char*)msg, 255, " * Adding `%s`\n", buffer);
+        snprintf((char*)msg, 255, " * Adding `%s`\n", buffer);
         logThis();
         memset(buffer, 0, 256);
         buffIndex = 0;
@@ -1362,7 +1538,7 @@ vector<string> tokenize(char *code) {
       }
       buffer[buffIndex++] = esc;
     } else if (c == '"' && insideString /* && code[ix + 1] < '!'*/) {
-      xxxxxx = snprintf((char*)msg, 255, "Ending \"\n");
+      snprintf((char*)msg, 255, "Ending \"\n");
       logThis();
       insideString = false;
       buffer[buffIndex++] = c;
@@ -1370,20 +1546,20 @@ vector<string> tokenize(char *code) {
       string ss(buffer);
       //ss.append("\"");
       ix += 1;
-      xxxxxx = snprintf((char*)msg, 255, "ss: %s\n", ss.c_str());
+      snprintf((char*)msg, 255, "ss: %s\n", ss.c_str());
       logThis();
       chunks.push_back(ss);
       memset(buffer, 0, 256);
       buffIndex = 0;
     } else {
-      xxxxxx = snprintf((char*)msg, 255, "%c", c);
+      snprintf((char*)msg, 255, "%c", c);
       logThis();
       buffer[buffIndex++] = c;
     }
   }
   if (buffIndex > 0) {
     buffer[buffIndex + 1] = 0;
-    xxxxxx = snprintf((char*)msg, 255, " • Adding `%s`\n", buffer);
+    snprintf((char*)msg, 255, " • Adding `%s`\n", buffer);
     logThis();
     chunks.push_back(buffer);
   }
