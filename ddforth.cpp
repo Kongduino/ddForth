@@ -35,6 +35,7 @@ nativeCommand nativeCommands[] = {
   { handleBEGIN, "BEGIN" },
   { handleUNTIL, "UNTIL" },
   { handleWHILE, "WHILE" },
+  { handleDO, "DO" },
 };
 int nativeCmdCount = 0;
 struct userCommand {
@@ -53,7 +54,8 @@ enum dataType {
   xSTRING,
 };
 enum JumpType {
-  xBEGIN
+  xBEGIN,
+  xDO_LOOP
 };
 
 void StoreCONSTFLOAT(string name, float value) {
@@ -225,6 +227,22 @@ bool handleFact() {
   putIntegerOnStack(factorial);
   return true;
 }
+
+bool handleDO() {
+// Max min DO ... LOOP
+  snprintf((char*)msg, 255, "\n\n--> DO at ");
+  logThis();
+  jumpStack.push_back(executionPointer);
+  jumpStackType.push_back(xDO_LOOP);
+  snprintf((char*)msg, 255, "%d\n", executionPointer);
+  logThis();
+  return true;
+}
+
+// handleLOOP
+// pop two identical-type values
+// compare and loop if needed
+
 
 bool handleBEGIN() {
 // BEGIN ... <condition> UNTIL

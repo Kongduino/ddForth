@@ -49,6 +49,8 @@ bool handleBASE16();
 bool handleWHILE();
 bool handleUNTIL();
 bool handleBEGIN();
+bool handleDO();
+
 vector<string> tokenize(char *);
 void evaluate(vector<string>);
 void StoreINT(string, int);
