@@ -89,6 +89,8 @@ enum mathTypes {
   math_DIV,
   math_EQUAL,
   math_GREATER,
+  math_LOWER,
+  math_DIFFERENT,
 };
 
 struct nativeCommand {

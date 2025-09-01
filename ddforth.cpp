@@ -722,179 +722,15 @@ bool handleGreater() {
 }
 
 bool handleLower() {
-  unsigned char type1 = dataStack.at(dataStack.size() - 1);
-  unsigned char type0 = dataStack.at(dataStack.size() - 2);
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    logInconsistent((char*)"handleLower");
-    return false;
-  }
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      xxxxxx = snprintf((char*)msg, 255, "2 INTs ");
-      logThis();
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-        logStackOverflow((char*)"handleLower");
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-        logStackOverflow((char*)"handleLower1");
-        return false;
-      }
-      if (i0 < i1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    } else {
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-        logStackOverflow((char*)"handleLower2");
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-        logStackOverflow((char*)"handleLower3");
-        return false;
-      }
-      if (f0 < f1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    }
-  } else {
-// one int one float
-    xxxxxx = snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
-    logThis();
-    int i0, i1;
-    float f0;
-    if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char*)"handleLower4");
-      return false;
-    }
-    i1 = (int)f0;
-    if (popIntegerFromStack(&i0) == false) {
-      logStackOverflow((char*)"handleLower5");
-      return false;
-    }
-    if (i0 < i1) putIntegerOnStack(1);
-    else putIntegerOnStack(0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_LOWER);
 }
 
 bool handleEqual() {
-  unsigned char type1 = dataStack.at(dataStack.size() - 1);
-  unsigned char type0 = dataStack.at(dataStack.size() - 2);
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    logInconsistent((char*)"handleEqual");
-    return false;
-  }
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      xxxxxx = snprintf((char*)msg, 255, "2 INTs ");
-      logThis();
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-        logStackOverflow((char*)"handleEqual1");
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-        logStackOverflow((char*)"handleEqual2");
-        return false;
-      }
-      if (i0 == i1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    } else {
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-        logStackOverflow((char*)"handleEqual3");
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-        logStackOverflow((char*)"handleEqual4");
-        return false;
-      }
-      if (f0 == f1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    }
-  } else {
-// one int one float
-    xxxxxx = snprintf((char*)msg, 255, "1 INT 1 FLOAT");
-    logThis();
-    int i0, i1;
-    float f0;
-    if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char*)"handleEqual5");
-      return false;
-    }
-    i1 = (int)f0;
-    if (popIntegerFromStack(&i0) == false) {
-      logStackOverflow((char*)"handleEqual6");
-      return false;
-    }
-    if (i0 == i1) putIntegerOnStack(1);
-    else putIntegerOnStack(0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_EQUAL);
 }
 
 bool handleDifferent() {
-  unsigned char type1 = dataStack.at(dataStack.size() - 1);
-  unsigned char type0 = dataStack.at(dataStack.size() - 2);
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    logInconsistent((char*)"handleLower");
-    return false;
-  }
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      xxxxxx = snprintf((char*)msg, 255, "2 INTs ");
-      int i0, i1;
-      if (popIntegerFromStack(&i1) == false) {
-      logStackOverflow((char*)"handleDifferent1");
-        return false;
-      }
-      if (popIntegerFromStack(&i0) == false) {
-      logStackOverflow((char*)"handleDifferent2");
-        return false;
-      }
-      if (i0 != i1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    } else {
-      float f0, f1;
-      if (popFloatFromStack(&f1) == false) {
-      logStackOverflow((char*)"handleDifferent3");
-        return false;
-      }
-      if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char*)"handleDifferent4");
-        return false;
-      }
-      if (f0 != f1) putIntegerOnStack(1);
-      else putIntegerOnStack(0);
-      return true;
-    }
-  } else {
-// one int one float
-    xxxxxx = snprintf((char*)msg, 255, "1 INT 1 FLOAT");
-    logThis();
-    int i0, i1;
-    float f0, f1;
-    if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char*)"handleDifferent5");
-      return false;
-    }
-    if (popIntegerFromStack(&i0) == false) {
-      logStackOverflow((char*)"handleDifferent6");
-      return false;
-    }
-    f1 = i0;
-    if (f0 != f1) putIntegerOnStack(1);
-    else putIntegerOnStack(0);
-    return true;
-  }
-  return false;
+  return handle2Nums(math_DIFFERENT);
 }
 
 bool handle2Nums(unsigned char X) {
@@ -934,6 +770,15 @@ bool handle2Nums(unsigned char X) {
         case math_GREATER:
           putIntegerOnStack(i0 > i1);
           break;
+        case math_LOWER:
+          putIntegerOnStack(i0 < i1);
+          break;
+        case math_EQUAL:
+          putIntegerOnStack(i0 == i1);
+          break;
+        case math_DIFFERENT:
+          putIntegerOnStack(i0 != i1);
+          break;
       }
       return true;
     } else {
@@ -964,6 +809,15 @@ bool handle2Nums(unsigned char X) {
         case math_GREATER:
           putIntegerOnStack(f0 > f1);
           break;
+        case math_LOWER:
+          putIntegerOnStack(f0 < f1);
+          break;
+        case math_EQUAL:
+          putIntegerOnStack(f0 == f1);
+          break;
+        case math_DIFFERENT:
+          putIntegerOnStack(f0 != f1);
+          break;
       }
       return true;
     }
@@ -972,7 +826,7 @@ bool handle2Nums(unsigned char X) {
       xxxxxx = snprintf((char*)msg, 255, "1 INT 1 FLOAT ");
       logThis();
     int i1;
-    float f0;
+    float f0, f1;
     bool floatFirst = (dataStack.at(dataStack.size() - 1) == xFLOAT);
     xxxxxx = snprintf((char*)msg, 255, "FLOAT is first: %c", (floatFirst ? 'y' : 'n'));
     logThis();
@@ -999,10 +853,20 @@ bool handle2Nums(unsigned char X) {
         putFloatOnStack(f0 / i1);
         break;
       case math_GREATER:
+        f1 = i1;
+        cout <<f0 << " vs " << f1 << endl;
+        if (floatFirst) putIntegerOnStack(f0 < f1);
+        else putIntegerOnStack(f1 < f0);
+        break;
+      case math_EQUAL:
+        f1 = i1;
+        cout <<f0 << " vs " << f1 << endl;
+        putIntegerOnStack(f0 == f1);
+        break;
+      case math_DIFFERENT:
         float f1 = i1;
         cout <<f0 << " vs " << f1 << endl;
-        if (floatFirst) putIntegerOnStack(f0 > f1);
-        else putIntegerOnStack(f1 > f0);
+        putIntegerOnStack(f0 == f1);
         break;
     }
     return true;
@@ -1030,7 +894,6 @@ bool handleDEPTH() {
   putIntegerOnStack(dataStack.size());
   return true;
 }
-
 
 bool handleROT() {
   logStack((char*)"handleROT");
