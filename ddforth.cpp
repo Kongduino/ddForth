@@ -563,6 +563,10 @@ bool handleEMIT() {
   return true;
 }
 
+bool handleKEY() {
+  return true;
+}
+
 bool handlePRINTSTRING() {
   isPrinting = true;
   return true;

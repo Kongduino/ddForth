@@ -33,6 +33,7 @@ bool handleSQR();
 bool handleSQRT();
 bool handleFact();
 bool handleEMIT();
+bool handleKEY();
 bool handlePRINT();
 bool handlePRINTSTRING();
 bool handleUPRINT();
@@ -142,6 +143,7 @@ nativeCommand nativeCommands[] = {
   { handleSQR, "SQR" },
   { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
+  { handleKEY, "KEY" },
   { handlePRINT, "." },
   { handlePRINTSTRING, ".\"" },
   { handleUPRINT, "U." },
