@@ -21,6 +21,8 @@ bool handleEqual();
 bool handleDifferent();
 bool handleLower();
 bool handleGreater();
+bool handleGreaterEqual();
+bool handleLowerEqual();
 bool handle2Nums(unsigned char);
 bool handlePlus();
 bool handleMinus();
@@ -99,7 +101,9 @@ enum mathTypes {
   math_DIV,
   math_EQUAL,
   math_GREATER,
+  math_GREATEREQUAL,
   math_LOWER,
+  math_LOWEREQUAL,
   math_DIFFERENT,
 };
 enum dataType {
@@ -153,7 +157,9 @@ nativeCommand nativeCommands[] = {
   { showVars, ".V" },
   { handleEqual, "=" },
   { handleLower, "<" },
+  { handleLowerEqual, "<=" },
   { handleGreater, ">" },
+  { handleGreaterEqual, ">=" },
   { handleDifferent, "<>" },
   { handleBEGIN, "BEGIN" },
   { handleUNTIL, "UNTIL" },

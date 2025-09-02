@@ -807,8 +807,15 @@ bool handleGreater() {
   return handle2Nums(math_GREATER);
 }
 
+bool handleGreaterEqual() {
+  return handle2Nums(math_GREATEREQUAL);
+}
 bool handleLower() {
   return handle2Nums(math_LOWER);
+}
+
+bool handleLowerEqual() {
+  return handle2Nums(math_LOWEREQUAL);
 }
 
 bool handleEqual() {
@@ -856,8 +863,14 @@ bool handle2Nums(unsigned char X) {
         case math_GREATER:
           putIntegerOnStack((i0 > i1));
           break;
+        case math_GREATEREQUAL:
+          putIntegerOnStack((i0 > i1) || (i0 == i1));
+          break;
         case math_LOWER:
           putIntegerOnStack((i0 < i1));
+          break;
+        case math_LOWEREQUAL:
+          putIntegerOnStack((i0 < i1) || (i0 == i1));
           break;
         case math_DIFFERENT:
           putIntegerOnStack((i0 != i1));
@@ -895,8 +908,14 @@ bool handle2Nums(unsigned char X) {
         case math_GREATER:
           putIntegerOnStack((f0 > f1));
           break;
+        case math_GREATEREQUAL:
+          putIntegerOnStack((f0 > f1) || (f0 == f1));
+          break;
         case math_LOWER:
           putIntegerOnStack((f0 < f1));
+          break;
+        case math_LOWEREQUAL:
+          putIntegerOnStack((f0 < f1) || (f0 == f1));
           break;
         case math_DIFFERENT:
           putIntegerOnStack((f0 != f1));
@@ -944,9 +963,17 @@ bool handle2Nums(unsigned char X) {
         if (intFirst) putIntegerOnStack(f1 > f0);
         else putIntegerOnStack(f0 > f1);
         break;
+      case math_GREATEREQUAL:
+        if (intFirst) putIntegerOnStack((f1 > f0) || (f1 == f0));
+        else putIntegerOnStack((f0 > f1) || (f0 == f1));
+        break;
       case math_LOWER:
         if (intFirst) putIntegerOnStack(f1 < f0);
         else putIntegerOnStack(f0 < f1);
+        break;
+      case math_LOWEREQUAL:
+        if (intFirst) putIntegerOnStack((f1 < f0) || (f1 == f0));
+        else putIntegerOnStack((f0 < f1) || (f0 == f1));
         break;
       case math_DIFFERENT:
         putIntegerOnStack((f0 != f1));
