@@ -1,1 +1,7 @@
-1 2 OVER 1.2 2.1 OVER .S ." Loop and add" CR BEGIN DUP . + DEPTH 1 = UNTIL . CR .S
+1 2 OVER 1.2 2.1 OVER .S
+." Loop and add" CR
+BEGIN
+  DUP . +
+  DEPTH 1 =
+UNTIL
+. CR .S

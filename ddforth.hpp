@@ -1,4 +1,4 @@
-#include <fstream> // For ifstream
+#include <fstream>  // For ifstream
 #include <iostream>
 #include <stdio.h>
 #include <vector>
@@ -110,7 +110,7 @@ enum dataType {
   xINVALID,
   xINTEGER,
   xFLOAT,
-  xSTRING, // not used so far
+  xSTRING,  // not used so far
 };
 enum JumpType {
   xBEGIN,
@@ -184,7 +184,7 @@ char numerics[] = "0123456789abcdef";
 void logStack(char *who) {
 #if defined(DEBUG)
   xxxxxx = snprintf(
-    (char*)msg, 255, 
+    (char *)msg, 255,
     "%s: dataStack.size() %zu intCounter %d userIntegers.size() %zu ",
     who, dataStack.size(), intCounter, userIntegers.size());
   cout << msg;
@@ -193,14 +193,14 @@ void logStack(char *who) {
 
 void logInconsistent(char *who) {
 #if defined(DEBUG)
-  xxxxxx = snprintf((char*)msg, 255, "%s Data inconsistent!\n", who);
+  xxxxxx = snprintf((char *)msg, 255, "%s Data inconsistent!\n", who);
   cout << msg;
 #endif
 }
 
 void logStackOverflow(char *who) {
 #if defined(DEBUG)
-  xxxxxx = snprintf((char*)msg, 255, "%s Stack overflow!\n", who);
+  xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
 #endif
 }

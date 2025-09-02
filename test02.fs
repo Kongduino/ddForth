@@ -1,1 +1,7 @@
-BASE .S 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR BASE ? .V CR
+BASE 16 !
+A5 BASE A ! . CR
+-13 DUP DUP .S
+. U.
+HEX .
+DEC CR
+BASE ? .V CR
