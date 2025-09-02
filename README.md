@@ -6,6 +6,32 @@ Surprisingly, it went well, beyond expectations, and I can run quite a few of th
 
 Run `./ddforth "WORDS"` to get the list of words that have been implemented.
 
+```
+Handled in Code:
+----------------
+ • VAR         (Handled in code)
+ • CONST       (Handled in code)
+ • : ... ;     (Handled in code)
+
+Native Commands:
+----------------
+WORDS + - * / FACT MOD SQR SQRT EMIT KEY . ." U. DUP DROP SWAP DEPTH ROT OVER BASE BIN DEC HEX ! @ CR .S .V = < <= > >= <> BEGIN UNTIL WHILE DO LOOP I I' J 
+
+User Commands:
+--------------
+ • 0=          0 =
+ • 0>          0 >
+ • 0<          0 <
+ • TRUE        1 =
+ • FALSE       0 =
+ • ?           @ .
+ • 1+          1 +
+ • 1-          1 -
+ • 2+          2 +
+ • 2-          2 -
+ • 2*          2 *
+ • 2/          2 /
+```
 
 ## REGULAR VERSION
 
