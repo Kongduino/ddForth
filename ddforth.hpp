@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <cmath> // For std::sqrt
 
 using namespace std;
 
@@ -28,6 +29,8 @@ bool handlePlus();
 bool handleMinus();
 bool handleMult();
 bool handleDiv();
+bool handleSQR();
+bool handleSQRT();
 bool handleFact();
 bool handleEMIT();
 bool handlePRINT();
@@ -136,6 +139,8 @@ nativeCommand nativeCommands[] = {
   { handleMult, "*" },
   { handleDiv, "/" },
   { handleFact, "FACT" },
+  { handleSQR, "SQR" },
+  { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
   { handlePRINT, "." },
   { handlePRINTSTRING, ".\"" },
@@ -183,6 +188,12 @@ vector<userCommand> userCommands {
   {"TRUE", "1 ="},
   {"FALSE", "0 ="},
   {"?", "@ ."},
+  {"1+", "1 +"},
+  {"1-", "1 -"},
+  {"2+", "2 +"},
+  {"2-", "2 -"},
+  {"2*", "2 *"},
+  {"2/", "2 /"},
 };
 int userCmdCount = 0;
 

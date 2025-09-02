@@ -940,6 +940,58 @@ bool handleDiv() {
   return handle2Nums(math_DIV);
 }
 
+bool handleSQR() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleSQR");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSQR");
+      return false;
+    }
+    putFloatOnStack(i0 * i0);
+    return true;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleSQR");
+      return false;
+    }
+    putFloatOnStack(f0 * f0);
+    return true;
+  }
+  return false;
+}
+
+bool handleSQRT() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleSQR");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSQR");
+      return false;
+    }
+    putFloatOnStack(sqrt(i0));
+    return true;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleSQR");
+      return false;
+    }
+    putFloatOnStack(sqrt(f0));
+    return true;
+  }
+  return false;
+}
+
 bool handleDEPTH() {
   logStack((char *)"handleDEPTH");
   putIntegerOnStack(dataStack.size());
