@@ -1,10 +1,13 @@
-#include <fstream>  // For ifstream
-#include <iostream>
-#include <stdio.h>
-#include <vector>
-#include <string>
-#include <map>
 #include <cmath> // For std::sqrt
+#include <fcntl.h>
+#include <fstream> // For ifstream
+#include <iostream>
+#include <map>
+#include <cstdio>
+#include <string>
+#include <termios.h>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
 
@@ -29,6 +32,7 @@ bool handlePlus();
 bool handleMinus();
 bool handleMult();
 bool handleDiv();
+bool handleMOD();
 bool handleSQR();
 bool handleSQRT();
 bool handleFact();
@@ -109,6 +113,7 @@ enum mathTypes {
   math_LOWER,
   math_LOWEREQUAL,
   math_DIFFERENT,
+  math_MOD,
 };
 enum dataType {
   xINVALID,
@@ -140,6 +145,7 @@ nativeCommand nativeCommands[] = {
   { handleMult, "*" },
   { handleDiv, "/" },
   { handleFact, "FACT" },
+  { handleMOD, "MOD" },
   { handleSQR, "SQR" },
   { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },

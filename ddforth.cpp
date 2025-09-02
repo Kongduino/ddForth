@@ -106,6 +106,10 @@ bool handleWORDS() {
   return true;
 }
 
+bool handleMOD() {
+  return handle2Nums(math_MOD);
+}
+
 bool handleFact() {
   int factorial = 1;
   int n;
@@ -564,6 +568,17 @@ bool handleEMIT() {
 }
 
 bool handleKEY() {
+  xxxxxx = snprintf((char *)msg, 255, "handleKEY\n");
+  logThis();
+  char ch;
+  // Set the terminal to raw mode
+  system("stty raw");
+  ch = getchar();
+  // Set the terminal to normal mode
+  system("stty sane");
+  xxxxxx = snprintf((char *)msg, 255, "handleKEY has received char `%c`, ASCII 0x%02x\n", ch, ch);
+  logThis();
+  putIntegerOnStack(ch);
   return true;
 }
 
@@ -820,6 +835,9 @@ bool handle2Nums(unsigned char X) {
         case math_EQUAL:
           putIntegerOnStack((i0 == i1));
           break;
+        case math_MOD:
+          putIntegerOnStack((i0 % i1));
+          break;
       }
       return true;
     } else {
@@ -865,6 +883,12 @@ bool handle2Nums(unsigned char X) {
         case math_EQUAL:
           putIntegerOnStack((f0 == f1));
           break;
+        case math_MOD:
+          int i0 = (f0 / f1);
+          i0 *= f1; 
+          float f2 = f0 - i0;
+          putFloatOnStack(f2);
+          break;
       }
       return true;
     }
@@ -885,7 +909,7 @@ bool handle2Nums(unsigned char X) {
       logStackOverflow((char *)"handle2Nums6");
       return false;
     }
-    f1 = i1;  // The int is converted to a float
+    f1 = i1; // The int is converted to a float
     switch (X) {
       case math_PLUS:
         putFloatOnStack(f0 + f1);
@@ -922,6 +946,11 @@ bool handle2Nums(unsigned char X) {
         break;
       case math_EQUAL:
         putIntegerOnStack((f0 == f1));
+        break;
+      case math_MOD:
+        int i0 = f0;
+        if (intFirst) putIntegerOnStack(i1 % i0);
+        else putIntegerOnStack(i0 % i1);
         break;
     }
     return true;
@@ -1001,7 +1030,6 @@ bool handleDEPTH() {
   putIntegerOnStack(dataStack.size());
   return true;
 }
-
 
 bool handleROT() {
   logStack((char *)"handleROT");
