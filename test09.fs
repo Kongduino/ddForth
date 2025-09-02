@@ -1,1 +1,10 @@
--10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR
+-10 BEGIN
+  DUP . DUP -1 *
+  BEGIN
+    46 EMIT 1 - DUP
+    0=
+  UNTIL
+  DROP 1 + DUP
+  0=
+UNTIL
+. .S CR

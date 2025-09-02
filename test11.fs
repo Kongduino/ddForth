@@ -1,1 +1,7 @@
-CR 5 0 DO I . 5 0 DO I . LOOP CR LOOP
+CR 5 0 DO
+  I . 5 0
+  DO
+    I .
+  LOOP
+  CR
+LOOP

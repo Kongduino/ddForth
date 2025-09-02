@@ -40,7 +40,11 @@ void StoreFLOAT(string name, float value) {
   } else {
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
-    xxxxxx = snprintf((char*)msg, 255, "FVAR %s created at %d\n", name.c_str(), (fvarAddresses[name]));
+    xxxxxx = snprintf(
+      (char*)msg, 255,
+      "FVAR %s created at %d. fvarAddresses.size: %zu. myFVARs.size: %zu\n",
+      name.c_str(), fvarAddresses[name], fvarAddresses.size(), myFVARs.size()
+    );
     logThis();
   }  
 }
@@ -354,54 +358,75 @@ bool handleWHILE() {
 }
 
 bool showVars() {
-  cout << endl << "+---------------------------------------+" << endl;
-  cout << "| Num\t| Name\t\t| Addr\t| Value\t|";
-  cout << endl << "+---------------------------------------+" << endl;
+  cout << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
+  << " varAddresses.size: " << varAddresses.size()
+  << " fvarAddresses.size: " << fvarAddresses.size() << endl;
+  cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
+  << " constAddresses.size: " << constAddresses.size()
+  << " fconstAddresses.size: " << fconstAddresses.size() << endl;
   if (myVARs.size() > 0) {
+    cout << "+-----------------------------------------+" << endl;
+    cout << "| Num     |  VAR Name   | Addr | Value    |";
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = varAddresses.begin();
     int ix = 0;
     while (it != varAddresses.end()) {
       string n = it->first;
-      printf("| %-3d/%-3zu | %-11s | %10d |\n", (ix++), myVARs.size(), n.c_str(), it->second);
+      printf(
+        "| %3d/%-3zu | %-11s | %4d |%9d |\n",
+        (ix++), myVARs.size(), n.c_str(), it->second, myVARs.at(it->second)
+      );
       it++;
     }
-    cout << "+---------------------------------------+" << endl;
+    cout << "+-----------------------------------------+" << endl;
   }
-  if (myVARs.size() > 0) {
+  if (myFVARs.size() > 0) {
+    cout << "+-----------------------------------------+" << endl;
+    cout << "| Num     | FVAR Name   | Addr | Value    |";
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fvarAddresses.begin();
     int ix = 0;
     while (it != fvarAddresses.end()) {
-      cout << "| " << (ix++) << "/" << fvarAddresses.size() << "\t| ";
-      cout << it->first << "\t\t| ";
-      cout << (it->second) << "\t|";
-      cout << myFVARs.at(it->second - 128) << "\t|" << endl;
+      string n = it->first;
+      printf(
+        "| %3d/%-3zu | %-11s | %4d |%8f |\n",
+        (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128)
+      );
       it++;
     }
-    cout << "+---------------------------------------+" << endl;
+    cout << "+-----------------------------------------+" << endl;
   }
   if (myCONSTs.size() > 0) {
+    cout << "+-----------------------------------------+" << endl;
+    cout << "| Num     |  CONST Name | Addr | Value    |";
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = constAddresses.begin();
     int ix = 0;
     while (it != constAddresses.end()) {
-      cout << "| " << (ix++) << "/" << constAddresses.size() << "\t| ";
-      cout << it->first << "\t\t| ";
-      cout << (it->second) << "\t|";
-      cout << myCONSTs.at(it->second - 256) << "\t|" << endl;
+      string n = it->first;
+      printf(
+        "| %3d/%-3zu | %-11s | %4d |%9d |\n",
+        (ix++), myCONSTs.size(), n.c_str(), it->second, myCONSTs.at(it->second - 256)
+      );
       it++;
     }
-    cout << "+---------------------------------------+" << endl;
+    cout << "+-----------------------------------------+" << endl;
   }
   if (myFCONSTs.size() > 0) {
+    cout << "+-----------------------------------------+" << endl;
+    cout << "| Num     | FCONST Name | Addr | Value    |";
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fconstAddresses.begin();
     int ix = 0;
     while (it != fconstAddresses.end()) {
-      cout << "| " << (ix++) << "/" << fconstAddresses.size() << "\t| ";
-      cout << it->first << "\t\t| ";
-      cout << (it->second) << "\t|";
-      cout << myFCONSTs.at(it->second - 384) << "\t|" << endl;
+      string n = it->first;
+      printf(
+        "| %3d/%-3zu | %-11s | %4d |%8f |\n",
+        (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384)
+      );
       it++;
     }
-    cout << "+---------------------------------------+" << endl;
+    cout << "+-----------------------------------------+" << endl;
   }
   return true;
 }
@@ -440,7 +465,7 @@ bool showStack() {
     }
     x -= 1;
   }
-  cout << "+-----------------------+" << endl;
+  cout << "+------------------------+" << endl;
   return true;
 }
 
@@ -1311,19 +1336,19 @@ void evaluate(vector<string> chunks) {
       } else thisIsInt = true;
       if (!thisIsFloat && !thisIsInt) return;
       if (c == "VAR" && thisIsInt) {
-        xxxxxx = snprintf((char*)msg, 255, "VAR name: %s initialized with %d\n", d.c_str(), i0);
+        xxxxxx = snprintf((char*)msg, 255, "INT VAR name: %s initialized with %d\n", d.c_str(), i0);
         logThis();
         StoreINT(d, i0);
       } else if (c == "VAR" && thisIsFloat) {
-        xxxxxx = snprintf((char*)msg, 255, "VAR name: %s initialized with %f\n", d.c_str(), f0);
+        xxxxxx = snprintf((char*)msg, 255, "FLOAT VAR name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreFLOAT(d, f0);
       } else if (c == "CONST" && thisIsInt) {
-        xxxxxx = snprintf((char*)msg, 255, "CONST name: %s initialized with %d\n", d.c_str(), i0);
+        xxxxxx = snprintf((char*)msg, 255, "INT CONST name: %s initialized with %d\n", d.c_str(), i0);
         logThis();
         StoreCONSTINT(d, i0);
       } else if (c == "CONST" && thisIsFloat) {
-        xxxxxx = snprintf((char*)msg, 255, "CONST name: %s initialized with %f\n", d.c_str(), f0);
+        xxxxxx = snprintf((char*)msg, 255, "FLOAT CONST name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreCONSTFLOAT(d, f0);
       }
