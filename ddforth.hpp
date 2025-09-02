@@ -1,4 +1,4 @@
-#include <fstream>  // For ifstream
+#include <fstream> // For ifstream
 #include <iostream>
 #include <stdio.h>
 #include <vector>
@@ -58,7 +58,7 @@ bool handleI();
 bool handleIprime();
 bool handleJ();
 
-vector<string> tokenize(char *);
+vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 void StoreINT(string, int);
 void StoreFLOAT(string, float);
@@ -102,6 +102,16 @@ enum mathTypes {
   math_LOWER,
   math_DIFFERENT,
 };
+enum dataType {
+  xINVALID,
+  xINTEGER,
+  xFLOAT,
+  xSTRING, // not used so far
+};
+enum JumpType {
+  xBEGIN,
+  xDO
+};
 
 struct nativeCommand {
   bool (*ptr)(void);  // Function pointer
@@ -114,6 +124,56 @@ void logThis() {
   cout << msg;
 #endif
 }
+
+nativeCommand nativeCommands[] = {
+  { handleWORDS, "WORDS" },
+  { handlePlus, "+" },
+  { handleMinus, "-" },
+  { handleMult, "*" },
+  { handleDiv, "/" },
+  { handleFact, "FACT" },
+  { handleEMIT, "EMIT" },
+  { handlePRINT, "." },
+  { handlePRINTSTRING, ".\"" },
+  { handleUPRINT, "U." },
+  { handleDUP, "DUP" },
+  { handleDROP, "DROP" },
+  { handleSWAP, "SWAP" },
+  { handleDEPTH, "DEPTH" },
+  { handleROT, "ROT" },
+  { handleOVER, "OVER" },
+  { handleBASE, "BASE" },
+  { handleBASE2, "BIN" },
+  { handleBASE10, "DEC" },
+  { handleBASE16, "HEX" },
+  { handleStore, "!" },
+  { handleRetrieve, "@" },
+  { handleCR, "CR" },
+  { showStack, ".S" },
+  { showVars, ".V" },
+  { handleEqual, "=" },
+  { handleLower, "<" },
+  { handleGreater, ">" },
+  { handleDifferent, "<>" },
+  { handleBEGIN, "BEGIN" },
+  { handleUNTIL, "UNTIL" },
+  { handleWHILE, "WHILE" },
+  { handleDO, "DO" },
+  { handleLOOP, "LOOP" },
+  { handleI, "I" },
+  { handleIprime, "I'" },
+  { handleJ, "J" },
+};
+int nativeCmdCount = 0;
+
+struct userCommand {
+  string name;
+  string command;
+};
+vector<userCommand> userCommands;
+int userCmdCount = 0;
+
+char numerics[] = "0123456789abcdef";
 
 void logStack(char *who) {
 #if defined(DEBUG)

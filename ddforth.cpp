@@ -2,66 +2,6 @@
 
 using namespace std;
 
-nativeCommand nativeCommands[] = {
-  { handleWORDS, "WORDS" },
-  { handlePlus, "+" },
-  { handleMinus, "-" },
-  { handleMult, "*" },
-  { handleDiv, "/" },
-  { handleFact, "FACT" },
-  { handleEMIT, "EMIT" },
-  { handlePRINT, "." },
-  { handlePRINTSTRING, ".\"" },
-  { handleUPRINT, "U." },
-  { handleDUP, "DUP" },
-  { handleDROP, "DROP" },
-  { handleSWAP, "SWAP" },
-  { handleDEPTH, "DEPTH" },
-  { handleROT, "ROT" },
-  { handleOVER, "OVER" },
-  { handleBASE, "BASE" },
-  { handleBASE2, "BIN" },
-  { handleBASE10, "DEC" },
-  { handleBASE16, "HEX" },
-  { handleStore, "!" },
-  { handleRetrieve, "@" },
-  { handleCR, "CR" },
-  { showStack, ".S" },
-  { showVars, ".V" },
-  { handleEqual, "=" },
-  { handleLower, "<" },
-  { handleGreater, ">" },
-  { handleDifferent, "<>" },
-  { handleBEGIN, "BEGIN" },
-  { handleUNTIL, "UNTIL" },
-  { handleWHILE, "WHILE" },
-  { handleDO, "DO" },
-  { handleLOOP, "LOOP" },
-  { handleI, "I" },
-  { handleIprime, "I'" },
-  { handleJ, "J" },
-};
-int nativeCmdCount = 0;
-struct userCommand {
-  string name;
-  string command;
-};
-
-vector<userCommand> userCommands;
-int userCmdCount = 0;
-unsigned char dictionary[64 * 1024] = { 0 };
-char numerics[] = "0123456789abcdef";
-enum dataType {
-  xINVALID,
-  xINTEGER,
-  xFLOAT,
-  xSTRING,
-};
-enum JumpType {
-  xBEGIN,
-  xDO
-};
-
 void StoreCONSTFLOAT(string name, float value) {
   map<string, int>::iterator it;
   it = fconstAddresses.find(name);
@@ -1222,29 +1162,32 @@ bool lookupVAR(string name) {
     // 256 --> xxx = const
     return true;
   }  
-  xxxxxx = snprintf((char*)msg, 255, "No such VAR/CONST: %s\n", name.c_str());
+  xxxxxx = snprintf((char*)msg, 255, "No VAR/CONST called: %s\n", name.c_str());
   logThis();
   return false;
 }
 
-bool lookupUC(string c) {
-  xxxxxx = snprintf((char*)msg, 255, "lookupUC %s ", c.c_str());
+bool lookupUC(string name) {
+  xxxxxx = snprintf((char*)msg, 255, "lookupUC %s ", name.c_str());
   logThis();
   for (int ix = 0; ix < userCommands.size(); ix++) {
     xxxxxx = snprintf((char*)msg, 255, "%s ", userCommands[ix].name.c_str());
     logThis();
-    if (c == userCommands[ix].name) {
+    if (name == userCommands[ix].name) {
       char code[256];
       strcpy(code, userCommands[ix].command.c_str());
       xxxxxx = snprintf((char*)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
       logThis();
       int savedExecutionPointer = executionPointer;
-      vector<string> myChunks = tokenize(code);
+      vector<string> myChunks;
+      myChunks = tokenize(code, myChunks);
       evaluate(myChunks);
       executionPointer = savedExecutionPointer;
       return true;
     }
   }
+  xxxxxx = snprintf((char*)msg, 255, "No user word called: %s\n", name.c_str());
+  logThis();
   return false;
 }
 
@@ -1453,9 +1396,10 @@ void evaluate(vector<string> chunks) {
   }
 }
 
-vector<string> tokenize(char *code) {
+vector<string> tokenize(char *code, vector<string>chunks) {
+  // adds to the string vector chunks.
+  // enables multi-line code
   unsigned int ln = strlen(code), ix = 0;
-  vector<string> chunks;
   char buffer[256] = { 0 };
   unsigned int buffIndex = 0;
   bool insideString = false;
@@ -1470,11 +1414,11 @@ vector<string> tokenize(char *code) {
         if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
         // if (isPrinting && !insideString) {
           insideString = true;
-          xxxxxx = snprintf((char*)msg, 255, "inside string\n");
+          xxxxxx = snprintf((char*)msg, 255, "inside string ");
           logThis();
           cout << "" << endl;
         }
-        xxxxxx = snprintf((char*)msg, 255, " * Adding `%s`\n", buffer);
+        xxxxxx = snprintf((char*)msg, 255, "\n* Adding `%s`", buffer);
         logThis();
         memset(buffer, 0, 256);
         buffIndex = 0;
@@ -1493,7 +1437,7 @@ vector<string> tokenize(char *code) {
       }
       buffer[buffIndex++] = esc;
     } else if (c == '"' && insideString /* && code[ix + 1] < '!'*/) {
-      xxxxxx = snprintf((char*)msg, 255, "Ending \"\n");
+      xxxxxx = snprintf((char*)msg, 255, " Ending \"\n");
       logThis();
       insideString = false;
       buffer[buffIndex++] = c;
@@ -1514,7 +1458,7 @@ vector<string> tokenize(char *code) {
   }
   if (buffIndex > 0) {
     buffer[buffIndex + 1] = 0;
-    xxxxxx = snprintf((char*)msg, 255, " • Adding `%s`\n", buffer);
+    xxxxxx = snprintf((char*)msg, 255, "\n* Adding `%s`\n", buffer);
     logThis();
     chunks.push_back(buffer);
   }
@@ -1523,8 +1467,10 @@ vector<string> tokenize(char *code) {
 
 int main(int argc, char **argv) {
   char code[256] = { 0 };
+  vector<string> chunks;
+
   initForth();
-  if(argc == 3) {
+  if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
       ifstream inputFile(argv[2]);
       if (!inputFile.is_open()) {
@@ -1532,22 +1478,27 @@ int main(int argc, char **argv) {
         return 0;
       }
       string line;
-      getline(inputFile, line);
-      strcpy(code, line.c_str());
+      while (std::getline(inputFile, line)) {
+        // getline(inputFile, line);
+        strcpy(code, line.c_str());
+        chunks = tokenize(code, chunks);
+        cout << "Read: " << line << " size: " << chunks.size() << endl;
+      }
+      evaluate(chunks);
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
     }
-  } else if(argc == 2) {
-    strcpy(code, argv[1]);
   } else {
-    strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
+    if (argc == 2) {
+      strcpy(code, argv[1]);
+    } else {
+      strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
+    }
+    cout << "Running code:" << endl << "\t" << code << endl;
+    chunks = tokenize(code, chunks);
+    evaluate(chunks);
   }
-
-  cout << "Running code:" << endl << "\t" << code << endl;
-  vector<string> chunks = tokenize(code);
-  evaluate(chunks);
-
   cout << endl << endl;
   return 0;
 }
