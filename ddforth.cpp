@@ -1521,7 +1521,7 @@ int main(int argc, char **argv) {
         // getline(inputFile, line);
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
-        cout << "Read: " << line << " size: " << chunks.size() << endl;
+        cout << "Read: " << line << " chunks: " << chunks.size() << endl;
       }
       evaluate(chunks);
     } else {
