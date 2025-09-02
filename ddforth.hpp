@@ -7,6 +7,8 @@
 
 using namespace std;
 
+#define myVERSION 1045
+
 bool handleWORDS();
 bool showStack();
 bool showVars();

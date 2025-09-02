@@ -195,7 +195,7 @@ void initForth() {
   logThis();
   x = { name, code };
   userCommands.push_back(x);
-  StoreINT("VER.", 1051);
+  StoreINT("VER.", myVERSION);
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
@@ -204,12 +204,16 @@ void initForth() {
 
 bool handleWORDS() {
   cout << endl << "WORDS" << endl;
-  for (vector<string>::iterator it = computedWords.begin() ; it != computedWords.end(); ++it)
-    cout << " • " << *it << "     \t (Handled in code)" << endl;
-  for (int ix = 0; ix < nativeCmdCount; ix++)
-    cout << " • " << nativeCommands[ix].name << "     \t (Native command)" << endl;
-  for (vector<userCommand>::iterator it = userCommands.begin() ; it != userCommands.end(); ++it)
-    cout << " • " << it->name << "\t\t" << it->command << endl;
+  for (vector<string>::iterator it = computedWords.begin() ; it != computedWords.end(); ++it) {
+    string s = *it;
+    printf(" • %-15s (Handled in code)\n", s.c_str());
+  }
+  for (int ix = 0; ix < nativeCmdCount; ix++) {
+    printf(" • %-15s (Native command)\n", nativeCommands[ix].name.c_str());
+  }
+  for (vector<userCommand>::iterator it = userCommands.begin() ; it != userCommands.end(); ++it) {
+    printf(" • %-15s %s\n", it->name.c_str(), it->command.c_str());
+  }
   return true;
 }
 
