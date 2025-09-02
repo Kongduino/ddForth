@@ -92,14 +92,17 @@ bool checkTypes(int levels, unsigned char n) {
 }
 
 bool handleWORDS() {
-  cout << endl << "WORDS" << endl;
+  cout << "Handled in Code:" << endl << "----------------" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
     printf(" • %-11s (Handled in code)\n", s.c_str());
   }
+  cout << endl << "Native Commands:" << endl << "----------------" << endl;
   for (int ix = 0; ix < nativeCmdCount; ix++) {
-    printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    cout << nativeCommands[ix].name << " ";
   }
+  cout << endl << endl << "User Commands:" << endl << "--------------" << endl;
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
