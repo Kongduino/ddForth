@@ -176,10 +176,30 @@ struct userCommand {
   string name;
   string command;
 };
-vector<userCommand> userCommands;
+vector<userCommand> userCommands {
+  {"0=", "0 ="},
+  {"0>", "0 >"},
+  {"0<", "0 <"},
+  {"TRUE", "1 ="},
+  {"FALSE", "0 ="},
+  {"?", "@ ."},
+};
 int userCmdCount = 0;
 
 char numerics[] = "0123456789abcdef";
+
+void initForth() {
+  xxxxxx = snprintf((char *)msg, 255, "init ");
+  logThis();
+  nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
+  StoreINT("BASE", 10);
+  StoreINT("VER.", myVERSION);
+  // words that are handled in code (evaluate)
+  computedWords.push_back("VAR");
+  computedWords.push_back("CONST");
+  computedWords.push_back(": ... ;");
+  userCmdCount = userCommands.size();
+}
 
 void logStack(char *who) {
 #if defined(DEBUG)

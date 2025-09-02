@@ -91,60 +91,6 @@ bool checkTypes(int levels, unsigned char n) {
   return true;
 }
 
-void initForth() {
-  xxxxxx = snprintf((char *)msg, 255, "init ");
-  logThis();
-  nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
-  userCmdCount = userCommands.size();
-  StoreINT("BASE", 10);
-  string name("0=");
-  string code("0 =");
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  userCommand x = { name, code };
-  userCommands.push_back(x);
-
-  name = "0>";
-  code = "0 >";
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  x = { name, code };
-  userCommands.push_back(x);
-
-  name = "0<";
-  code = "0 <";
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  x = { name, code };
-  userCommands.push_back(x);
-
-  name = "TRUE";
-  code = "1 =";
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  x = { name, code };
-  userCommands.push_back(x);
-
-  name = "FALSE";
-  code = "0 =";
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  x = { name, code };
-  userCommands.push_back(x);
-
-  name = "?";
-  code = "@ .";
-  xxxxxx = snprintf((char *)msg, 255, "Adding word %s with `%s`\n", name.c_str(), code.c_str());
-  logThis();
-  x = { name, code };
-  userCommands.push_back(x);
-  StoreINT("VER.", myVERSION);
-  // words that are handled in code (evaluate)
-  computedWords.push_back("VAR");
-  computedWords.push_back("CONST");
-  computedWords.push_back(": ... ;");
-}
-
 bool handleWORDS() {
   cout << endl << "WORDS" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
