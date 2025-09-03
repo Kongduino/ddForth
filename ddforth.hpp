@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define myVERSION 1045
+#define myVERSION 1060
 
 bool handleWORDS();
 bool showStack();
