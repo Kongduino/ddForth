@@ -41,6 +41,8 @@ bool handleLOOP();
 bool handleLower();
 bool handleLowerEqual();
 bool handleMinus();
+bool handleMIN();
+bool handleMAX();
 bool handleMOD();
 bool handleMult();
 bool handleOVER();
@@ -123,6 +125,8 @@ enum mathTypes {
   math_LOWEREQUAL,
   math_DIFFERENT,
   math_MOD,
+  math_MIN,
+  math_MAX,
 };
 enum dataType {
   xINVALID,
@@ -153,6 +157,8 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
+  { handleMIN, "MIN" },
+  { handleMAX, "MAX" },
   { handleFact, "FACT" },
   { handleMOD, "MOD" },
   { handleSQR, "SQR" },

@@ -404,7 +404,7 @@ bool showStack() {
     cout << "Stack empty! ";
     return true;
   }
-  cout << endl;  // << "showStack " << dataStack.size();
+  cout << endl; // << "showStack " << dataStack.size();
   int x = dataStack.size() - 1;
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
@@ -848,38 +848,72 @@ bool handle2Nums(unsigned char X) {
       }
       switch (X) {
         case math_PLUS:
-          putIntegerOnStack(i0 + i1);
-          break;
+          {
+            putIntegerOnStack(i0 + i1);
+            break;
+          }
         case math_MINUS:
-          putIntegerOnStack(i0 - i1);
-          break;
+          {
+            putIntegerOnStack(i0 - i1);
+            break;
+          }
         case math_MULT:
-          putIntegerOnStack(i0 * i1);
-          break;
+          {
+            putIntegerOnStack(i0 * i1);
+            break;
+          }
         case math_DIV:
-          putIntegerOnStack(i0 / i1);
-          break;
+          {
+            putIntegerOnStack(i0 / i1);
+            break;
+          }
         case math_GREATER:
-          putIntegerOnStack((i0 > i1));
-          break;
+          {
+            putIntegerOnStack((i0 > i1));
+            break;
+          }
         case math_GREATEREQUAL:
-          putIntegerOnStack((i0 > i1) || (i0 == i1));
-          break;
+          {
+            putIntegerOnStack((i0 > i1) || (i0 == i1));
+            break;
+          }
         case math_LOWER:
-          putIntegerOnStack((i0 < i1));
-          break;
+          {
+            putIntegerOnStack((i0 < i1));
+            break;
+          }
         case math_LOWEREQUAL:
-          putIntegerOnStack((i0 < i1) || (i0 == i1));
-          break;
+          {
+            putIntegerOnStack((i0 < i1) || (i0 == i1));
+            break;
+          }
         case math_DIFFERENT:
-          putIntegerOnStack((i0 != i1));
-          break;
+          {
+            putIntegerOnStack((i0 != i1));
+            break;
+          }
         case math_EQUAL:
-          putIntegerOnStack((i0 == i1));
-          break;
+          {
+            putIntegerOnStack((i0 == i1));
+            break;
+          }
         case math_MOD:
-          putIntegerOnStack((i0 % i1));
-          break;
+          {
+            putIntegerOnStack((i0 % i1));
+            break;
+          }
+        case math_MIN:
+          {
+            if (i0 < i1) putIntegerOnStack(i0);
+            else putIntegerOnStack(i1);
+            break;
+          }
+        case math_MAX:
+          {
+            if (i0 > i1) putIntegerOnStack(i0);
+            else putIntegerOnStack(i1);
+            break;
+          }
       }
       return true;
     } else {
@@ -896,41 +930,73 @@ bool handle2Nums(unsigned char X) {
       logThis();
       switch (X) {
         case math_PLUS:
-          putFloatOnStack(f0 + f1);
-          break;
+          {
+            putFloatOnStack(f0 + f1);
+            break;
+          }
         case math_MINUS:
-          putFloatOnStack(f0 - f1);
-          break;
+          {
+            putFloatOnStack(f0 - f1);
+            break;
+          }
         case math_MULT:
-          putFloatOnStack(f0 * f1);
-          break;
+          {
+            putFloatOnStack(f0 * f1);
+            break;
+          }
         case math_DIV:
           putFloatOnStack(f0 / f1);
           break;
         case math_GREATER:
-          putIntegerOnStack((f0 > f1));
-          break;
+          {
+            putIntegerOnStack((f0 > f1));
+            break;
+          }
         case math_GREATEREQUAL:
-          putIntegerOnStack((f0 > f1) || (f0 == f1));
-          break;
+          {
+            putIntegerOnStack((f0 > f1) || (f0 == f1));
+            break;
+          }
         case math_LOWER:
-          putIntegerOnStack((f0 < f1));
-          break;
+          {
+            putIntegerOnStack((f0 < f1));
+            break;
+          }
         case math_LOWEREQUAL:
-          putIntegerOnStack((f0 < f1) || (f0 == f1));
-          break;
+          {
+            putIntegerOnStack((f0 < f1) || (f0 == f1));
+            break;
+          }
         case math_DIFFERENT:
-          putIntegerOnStack((f0 != f1));
-          break;
+          {
+            putIntegerOnStack((f0 != f1));
+            break;
+          }
         case math_EQUAL:
-          putIntegerOnStack((f0 == f1));
-          break;
+          {
+            putIntegerOnStack((f0 == f1));
+            break;
+          }
         case math_MOD:
-          int i0 = (f0 / f1);
-          i0 *= f1; 
-          float f2 = f0 - i0;
-          putFloatOnStack(f2);
+          {
+            int i0 = (f0 / f1);
+            i0 *= f1;
+            float f2 = f0 - i0;
+            putFloatOnStack(f2);
+          }
           break;
+        case math_MIN:
+          {
+            if (f0 < f1) putFloatOnStack(f0);
+            else putFloatOnStack(f1);
+            break;
+          }
+        case math_MAX:
+          {
+            if (f0 > f1) putFloatOnStack(f0);
+            else putFloatOnStack(f1);
+            break;
+          }
       }
       return true;
     }
@@ -951,55 +1017,88 @@ bool handle2Nums(unsigned char X) {
       logStackOverflow((char *)"handle2Nums6");
       return false;
     }
-    f1 = i1; // The int is converted to a float
+    f1 = i1;  // The int is converted to a float
     switch (X) {
       case math_PLUS:
-        putFloatOnStack(f0 + f1);
-        break;
+        {
+          putFloatOnStack(f0 + f1);
+          break;
+        }
       case math_MINUS:
-        if (intFirst) putFloatOnStack(f1 - f0);
-        else putFloatOnStack(f0 - f1);
-        break;
+        {
+          if (intFirst) putFloatOnStack(f1 - f0);
+          else putFloatOnStack(f0 - f1);
+          break;
+        }
       case math_MULT:
-        putFloatOnStack(f0 * f1);
-        break;
+        {
+          putFloatOnStack(f0 * f1);
+          break;
+        }
       case math_DIV:
-        if (intFirst) putFloatOnStack(f1 / f0);
-        else putFloatOnStack(f0 / f1);
-        break;
+        {
+          if (intFirst) putFloatOnStack(f1 / f0);
+          else putFloatOnStack(f0 / f1);
+          break;
+        }
       case math_GREATER:
-        if (intFirst) putIntegerOnStack(f1 > f0);
-        else putIntegerOnStack(f0 > f1);
-        break;
+        {
+          if (intFirst) putIntegerOnStack(f1 > f0);
+          else putIntegerOnStack(f0 > f1);
+          break;
+        }
       case math_GREATEREQUAL:
-        if (intFirst) putIntegerOnStack((f1 > f0) || (f1 == f0));
-        else putIntegerOnStack((f0 > f1) || (f0 == f1));
-        break;
+        {
+          if (intFirst) putIntegerOnStack((f1 > f0) || (f1 == f0));
+          else putIntegerOnStack((f0 > f1) || (f0 == f1));
+          break;
+        }
       case math_LOWER:
-        if (intFirst) putIntegerOnStack(f1 < f0);
-        else putIntegerOnStack(f0 < f1);
-        break;
+        {
+          if (intFirst) putIntegerOnStack(f1 < f0);
+          else putIntegerOnStack(f0 < f1);
+          break;
+        }
       case math_LOWEREQUAL:
-        if (intFirst) putIntegerOnStack((f1 < f0) || (f1 == f0));
-        else putIntegerOnStack((f0 < f1) || (f0 == f1));
-        break;
+        {
+          if (intFirst) putIntegerOnStack((f1 < f0) || (f1 == f0));
+          else putIntegerOnStack((f0 < f1) || (f0 == f1));
+          break;
+        }
       case math_DIFFERENT:
-        putIntegerOnStack((f0 != f1));
-        break;
+        {
+          putIntegerOnStack((f0 != f1));
+          break;
+        }
       case math_EQUAL:
-        putIntegerOnStack((f0 == f1));
-        break;
+        {
+          putIntegerOnStack((f0 == f1));
+          break;
+        }
       case math_MOD:
-        int i0 = f0;
-        if (intFirst) putIntegerOnStack(i1 % i0);
-        else putIntegerOnStack(i0 % i1);
-        break;
+        {
+          int i0 = f0;
+          if (intFirst) putIntegerOnStack(i1 % i0);
+          else putIntegerOnStack(i0 % i1);
+          break;
+        }
+      case math_MIN:
+        {
+          if (f0 < f1) putFloatOnStack(f0);
+          else putFloatOnStack(f1);
+          break;
+        }
+      case math_MAX:
+        {
+          if (f0 > f1) putFloatOnStack(f0);
+          else putFloatOnStack(f1);
+          break;
+        }
     }
     return true;
   }
   return false;
 }
-
 bool handlePlus() {
   return handle2Nums(math_PLUS);
 }
@@ -1013,6 +1112,14 @@ bool handleMult() {
 
 bool handleDiv() {
   return handle2Nums(math_DIV);
+}
+
+bool handleMIN() {
+  return handle2Nums(math_MIN);
+}
+
+bool handleMAX() {
+  return handle2Nums(math_MAX);
 }
 
 bool handleSQR() {
