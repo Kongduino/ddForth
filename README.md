@@ -305,6 +305,31 @@ Read: LOOP size: 14
 3 0 1 2 3 4 
 4 0 1 2 3 4 
 
+
+./ddforth -f test12.fs
+Read: : AVERAGE chunks: 2
+Read: CR DEPTH DUP >R chunks: 6
+Read: 1 DO + LOOP chunks: 10
+Read: R> / . chunks: 13
+Read: ; chunks: 14
+Read:  chunks: 14
+Read: 12.1 13 14 15 AVERAGE chunks: 19
+
+13.525000 
+
+./ddforth -f test13.fs
+Read: : AVERAGE chunks: 2
+Read: CR DEPTH DUP VAR COUNT chunks: 7
+Read: 1 DO + LOOP chunks: 11
+Read: COUNT @ / . chunks: 15
+Read: ; chunks: 16
+Read:  chunks: 16
+
+Read: LINE EXEC ." Average is: " AVERAGE chunks: 21
+12 15 99 66
+12 15 99 66
+Average is:  
+48 
 ```
 
 ## DEBUG VERSION
