@@ -1,0 +1,7 @@
+: AVERAGE
+CR DEPTH DUP >R
+1 DO + LOOP
+R> / .
+;
+
+12.1 13 14 15 AVERAGE

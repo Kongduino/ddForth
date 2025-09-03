@@ -45,7 +45,9 @@ bool handleDUP();
 bool handleOVER();
 bool popFromLoopStack(int *);
 bool putIntegerOnStack(int);
+bool putIntegerOnJumpStack(int);
 bool popIntegerFromStack(int *);
+bool popIntegerFromJumpStack(int *);
 bool putFloatOnStack(float);
 bool popFloatFromStack(float *);
 bool lookup(string);
@@ -67,6 +69,10 @@ bool handleLOOP();
 bool handleI();
 bool handleIprime();
 bool handleJ();
+bool handleRput();
+bool handleRget();
+void logJumpStackOverflow(char *);
+void logLoopStackOverflow(char *);
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -79,9 +85,6 @@ void logInconsistent(char *who);
 void logStackOverflow(char *who);
 
 vector<int> dataStack;
-unsigned int intCounter = 0;
-unsigned int floatCounter = 0;
-unsigned int stringCounter = 0;
 int executionPointer = -1;
 vector<int> jumpStack;
 vector<int> jumpStackType;
@@ -182,6 +185,8 @@ nativeCommand nativeCommands[] = {
   { handleI, "I" },
   { handleIprime, "I'" },
   { handleJ, "J" },
+  { handleRput, ">R" },
+  { handleRget, "R>" },
 };
 int nativeCmdCount = 0;
 
@@ -224,8 +229,8 @@ void logStack(char *who) {
 #if defined(DEBUG)
   xxxxxx = snprintf(
     (char *)msg, 255,
-    "%s: dataStack.size() %zu intCounter %d userIntegers.size() %zu ",
-    who, dataStack.size(), intCounter, userIntegers.size());
+    "%s: dataStack.size() %zu userIntegers.size() %zu ",
+    who, dataStack.size(), userIntegers.size());
   cout << msg;
 #endif
 }
@@ -243,3 +248,18 @@ void logStackOverflow(char *who) {
   cout << msg;
 #endif
 }
+
+void logJumpStackOverflow(char *who) {
+#if defined(DEBUG)
+  xxxxxx = snprintf((char *)msg, 255, "%s Jump Stack overflow!\n", who);
+  cout << msg;
+#endif
+}
+
+void logLoopStackOverflow(char *who) {
+#if defined(DEBUG)
+  xxxxxx = snprintf((char *)msg, 255, "%s Loop Stack overflow!\n", who);
+  cout << msg;
+#endif
+}
+

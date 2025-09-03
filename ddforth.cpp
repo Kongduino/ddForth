@@ -91,6 +91,30 @@ bool checkTypes(int levels, unsigned char n) {
   return true;
 }
 
+bool handleRput() {
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleRput");
+    return false;
+  }
+  putIntegerOnJumpStack(i0);
+  return true;
+}
+
+bool handleRget() {
+  if (jumpStack.size() == 0) {
+    logStackOverflow((char *)"handleRget");
+    return false;
+  }
+  int i0;
+  if (popIntegerFromJumpStack(&i0) == false) {
+    logJumpStackOverflow((char *)"handleRget");
+    return false;
+  }
+  putIntegerOnStack(i0);
+  return true;
+}
+
 bool handleWORDS() {
   cout << "Handled in Code:" << endl << "----------------" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
@@ -162,13 +186,11 @@ bool handleDO() {
 
 bool checkDOLOOPconditions(char *who) {
   if (jumpStack.size() == 0) {
-    xxxxxx = snprintf((char *)msg, 255, "%s JumpStack overflow!\n", who);
-    logThis();
+    logJumpStackOverflow(who);
     return false;
   }
   if (loopStack.size() < 2) {
-    xxxxxx = snprintf((char *)msg, 255, "%s loopStack overflow!\n", who);
-    logThis();
+    logLoopStackOverflow(who);
     return false;
   }
   int type0 = jumpStackType.at(jumpStackType.size() - 1);
@@ -384,9 +406,9 @@ bool showStack() {
   }
   cout << endl;  // << "showStack " << dataStack.size();
   int x = dataStack.size() - 1;
-  int myInts = intCounter - 1;
-  int myFloats = floatCounter - 1;
-  int myStrings = stringCounter - 1;
+  int myInts = userIntegers.size() - 1;
+  int myFloats = userFloats.size() - 1;
+  int myStrings = userStrings.size() - 1;
   // logStackOverflow((char*)"showStack");
   cout << "\tdataStack.size()\t" << (dataStack.size());
   cout << "\tmyInts\t" << (myInts + 1);
@@ -420,7 +442,7 @@ bool handleCR() {
 }
 
 bool handleStore() {
-  xxxxxx = snprintf((char *)msg, 255, "handleStore: intCounter %d dataStack.size() %zu ", intCounter, dataStack.size());
+  xxxxxx = snprintf((char *)msg, 255, "handleStore: userIntegers.size %zu dataStack.size() %zu ", userIntegers.size(), dataStack.size());
   logThis();
   if (dataStack.size() < 2) {
     logStackOverflow((char *)"handleStore");
@@ -897,7 +919,7 @@ bool handle2Nums(unsigned char X) {
     }
   } else {
     // one int one float
-    xxxxxx = snprintf((char *)msg, 255, "1 INT 1 FLOAT ");
+    xxxxxx = snprintf((char *)msg, 255, "1 INT, 1 FLOAT ");
     logThis();
     bool intFirst = false;
     if (type0 == xINTEGER) intFirst = true;
@@ -1050,7 +1072,7 @@ bool handleROT() {
   }
   if (type0 == type1 && type0 == type2) {
     if (type0 == xINTEGER) {
-      if (intCounter < 3) {
+      if (userIntegers.size() < 3) {
         logStackOverflow((char *)"handleROT1");
         return false;
       }
@@ -1110,7 +1132,7 @@ bool handleSWAP() {
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      if (intCounter < 2) {
+      if (userIntegers.size() < 2) {
         logStackOverflow((char *)"handleSWAP1");
         return false;
       }
@@ -1127,7 +1149,7 @@ bool handleSWAP() {
       putIntegerOnStack(i1);
       return true;
     } else {
-      if (floatCounter < 2) {
+      if (userFloats.size() < 2) {
         logStackOverflow((char *)"handleSWAP4");
         return false;
       }
@@ -1152,7 +1174,12 @@ bool putStringOnStack(string n) {
   enum dataType type = xSTRING;
   userStrings.push_back(n);
   dataStack.push_back(type);
-  stringCounter += 1;
+  return true;
+}
+
+bool putIntegerOnJumpStack(int n) {
+  enum dataType type = xINTEGER;
+  jumpStack.push_back(n);
   return true;
 }
 
@@ -1160,7 +1187,6 @@ bool putIntegerOnStack(int n) {
   enum dataType type = xINTEGER;
   userIntegers.push_back(n);
   dataStack.push_back(type);
-  intCounter += 1;
   return true;
 }
 
@@ -1173,26 +1199,28 @@ bool popFromLoopStack(int *value) {
   return true;
 }
 
+bool popIntegerFromJumpStack(int *value) {
+  *value = jumpStack.at(jumpStack.size() - 1);
+  jumpStack.pop_back();
+  return true;
+}
+
 bool popIntegerFromStack(int *value) {
-  enum dataType type = xINTEGER;
-  if (dataStack.at(dataStack.size() - 1) != type || userIntegers.size() == 0) {
+  if (userIntegers.size() == 0) {
     return false;
   }
-  *value = userIntegers.at(intCounter - 1);
+  *value = userIntegers.at(userIntegers.size() - 1);
   userIntegers.pop_back();
   dataStack.pop_back();
-  intCounter -= 1;
   return true;
 }
 
 bool popFloatFromStack(float *value) {
-  enum dataType type = xFLOAT;
-  if (dataStack.at(dataStack.size() - 1) != type || userFloats.size() == 0) {
+  if (userFloats.size() == 0) {
     return false;
   }
-  *value = userFloats.at(floatCounter - 1);
+  *value = userFloats.at(userFloats.size() - 1);
   userFloats.pop_back();
-  floatCounter -= 1;
   dataStack.pop_back();
   return true;
 }
@@ -1201,7 +1229,6 @@ bool putFloatOnStack(float n) {
   enum dataType type = xFLOAT;
   userFloats.push_back(n);
   dataStack.push_back(type);
-  floatCounter += 1;
   return true;
 }
 
@@ -1532,7 +1559,7 @@ vector<string> tokenize(char *code, vector<string> chunks) {
   }
   if (buffIndex > 0) {
     buffer[buffIndex + 1] = 0;
-    xxxxxx = snprintf((char *)msg, 255, "\n* Adding `%s`\n", buffer);
+    xxxxxx = snprintf((char *)msg, 255, "\n** Adding `%s`\n", buffer);
     logThis();
     chunks.push_back(buffer);
   }
