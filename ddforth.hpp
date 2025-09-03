@@ -13,64 +13,67 @@ using namespace std;
 
 #define myVERSION 1060
 
-bool handleWORDS();
-bool showStack();
-bool showVars();
-bool handleCR();
-bool handleDEPTH();
-bool handleDROP();
-bool handleSWAP();
-bool handleROT();
-bool handleEqual();
-bool handleDifferent();
-bool handleLower();
-bool handleGreater();
-bool handleGreaterEqual();
-bool handleLowerEqual();
 bool handle2Nums(unsigned char);
-bool handlePlus();
-bool handleMinus();
-bool handleMult();
-bool handleDiv();
-bool handleMOD();
-bool handleSQR();
-bool handleSQRT();
-bool handleFact();
-bool handleEMIT();
-bool handleKEY();
-bool handlePRINT();
-bool handlePRINTSTRING();
-bool handleUPRINT();
-bool handleDUP();
-bool handleOVER();
-bool popFromLoopStack(int *);
-bool putIntegerOnStack(int);
-bool putIntegerOnJumpStack(int);
-bool popIntegerFromStack(int *);
-bool popIntegerFromJumpStack(int *);
-bool putFloatOnStack(float);
-bool popFloatFromStack(float *);
-bool lookup(string);
-bool lookupUC(string);
-bool lookupVAR(string);
-bool putStringOnStack(string);
-void initForth();
-bool handleStore();
-bool handleRetrieve();
 bool handleBASE();
 bool handleBASE2();
 bool handleBASE10();
 bool handleBASE16();
-bool handleWHILE();
-bool handleUNTIL();
 bool handleBEGIN();
+bool handleCR();
+bool handleDEPTH();
+bool handleDifferent();
+bool handleDiv();
 bool handleDO();
-bool handleLOOP();
+bool handleDROP();
+bool handleDUP();
+bool handleEMIT();
+bool handleEqual();
+bool handleFact();
+bool handleGreater();
+bool handleGreaterEqual();
 bool handleI();
 bool handleIprime();
 bool handleJ();
-bool handleRput();
+bool handleKEY();
+bool handleLINE();
+bool handleLOOP();
+bool handleLower();
+bool handleLowerEqual();
+bool handleMinus();
+bool handleMOD();
+bool handleMult();
+bool handleOVER();
+bool handlePlus();
+bool handlePRINT();
+bool handlePRINTSTACKSTRING();
+bool handlePRINTSTRING();
+bool handleRetrieve();
 bool handleRget();
+bool handleROT();
+bool handleRput();
+bool handleSQR();
+bool handleSQRT();
+bool handleStore();
+bool handleSWAP();
+bool handleUNTIL();
+bool handleUPRINT();
+bool handleWHILE();
+bool handleWORDS();
+bool lookup(string);
+bool lookupUC(string);
+bool lookupVAR(string);
+bool popFloatFromStack(float *);
+bool popFromLoopStack(int *);
+bool popIntegerFromJumpStack(int *);
+bool popIntegerFromStack(int *);
+bool popStringFromStack(string *);
+bool putFloatOnStack(float);
+bool putIntegerOnJumpStack(int);
+bool putIntegerOnStack(int);
+bool putStringOnStack(string);
+bool showStack();
+bool showVars();
+void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
 
@@ -153,8 +156,10 @@ nativeCommand nativeCommands[] = {
   { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
+  { handleLINE, "LINE" },
   { handlePRINT, "." },
   { handlePRINTSTRING, ".\"" },
+  { handlePRINTSTACKSTRING, ".s" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },

@@ -607,8 +607,24 @@ bool handleKEY() {
   return true;
 }
 
+bool handleLINE() {
+  string s;
+  cin >> s;
+  return putStringOnStack(s);
+}
+
 bool handlePRINTSTRING() {
   isPrinting = true;
+  return true;
+}
+
+bool handlePRINTSTACKSTRING() {
+  string s;
+  if(popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handlePRINTSTACKSTRING");
+    return false;
+  }
+  cout << s << " ";
   return true;
 }
 
@@ -1221,6 +1237,16 @@ bool popFloatFromStack(float *value) {
   }
   *value = userFloats.at(userFloats.size() - 1);
   userFloats.pop_back();
+  dataStack.pop_back();
+  return true;
+}
+
+bool popStringFromStack(string* s) {
+  if (userStrings.size() == 0) {
+    return false;
+  }
+  *s = userStrings.at(userStrings.size() - 1);
+  userStrings.pop_back();
   dataStack.pop_back();
   return true;
 }
