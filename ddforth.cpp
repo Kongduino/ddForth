@@ -609,7 +609,8 @@ bool handleKEY() {
 
 bool handleLINE() {
   string s;
-  cin >> s;
+  // cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  getline(cin, s); // Reads the entire line
   return putStringOnStack(s);
 }
 
@@ -1380,6 +1381,21 @@ bool isFloat(string c, float *f0) {
     logThis();
   }
   return false;
+}
+
+bool handleEXEC() {
+  string s;
+  if(popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleEXEC");
+    return false;
+  }
+  cout << s << endl;
+  int savedExecutionPointer = executionPointer;
+  vector<string> myChunks;
+  myChunks = tokenize((char *)s.c_str(), myChunks);
+  evaluate(myChunks);
+  executionPointer = savedExecutionPointer;
+  return true;
 }
 
 void evaluate(vector<string> chunks) {

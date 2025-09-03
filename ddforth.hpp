@@ -28,6 +28,7 @@ bool handleDROP();
 bool handleDUP();
 bool handleEMIT();
 bool handleEqual();
+bool handleEXEC();
 bool handleFact();
 bool handleGreater();
 bool handleGreaterEqual();
@@ -76,6 +77,8 @@ bool showVars();
 void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
+vector<string> tokenize(char *, vector<string>);
+void evaluate(vector<string>);
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -192,7 +195,9 @@ nativeCommand nativeCommands[] = {
   { handleJ, "J" },
   { handleRput, ">R" },
   { handleRget, "R>" },
+  { handleEXEC, "EXEC" },
 };
+
 int nativeCmdCount = 0;
 
 struct userCommand {
