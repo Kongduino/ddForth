@@ -147,7 +147,7 @@ struct nativeCommand {
 char msg[256];
 void logThis() {
 #if defined(DEBUG)
-  cout << msg;
+  Serial.print(msg);
 #endif
 }
 
@@ -239,43 +239,5 @@ void initForth() {
   computedWords.push_back("CONST");
   computedWords.push_back(": ... ;");
   userCmdCount = userCommands.size();
-}
-
-void logStack(char *who) {
-#if defined(DEBUG)
-  xxxxxx = snprintf(
-    (char *)msg, 255,
-    "%s: dataStack.size() %zu userIntegers.size() %zu ",
-    who, dataStack.size(), userIntegers.size());
-  cout << msg;
-#endif
-}
-
-void logInconsistent(char *who) {
-#if defined(DEBUG)
-  xxxxxx = snprintf((char *)msg, 255, "%s Data inconsistent!\n", who);
-  cout << msg;
-#endif
-}
-
-void logStackOverflow(char *who) {
-#if defined(DEBUG)
-  xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
-  cout << msg;
-#endif
-}
-
-void logJumpStackOverflow(char *who) {
-#if defined(DEBUG)
-  xxxxxx = snprintf((char *)msg, 255, "%s Jump Stack overflow!\n", who);
-  cout << msg;
-#endif
-}
-
-void logLoopStackOverflow(char *who) {
-#if defined(DEBUG)
-  xxxxxx = snprintf((char *)msg, 255, "%s Loop Stack overflow!\n", who);
-  cout << msg;
-#endif
 }
 
