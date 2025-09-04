@@ -1122,6 +1122,35 @@ bool handleMAX() {
   return handle2Nums(math_MAX);
 }
 
+bool handleABS() {
+  if (dataStack.size() == 0) {
+    logStackOverflow((char *)"handleDROP");
+    return false;
+  }
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  switch (type0) {
+    case xINTEGER:
+      int i0;
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char *)"handleABS1");
+        return false;
+      }
+      putIntegerOnStack(abs(i0));
+      return true;
+      break;
+    case xFLOAT:
+      float f0;
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handleDROP2");
+        return false;
+      }
+      putFloatOnStack(abs(f0));
+      return true;
+      break;
+  }
+  return false;
+}
+
 bool handleSQR() {
   unsigned char type0 = dataStack.at(dataStack.size() - 1);
   if (type0 == xSTRING || type0 == xINVALID) {

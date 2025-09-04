@@ -1,6 +1,6 @@
-#include <cmath> // For std::sqrt
+#include <cmath>  // For std::sqrt
 #include <fcntl.h>
-#include <fstream> // For ifstream
+#include <fstream>  // For ifstream
 #include <iostream>
 #include <map>
 #include <cstdio>
@@ -14,6 +14,7 @@ using namespace std;
 #define myVERSION 1077
 
 bool handle2Nums(unsigned char);
+bool handleABS();
 bool handleBASE();
 bool handleBASE2();
 bool handleBASE10();
@@ -157,6 +158,7 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
+  { handleABS, "ABS" },
   { handleMIN, "MIN" },
   { handleMAX, "MAX" },
   { handleFact, "FACT" },
@@ -210,19 +212,19 @@ struct userCommand {
   string name;
   string command;
 };
-vector<userCommand> userCommands {
-  {"0=", "0 ="},
-  {"0>", "0 >"},
-  {"0<", "0 <"},
-  {"TRUE", "1 ="},
-  {"FALSE", "0 ="},
-  {"?", "@ ."},
-  {"1+", "1 +"},
-  {"1-", "1 -"},
-  {"2+", "2 +"},
-  {"2-", "2 -"},
-  {"2*", "2 *"},
-  {"2/", "2 /"},
+vector<userCommand> userCommands{
+  { "0=", "0 =" },
+  { "0>", "0 >" },
+  { "0<", "0 <" },
+  { "TRUE", "1 =" },
+  { "FALSE", "0 =" },
+  { "?", "@ ." },
+  { "1+", "1 +" },
+  { "1-", "1 -" },
+  { "2+", "2 +" },
+  { "2-", "2 -" },
+  { "2*", "2 *" },
+  { "2/", "2 /" },
 };
 int userCmdCount = 0;
 
@@ -241,4 +243,3 @@ void initForth() {
   computedWords.push_back(": ... ;");
   userCmdCount = userCommands.size();
 }
-

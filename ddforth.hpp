@@ -14,6 +14,7 @@ using namespace std;
 #define myVERSION 1077
 
 bool handle2Nums(unsigned char);
+bool handleABS();
 bool handleBASE();
 bool handleBASE2();
 bool handleBASE10();
@@ -157,6 +158,7 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
+  { handleABS, "ABS" },  
   { handleMIN, "MIN" },
   { handleMAX, "MAX" },
   { handleFact, "FACT" },

@@ -340,7 +340,6 @@ bool showStack() {
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
   int myStrings = userStrings.size() - 1;
-  // logStackOverflow((char*)"showStack");
   cout << "\tdataStack.size()\t" << (dataStack.size());
   cout << "\tmyInts\t" << (myInts + 1);
   cout << "\tmyFloats\t" << (myFloats + 1);
@@ -965,6 +964,32 @@ bool handleMIN() {
 
 bool handleMAX() {
   return handle2Nums(math_MAX);
+}
+
+bool handleABS() {
+  if (dataStack.size() == 0) {
+    return false;
+  }
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  switch (type0) {
+    case xINTEGER:
+      int i0;
+      if (popIntegerFromStack(&i0) == false) {
+        return false;
+      }
+      putIntegerOnStack(abs(i0));
+      return true;
+      break;
+    case xFLOAT:
+      float f0;
+      if (popFloatFromStack(&f0) == false) {
+        return false;
+      }
+      putFloatOnStack(abs(f0));
+      return true;
+      break;
+  }
+  return false;
 }
 
 bool handleSQR() {
