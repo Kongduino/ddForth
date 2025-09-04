@@ -101,16 +101,16 @@ bool handleWORDS() {
   Serial.println("Handled in Code:\n----------------\n");
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
-    printf(" • %-11s (Handled in code)\n", s.c_str());
+    Serial.printf(" • %-11s (Handled in code)\n", s.c_str());
   }
   Serial.println("Native Commands:\n----------------");
   for (int ix = 0; ix < nativeCmdCount; ix++) {
-    // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    //Serial.printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
     cout << nativeCommands[ix].name << " ";
   }
   Serial.println("User Commands:\n----------------");
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
-    printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
+    Serial.printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
   return true;
 }
@@ -267,68 +267,64 @@ bool showVars() {
        << " constAddresses.size: " << constAddresses.size()
        << " fconstAddresses.size: " << fconstAddresses.size() << endl;
   if (myVARs.size() > 0) {
-    cout << "+-----------------------------------------+" << endl;
-    cout << "| Num     |  VAR Name   | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
+    Serial.println("| Num     |  VAR Name   | Addr | Value    |");
+    Serial.println("+-----------------------------------------+");
     std::map<string, int>::iterator it = varAddresses.begin();
     int ix = 0;
     while (it != varAddresses.end()) {
       string n = it->first;
-      printf(
+      Serial.printf(
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myVARs.size(), n.c_str(), it->second, myVARs.at(it->second));
       it++;
     }
-    cout << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
   }
   if (myFVARs.size() > 0) {
-    cout << "+-----------------------------------------+" << endl;
-    cout << "| Num     | FVAR Name   | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
+    Serial.println("| Num     | FVAR Name   | Addr | Value    |");
+    Serial.println("+-----------------------------------------+");
     std::map<string, int>::iterator it = fvarAddresses.begin();
     int ix = 0;
     while (it != fvarAddresses.end()) {
       string n = it->first;
-      printf(
+      Serial.printf(
         "| %3d/%-3zu | %-11s | %4d |%8f |\n",
         (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128));
       it++;
     }
-    cout << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
   }
   if (myCONSTs.size() > 0) {
-    cout << "+-----------------------------------------+" << endl;
-    cout << "| Num     |  CONST Name | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
+    Serial.println("| Num     |  CONST Name | Addr | Value    |");
+    Serial.println("+-----------------------------------------+");
     std::map<string, int>::iterator it = constAddresses.begin();
     int ix = 0;
     while (it != constAddresses.end()) {
       string n = it->first;
-      printf(
+      Serial.printf(
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myCONSTs.size(), n.c_str(), it->second, myCONSTs.at(it->second - 256));
       it++;
     }
-    cout << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
   }
   if (myFCONSTs.size() > 0) {
-    cout << "+-----------------------------------------+" << endl;
-    cout << "| Num     | FCONST Name | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
+    Serial.println("| Num     | FCONST Name | Addr | Value    |");
+    Serial.println("+-----------------------------------------+");
     std::map<string, int>::iterator it = fconstAddresses.begin();
     int ix = 0;
     while (it != fconstAddresses.end()) {
       string n = it->first;
-      printf(
+      Serial.printf(
         "| %3d/%-3zu | %-11s | %4d |%8f |\n",
         (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
       it++;
     }
-    cout << "+-----------------------------------------+" << endl;
+    Serial.println("+-----------------------------------------+");
   }
   return true;
 }
@@ -349,7 +345,7 @@ bool showStack() {
   cout << "\tmyInts\t" << (myInts + 1);
   cout << "\tmyFloats\t" << (myFloats + 1);
   cout << "\tmyStrings\t" << (myStrings + 1) << endl;
-  cout << "+-----------------------+" << endl;
+  Serial.println("+-----------------------+");
   while (x > -1) {
     int type0 = dataStack.at(x);
     cout << "| " << (count++) << "\t| ";
@@ -359,7 +355,7 @@ bool showStack() {
         break;
       case xFLOAT:
         cout << "FLOAT\t| ";
-        printf("%.3f\t|\n", userFloats.at(myFloats--));
+        Serial.printf("%.3f\t|\n", userFloats.at(myFloats--));
         break;
       case xSTRING:
         cout << "STR.\t| " << userStrings.at(myStrings--) << "\t|" << endl;
@@ -367,7 +363,7 @@ bool showStack() {
     }
     x -= 1;
   }
-  Serial.println("+------------------------+");
+  Serial.println("+-----------------------+");
   return true;
 }
 
@@ -469,7 +465,7 @@ bool printOtherBases(int number, unsigned int base) {
     buffer[ix - n] = b;
     n += 1;
   }
-  printf("%s ", buffer);
+  Serial.printf("%s ", buffer);
   return true;
 }
 
