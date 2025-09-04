@@ -1438,13 +1438,13 @@ bool lookupUC(string name) {
     xxxxxx = snprintf((char *)msg, 255, "%s ", userCommands[ix].name.c_str());
     logThis();
     if (name == userCommands[ix].name) {
-      char code[256];
-      strcpy(code, userCommands[ix].command.c_str());
+      char cc[256];
+      strcpy(cc, userCommands[ix].command.c_str());
       xxxxxx = snprintf((char *)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
       logThis();
       int savedExecutionPointer = executionPointer;
       vector<string> myChunks;
-      myChunks = tokenize(code, myChunks);
+      myChunks = tokenize(cc, myChunks);
       evaluate(myChunks);
       executionPointer = savedExecutionPointer;
       return true;
@@ -1675,15 +1675,15 @@ void evaluate(vector<string> chunks) {
   }
 }
 
-vector<string> tokenize(char *code, vector<string> chunks) {
+vector<string> tokenize(char *cc, vector<string> chunks) {
   // adds to the string vector chunks.
   // enables multi-line code
-  unsigned int ln = strlen(code), ix = 0;
+  unsigned int ln = strlen(cc), ix = 0;
   char buffer[256] = { 0 };
   unsigned int buffIndex = 0;
   bool insideString = false;
   while (ix < ln) {
-    char c = code[ix++];
+    char c = cc[ix++];
     if (c < '!' && !insideString) {
       // skip if not yet in a string
       // else add chunk
@@ -1703,19 +1703,19 @@ vector<string> tokenize(char *code, vector<string> chunks) {
         buffIndex = 0;
       }
     } else if (c == '\\' && insideString) {
-      char esc = code[ix++];
+      char esc = cc[ix++];
       if (esc == 'n') esc = '\n';
       else if (esc == 'r') esc = '\r';
       else if (esc == '0') esc = '\0';
       else if (esc == 't') esc = '\t';
       else if (esc == 'x') {
         char xxx[3] = { 0 };
-        xxx[0] = code[ix++];
-        xxx[1] = code[ix++];
+        xxx[0] = cc[ix++];
+        xxx[1] = cc[ix++];
         esc = stoi(string(xxx), nullptr, 16);
       }
       buffer[buffIndex++] = esc;
-    } else if (c == '"' && insideString /* && code[ix + 1] < '!'*/) {
+    } else if (c == '"' && insideString /* && cc[ix + 1] < '!'*/) {
       xxxxxx = snprintf((char *)msg, 255, " Ending \"\n");
       logThis();
       insideString = false;
@@ -1744,10 +1744,27 @@ vector<string> tokenize(char *code, vector<string> chunks) {
   return chunks;
 }
 
-int main(int argc, char **argv) {
-  char code[256] = { 0 };
-  vector<string> chunks;
+bool handleLOAD() {
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleLOAD");
+    return false;
+  }
+  if (blocks.size() < i0) {
+    logUnknownBlock((char *)"handleLOAD");
+    return false;
+  }
+  string c = blocks.at(i0);
+  strcpy(code, c.c_str());
+  return true;
+  // The idea is now the buffer has code in it.
+  // The user can call EXEC or something similar. TBD.
+  // Later on add a buffer editor.
+}
 
+int main(int argc, char **argv) {
+  vector<string> chunks;
+  string thisBlock;
   initForth();
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
@@ -1759,10 +1776,12 @@ int main(int argc, char **argv) {
       string line;
       while (std::getline(inputFile, line)) {
         // getline(inputFile, line);
+        thisBlock = line;
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
         cout << "Read: " << line << " chunks: " << chunks.size() << endl;
       }
+      blocks.push_back(thisBlock);
       evaluate(chunks);
     } else {
       cerr << argv[1] << "!= -f" << endl;
@@ -1777,6 +1796,7 @@ int main(int argc, char **argv) {
     cout << "Running code:" << endl << "\t" << code << endl;
     chunks = tokenize(code, chunks);
     evaluate(chunks);
+    memset(code, 0, 256);
   }
   cout << endl << endl;
   return 0;

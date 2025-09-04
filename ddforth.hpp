@@ -63,6 +63,7 @@ bool handleUNTIL();
 bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
+bool handleLOAD();
 bool lookup(string);
 bool lookupUC(string);
 bool lookupVAR(string);
@@ -80,6 +81,7 @@ bool showVars();
 void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
+void logUnknownBlock(char *);
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 
@@ -100,6 +102,7 @@ vector<int> jumpStackType;
 vector<int> loopStack;
 vector<string> userStrings;
 vector<int> userIntegers;
+vector<string> blocks;
 vector<float> userFloats;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
@@ -113,6 +116,7 @@ vector<int> myCONSTs;
 vector<float> myFCONSTs;
 vector<string> computedWords;
 int xxxxxx;
+char code[256] = { 0 };
 
 enum mathTypes {
   math_PLUS,
@@ -204,6 +208,7 @@ nativeCommand nativeCommands[] = {
   { handleRput, ">R" },
   { handleRget, "R>" },
   { handleEXEC, "EXEC" },
+  { handleLOAD, "LOAD" },
 };
 
 int nativeCmdCount = 0;
@@ -282,4 +287,12 @@ void logLoopStackOverflow(char *who) {
   cout << msg;
 #endif
 }
+
+void logUnknownBlock(char *who) {
+#if defined(DEBUG)
+  xxxxxx = snprintf((char *)msg, 255, "%s Unknown Block!\n", who);
+  cout << msg;
+#endif
+}
+
 

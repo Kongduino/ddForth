@@ -5,10 +5,11 @@
 #include <map>
 #include <cstdio>
 #include <string>
-#include <termios.h>
+//#include <termios.h>
 #include <unistd.h>
 #include <vector>
 // #include "File.hpp"
+// not working
 
 #define FORMAT_SPIFFS_IF_FAILED true
 
