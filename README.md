@@ -343,4 +343,8 @@ for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;do
 
 ## IoT version
 
-![ArduinoIDE](assets/ArduinoIDE.png)
+![ArduinoIDE00](assets/ArduinoIDE00.png)
+
+![ArduinoIDE01](assets/ArduinoIDE01.png)
+
+
