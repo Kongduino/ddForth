@@ -260,12 +260,12 @@ bool handleWHILE() {
 }
 
 bool showVars() {
-  cout << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
-       << " varAddresses.size: " << varAddresses.size()
-       << " fvarAddresses.size: " << fvarAddresses.size() << endl;
-  cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
-       << " constAddresses.size: " << constAddresses.size()
-       << " fconstAddresses.size: " << fconstAddresses.size() << endl;
+  // cout << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
+  //      << " varAddresses.size: " << varAddresses.size()
+  //      << " fvarAddresses.size: " << fvarAddresses.size() << endl;
+  // cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
+  //      << " constAddresses.size: " << constAddresses.size()
+  //      << " fconstAddresses.size: " << fconstAddresses.size() << endl;
   if (myVARs.size() > 0) {
     Serial.println("+-----------------------------------------+");
     Serial.println("| Num     |  VAR Name   | Addr | Value    |");
@@ -290,7 +290,7 @@ bool showVars() {
     while (it != fvarAddresses.end()) {
       string n = it->first;
       Serial.printf(
-        "| %3d/%-3zu | %-11s | %4d |%8f |\n",
+        "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128));
       it++;
     }
@@ -320,7 +320,7 @@ bool showVars() {
     while (it != fconstAddresses.end()) {
       string n = it->first;
       Serial.printf(
-        "| %3d/%-3zu | %-11s | %4d |%8f |\n",
+        "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
       it++;
     }
