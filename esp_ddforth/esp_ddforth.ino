@@ -480,18 +480,18 @@ bool handleEMIT() {
     return false;
   }
   c = i0;
-  printf("%c", c);
+  Serial.printf("%c", c);
   return true;
 }
 
 bool handleKEY() {
   char ch;
-  // Set the terminal to raw mode
-  system("stty raw");
-  ch = getchar();
-  // Set the terminal to normal mode
-  system("stty sane");
+  while (!Serial.available())
+    ;
+  ch = Serial.read();
   putIntegerOnStack(ch);
+  while (!Serial.available())
+    ch = Serial.read();
   return true;
 }
 
