@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define myVERSION 1060
+#define myVERSION 1077
 
 bool handle2Nums(unsigned char);
 bool handleBASE();
@@ -234,6 +234,7 @@ void initForth() {
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
+  StoreCONSTFLOAT("PI", 3.141592653);
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
