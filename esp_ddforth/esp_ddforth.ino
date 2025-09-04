@@ -1465,13 +1465,12 @@ void setup() {
   evaluate(chunks);
   chunks.resize(0);
   Serial.println("Done.");
-  Serial.println("Enter code:");
+  Serial.print("Enter code: ");
 }
 
 void loop() {
   if (Serial.available()) {
-    // incoming from user
-    Serial.println("incoming from user on Serial.");
+    // Serial.println("incoming from user on Serial.");
     char incoming[256];
     memset(incoming, 0, 256);
     uint8_t ix = 0;
@@ -1497,11 +1496,11 @@ void loop() {
     vector<string> chunks;
     uint8_t ix, iy = userStrings.size();
     for (ix = 0; ix < iy; ix++) {
-      Serial.printf("Running code:\n\t%s\n", userStrings[ix].c_str());
+      Serial.printf("\t%s\n", userStrings[ix].c_str());
       chunks = tokenize((char *)userStrings[ix].c_str(), chunks);
     }
     evaluate(chunks);
     userStrings.resize(0);
-    Serial.println("\nEnter code:");
+    Serial.print("\nEnter code: ");
   }
 }

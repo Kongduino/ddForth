@@ -340,3 +340,7 @@ Average is:
 ```sh
 for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;done > debug_log.txt 
 ```
+
+## IoT version
+
+![ArduinoIDE](assets/ArduinoIDE.png)
