@@ -8,6 +8,9 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+// #include "File.hpp"
+
+#define FORMAT_SPIFFS_IF_FAILED true
 
 using namespace std;
 
@@ -38,6 +41,8 @@ bool handleIprime();
 bool handleJ();
 bool handleKEY();
 bool handleLINE();
+bool handleLOAD();
+bool handleSAVE();
 bool handleLOOP();
 bool handleLower();
 bool handleLowerEqual();
@@ -82,6 +87,8 @@ void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
+void writeFile(const char *, const char *);
+string readFile(const char *);
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -204,6 +211,8 @@ nativeCommand nativeCommands[] = {
   { handleRput, ">R" },
   { handleRget, "R>" },
   { handleEXEC, "EXEC" },
+  { handleLOAD, "LOAD" },
+  { handleSAVE, "SAVE" },
 };
 
 int nativeCmdCount = 0;
@@ -225,6 +234,7 @@ vector<userCommand> userCommands{
   { "2-", "2 -" },
   { "2*", "2 *" },
   { "2/", "2 /" },
+  {"pi", "PI @"},
 };
 int userCmdCount = 0;
 

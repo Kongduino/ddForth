@@ -76,6 +76,26 @@ bool checkTypes(int levels, unsigned char n) {
   return true;
 }
 
+bool handleLOAD() {
+  // if (dataStack.size() == 0) {
+  //   return false;
+  // }
+  // int i0;
+  // if (popIntegerFromStack(&i0) == false) {
+  //   return false;
+  // }
+  // string code;
+  // char fi[128];
+  // sprintf(fi, "/BLOCK%d.fs", i0);
+  // code = readFile(fi);
+  // return handleEXEC();
+  return true;
+}
+
+bool handleSAVE() {
+  return true;
+}
+
 bool handleRput() {
   int i0;
   if (popIntegerFromStack(&i0) == false) {
@@ -1474,9 +1494,10 @@ vector<string> tokenize(char *code, vector<string> chunks) {
 
 char code[256] = { 0 };
 vector<string> chunks;
+
 void setup() {
   Serial.begin(115200);
-
+  delay(3000);
   initForth();
   strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   Serial.printf("• Running code:\n\t%s\n", code);

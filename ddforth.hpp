@@ -225,6 +225,7 @@ vector<userCommand> userCommands {
   {"2-", "2 -"},
   {"2*", "2 *"},
   {"2/", "2 /"},
+  {"pi", "PI @"},
 };
 int userCmdCount = 0;
 
