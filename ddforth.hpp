@@ -7,45 +7,51 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
-#include "Files.hpp"
 
 using namespace std;
 
-#define myVERSION 1088
+#define myVERSION 1089
 
 bool handle2Nums(unsigned char);
 bool handleABS();
+bool handleAND();
 bool handleBASE();
 bool handleBASE2();
 bool handleBASE10();
 bool handleBASE16();
+bool handleDifferent();
+bool handleDiv();
+bool handleEqual();
+bool handleFact();
+bool handleGreater();
+bool handleGreaterEqual();
+bool handleLower();
+bool handleLowerEqual();
+bool handleMAX();
+bool handleMIN();
+bool handleMinus();
+bool handleMOD();
+bool handleMult();
+bool handleNOT();
+bool handleOR();
+bool handleSQRT();
+bool handleXOR();
+bool handleNEGATE();
+
 bool handleBEGIN();
 bool handleCR();
 bool handleDEPTH();
-bool handleDifferent();
-bool handleDiv();
 bool handleDO();
 bool handleDROP();
 bool handleDUP();
 bool handleEMIT();
-bool handleEqual();
 bool handleEXEC();
-bool handleFact();
-bool handleGreater();
-bool handleGreaterEqual();
 bool handleI();
 bool handleIprime();
 bool handleJ();
 bool handleKEY();
 bool handleLINE();
 bool handleLOOP();
-bool handleLower();
-bool handleLowerEqual();
-bool handleMinus();
-bool handleMIN();
-bool handleMAX();
-bool handleMOD();
-bool handleMult();
 bool handleOVER();
 bool handlePlus();
 bool handlePRINT();
@@ -57,7 +63,6 @@ bool handleROT();
 bool handleROLL();
 bool handleRput();
 bool handleSQR();
-bool handleSQRT();
 bool handleStore();
 bool handleSWAP();
 bool handleUNTIL();
@@ -85,6 +90,7 @@ void logLoopStackOverflow(char *);
 void logUnknownBlock(char *);
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
+int GetINTaddress(string);
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -121,21 +127,6 @@ char code[256] = { 0 };
 int xxxxxx;
 char msg[256];
 
-enum mathTypes {
-  math_PLUS,
-  math_MINUS,
-  math_MULT,
-  math_DIV,
-  math_EQUAL,
-  math_GREATER,
-  math_GREATEREQUAL,
-  math_LOWER,
-  math_LOWEREQUAL,
-  math_DIFFERENT,
-  math_MOD,
-  math_MIN,
-  math_MAX,
-};
 enum dataType {
   xINVALID,
   xINTEGER,
@@ -169,6 +160,11 @@ nativeCommand nativeCommands[] = {
   { handleMAX, "MAX" },
   { handleFact, "FACT" },
   { handleMOD, "MOD" },
+  { handleAND, "AND" },
+  { handleOR, "OR" },
+  { handleXOR, "XOR" },
+  { handleNOT, "NOT" },  
+  { handleNEGATE, "NEGATE" },
   { handleSQR, "SQR" },
   { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
@@ -238,6 +234,9 @@ vector<userCommand> userCommands {
 int userCmdCount = 0;
 
 char numerics[] = "0123456789abcdef";
+
+#include "Files.hpp"
+#include "Numbers.hpp"
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");
