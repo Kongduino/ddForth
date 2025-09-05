@@ -127,7 +127,8 @@ bool handleWORDS() {
   Serial.println("Native Commands:\n----------------");
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     //printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
-    cout << nativeCommands[ix].name << " ";
+    sprintf(msg, "%s ", nativeCommands[ix].name.c_str());
+    Serial.print(msg);
   }
   Serial.println("User Commands:\n----------------");
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
@@ -296,9 +297,11 @@ bool showVars() {
     int ix = 0;
     while (it != varAddresses.end()) {
       string n = it->first;
-      printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myVARs.size(), n.c_str(), it->second, myVARs.at(it->second));
+      Serial.print(msg);
       it++;
     }
     Serial.println("+-----------------------------------------+");
@@ -311,9 +314,11 @@ bool showVars() {
     int ix = 0;
     while (it != fvarAddresses.end()) {
       string n = it->first;
-      printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128));
+      Serial.print(msg);
       it++;
     }
     Serial.println("+-----------------------------------------+");
@@ -326,9 +331,11 @@ bool showVars() {
     int ix = 0;
     while (it != constAddresses.end()) {
       string n = it->first;
-      printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myCONSTs.size(), n.c_str(), it->second, myCONSTs.at(it->second - 256));
+      Serial.print(msg);
       it++;
     }
     Serial.println("+-----------------------------------------+");
@@ -341,9 +348,11 @@ bool showVars() {
     int ix = 0;
     while (it != fconstAddresses.end()) {
       string n = it->first;
-      printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
+      Serial.print(msg);
       it++;
     }
     Serial.println("+-----------------------------------------+");
@@ -362,25 +371,30 @@ bool showStack() {
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
   int myStrings = userStrings.size() - 1;
-  cout << "\tdataStack.size()\t" << (dataStack.size());
-  cout << "\tmyInts\t" << (myInts + 1);
-  cout << "\tmyFloats\t" << (myFloats + 1);
-  cout << "\tmyStrings\t" << (myStrings + 1) << endl;
+  sprintf(msg, "\tdataStack.size()\t%d", dataStack.size());
+  sprintf(msg, "\n\tmyInts\t%d", (myInts + 1));
+  Serial.print(msg);
+  sprintf(msg, "\tmyFloats\t%d", (myFloats + 1));
+  Serial.print(msg);
+  sprintf(msg, "\tmyStrings\t%d\n", (myStrings + 1));
+  Serial.print(msg);
   Serial.println("+-----------------------+");
   while (x > -1) {
     int type0 = dataStack.at(x);
-    cout << "| " << (count++) << "\t| ";
+    sprintf(msg, "| %d\t| ", (count++));
+    Serial.print(msg);
     switch (type0) {
       case xINTEGER:
-        cout << "INT.\t| " << userIntegers.at(myInts--) << "\t|" << endl;
+        sprintf(msg, "INT.\t|%d\t|\n", userIntegers.at(myInts--));
+        Serial.print(msg);
         break;
       case xFLOAT:
-        cout << "FLOAT\t| ";
-        sprintf(msg, "%.3f\t|\n", userFloats.at(myFloats--));
+        sprintf(msg, "FLOAT\t| %.3f\t|\n", userFloats.at(myFloats--));
         Serial.print(msg);
         break;
       case xSTRING:
-        cout << "STR.\t| " << userStrings.at(myStrings--) << "\t|" << endl;
+        sprintf(msg, "STR.\t| %d\t|\n", userStrings.at(myStrings--));
+        Serial.print(msg);
         break;
     }
     x -= 1;
@@ -1079,7 +1093,7 @@ bool handleROLL() {
     return false;
   }
   unsigned char type0;
-  for(ix = 0; ix < levels; ix++) {
+  for (ix = 0; ix < levels; ix++) {
     type0 = dataStack.at(dataStack.size() - ix - 1);
     if (type0 != xINTEGER && type0 != xFLOAT) {
       return false;
