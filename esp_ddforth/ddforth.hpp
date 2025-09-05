@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define myVERSION 1084
+#define myVERSION 1088
 
 bool handle2Nums(unsigned char);
 bool handleABS();
