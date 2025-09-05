@@ -1,6 +1,5 @@
 #include <cmath> // For std::sqrt
 #include <fcntl.h>
-#include <fstream> // For ifstream
 #include <iostream>
 #include <map>
 #include <cstdio>
@@ -8,6 +7,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+#include "Files.hpp"
 
 using namespace std;
 
@@ -54,6 +54,7 @@ bool handlePRINTSTRING();
 bool handleRetrieve();
 bool handleRget();
 bool handleROT();
+bool handleROLL();
 bool handleRput();
 bool handleSQR();
 bool handleSQRT();
@@ -94,6 +95,7 @@ bool checkTypes(int, unsigned char);
 void logStack(char *);
 void logInconsistent(char *who);
 void logStackOverflow(char *who);
+void logThis();
 
 vector<int> dataStack;
 int executionPointer = -1;
@@ -115,8 +117,9 @@ vector<float> myFVARs;
 vector<int> myCONSTs;
 vector<float> myFCONSTs;
 vector<string> computedWords;
-int xxxxxx;
 char code[256] = { 0 };
+int xxxxxx;
+char msg[256];
 
 enum mathTypes {
   math_PLUS,
@@ -149,7 +152,6 @@ struct nativeCommand {
   string name;
 };
 
-char msg[256];
 void logThis() {
 #if defined(DEBUG)
   cout << msg;
@@ -181,6 +183,7 @@ nativeCommand nativeCommands[] = {
   { handleSWAP, "SWAP" },
   { handleDEPTH, "DEPTH" },
   { handleROT, "ROT" },
+  { handleROLL, "ROLL" },
   { handleOVER, "OVER" },
   { handleBASE, "BASE" },
   { handleBASE2, "BIN" },

@@ -1209,66 +1209,35 @@ bool handleDEPTH() {
   return true;
 }
 
-bool handleROT() {
-  logStack((char *)"handleROT");
-  if (dataStack.size() < 3) {
-    logStackOverflow((char *)"handleROT");
+bool handleROLL() {
+  int ix, levels;
+  if (popIntegerFromStack(&levels) == false) {
+    logStackOverflow((char *)"handleROLL");
     return false;
   }
-  unsigned char type0 = dataStack.at(dataStack.size() - 1);
-  unsigned char type1 = dataStack.at(dataStack.size() - 2);
-  unsigned char type2 = dataStack.at(dataStack.size() - 3);
-  if (
-    type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID || type2 == xSTRING || type2 == xINVALID) {
-    logInconsistent((char *)"handleROT");
-    return false;
-  }
-  if (type0 == type1 && type0 == type2) {
-    if (type0 == xINTEGER) {
-      if (userIntegers.size() < 3) {
-        logStackOverflow((char *)"handleROT1");
-        return false;
-      }
-      int i0, i1, i2;
-      if (popIntegerFromStack(&i0) == false) {
-        logStackOverflow((char *)"handleROT2");
-        return false;
-      }
-      if (popIntegerFromStack(&i1) == false) {
-        logStackOverflow((char *)"handleROT3");
-        return false;
-      }
-      if (popIntegerFromStack(&i2) == false) {
-        logStackOverflow((char *)"handleROT4");
-        return false;
-      }
-      putIntegerOnStack(i0);
-      putIntegerOnStack(i2);
-      putIntegerOnStack(i1);
-      return true;
-    } else {
-      float f0, f1, f2;
-      if (popFloatFromStack(&f0) == false) {
-        logStackOverflow((char *)"handleROT6");
-        return false;
-      }
-      if (popFloatFromStack(&f1) == false) {
-        logStackOverflow((char *)"handleROT7");
-        return false;
-      }
-      if (popFloatFromStack(&f2) == false) {
-        logStackOverflow((char *)"handleROT8");
-        return false;
-      }
-      putFloatOnStack(f0);
-      putFloatOnStack(f2);
-      putFloatOnStack(f1);
-      return true;
+  unsigned char type0;
+  for(ix = 0; ix < levels; ix++) {
+    type0 = dataStack.at(dataStack.size() - ix - 1);
+    if (type0 != xINTEGER && type0 != xFLOAT) {
+      logInconsistent((char *)"handleROLL");
+      return false;
     }
-  } else {
-    return false;
   }
-  return false;
+  if (type0 == xINTEGER) {
+    ix = userIntegers.at(userIntegers.size() - 1);
+    userIntegers.insert(userIntegers.end() - levels, ix);
+    userIntegers.pop_back();
+  } else if (type0 == xFLOAT) {
+    ix = userFloats.at(userFloats.size() - 1);
+    userFloats.insert(userFloats.end() - levels, ix);
+    userFloats.pop_back();
+  }
+  return true;
+}
+
+bool handleROT() {
+  putIntegerOnStack(3);
+  return handleROLL();
 }
 
 bool handleSWAP() {
@@ -1764,40 +1733,37 @@ bool handleLOAD() {
 
 int main(int argc, char **argv) {
   vector<string> chunks;
-  string thisBlock;
   initForth();
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
-      ifstream inputFile(argv[2]);
-      if (!inputFile.is_open()) {
+      vector<string> thisBlock = loadFile(argv[2]);
+      if (thisBlock.size() == 0) {
         cerr << "Unable to open file!" << endl;
-        return 0;
+        return -1;
       }
-      string line;
-      while (std::getline(inputFile, line)) {
-        // getline(inputFile, line);
-        thisBlock = line;
+      string line, fullBlock;
+      for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+        line = *it;
+        fullBlock.append(line);
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
         cout << "Read: " << line << " chunks: " << chunks.size() << endl;
       }
-      blocks.push_back(thisBlock);
+      blocks.push_back(fullBlock);
       evaluate(chunks);
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
     }
+  } else if (argc == 2) {
+    strcpy(code, argv[1]);
   } else {
-    if (argc == 2) {
-      strcpy(code, argv[1]);
-    } else {
-      strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-    }
-    cout << "Running code:" << endl << "\t" << code << endl;
-    chunks = tokenize(code, chunks);
-    evaluate(chunks);
-    memset(code, 0, 256);
+    strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   }
+  cout << "Running code:" << endl << "\t" << code << endl;
+  chunks = tokenize(code, chunks);
+  evaluate(chunks);
+  memset(code, 0, 256);
   cout << endl << endl;
   return 0;
 }
