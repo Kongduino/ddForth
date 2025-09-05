@@ -6,6 +6,11 @@ Surprisingly, it went well, beyond expectations, and I can run quite a few of th
 
 Run `./ddforth "WORDS"` to get the list of words that have been implemented.
 
+### NOTE
+
+For IoT versions, you might need to edit the `platform.txt` file to remove `-fno-exceptions` and/or set `-fexceptions` in the `compiler.cpp.flags` section.
+
+
 ```
 Handled in Code:
 ----------------
