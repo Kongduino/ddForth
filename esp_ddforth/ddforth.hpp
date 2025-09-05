@@ -60,6 +60,7 @@ bool handlePRINTSTRING();
 bool handleRetrieve();
 bool handleRget();
 bool handleROT();
+bool handleROLL();
 bool handleRput();
 bool handleSQR();
 bool handleSQRT();
@@ -185,6 +186,7 @@ nativeCommand nativeCommands[] = {
   { handleSWAP, "SWAP" },
   { handleDEPTH, "DEPTH" },
   { handleROT, "ROT" },
+  { handleROLL, "ROLL" },
   { handleOVER, "OVER" },
   { handleBASE, "BASE" },
   { handleBASE2, "BIN" },

@@ -121,16 +121,18 @@ bool handleWORDS() {
   Serial.println("Handled in Code:\n----------------\n");
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
-    Serial.printf(" • %-11s (Handled in code)\n", s.c_str());
+    sprintf(msg, " • %-11s (Handled in code)\n", s.c_str());
+    Serial.print(msg);
   }
   Serial.println("Native Commands:\n----------------");
   for (int ix = 0; ix < nativeCmdCount; ix++) {
-    //Serial.printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    //sprintf(msg, " • %-11s (Native command)\n", nativeCommands[ix].name.c_str()); Serial.print(msg);
     cout << nativeCommands[ix].name << " ";
   }
   Serial.println("User Commands:\n----------------");
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
-    Serial.printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
+    sprintf(msg, " • %-11s %s\n", it->name.c_str(), it->command.c_str());
+    Serial.print(msg);
   }
   return true;
 }
@@ -294,11 +296,13 @@ bool showVars() {
     int ix = 0;
     while (it != varAddresses.end()) {
       string n = it->first;
-      Serial.printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myVARs.size(), n.c_str(), it->second, myVARs.at(it->second));
       it++;
     }
+    Serial.print(msg);
     Serial.println("+-----------------------------------------+");
   }
   if (myFVARs.size() > 0) {
@@ -309,11 +313,13 @@ bool showVars() {
     int ix = 0;
     while (it != fvarAddresses.end()) {
       string n = it->first;
-      Serial.printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128));
       it++;
     }
+    Serial.print(msg);
     Serial.println("+-----------------------------------------+");
   }
   if (myCONSTs.size() > 0) {
@@ -324,11 +330,13 @@ bool showVars() {
     int ix = 0;
     while (it != constAddresses.end()) {
       string n = it->first;
-      Serial.printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9d |\n",
         (ix++), myCONSTs.size(), n.c_str(), it->second, myCONSTs.at(it->second - 256));
       it++;
     }
+    Serial.print(msg);
     Serial.println("+-----------------------------------------+");
   }
   if (myFCONSTs.size() > 0) {
@@ -339,11 +347,13 @@ bool showVars() {
     int ix = 0;
     while (it != fconstAddresses.end()) {
       string n = it->first;
-      Serial.printf(
+      sprintf(
+        msg,
         "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
       it++;
     }
+    Serial.print(msg);
     Serial.println("+-----------------------------------------+");
   }
   return true;
@@ -374,7 +384,8 @@ bool showStack() {
         break;
       case xFLOAT:
         cout << "FLOAT\t| ";
-        Serial.printf("%.3f\t|\n", userFloats.at(myFloats--));
+        sprintf(msg, "%.3f\t|\n", userFloats.at(myFloats--));
+        Serial.print(msg);
         break;
       case xSTRING:
         cout << "STR.\t| " << userStrings.at(myStrings--) << "\t|" << endl;
@@ -484,7 +495,8 @@ bool printOtherBases(int number, unsigned int base) {
     buffer[ix - n] = b;
     n += 1;
   }
-  Serial.printf("%s ", buffer);
+  sprintf(msg, "%s ", buffer);
+  Serial.print(msg);
   return true;
 }
 
@@ -495,7 +507,8 @@ bool handleEMIT() {
     return false;
   }
   c = i0;
-  Serial.printf("%c", c);
+  sprintf(msg, "%c", c);
+  Serial.print(msg);
   return true;
 }
 
@@ -527,7 +540,8 @@ bool handlePRINTSTACKSTRING() {
   if (popStringFromStack(&s) == false) {
     return false;
   }
-  Serial.printf("%s ", s.c_str());
+  sprintf(msg, "%s ", s.c_str());
+  Serial.print(msg);
   return true;
 }
 
@@ -544,8 +558,10 @@ bool handlePRINT() {
           return false;
         }
         int base = GetINT("BASE");
-        if (base == 10) Serial.printf("%d ", i0);
-        else printOtherBases(i0, base);
+        if (base == 10) {
+          sprintf(msg, "%d ", i0);
+          Serial.print(msg);
+        } else printOtherBases(i0, base);
         break;
       }
     case xFLOAT:
@@ -554,7 +570,8 @@ bool handlePRINT() {
         if (popFloatFromStack(&f0) == false) {
           return false;
         }
-        Serial.printf("%f ", f0);
+        sprintf(msg, "%f ", f0);
+        Serial.print(msg);
         break;
       }
   }
@@ -576,7 +593,8 @@ bool handleUPRINT() {
         if (popIntegerFromStack((int *)&i0) == false) {
           return false;
         }
-        Serial.printf("%d ", i0);
+        sprintf(msg, "%d ", i0);
+        Serial.print(msg);
         break;
       }
     case xFLOAT:
@@ -1063,56 +1081,33 @@ bool handleDEPTH() {
   return true;
 }
 
-bool handleROT() {
-  if (dataStack.size() < 3) {
+bool handleROLL() {
+  int ix, levels;
+  if (popIntegerFromStack(&levels) == false) {
     return false;
   }
-  unsigned char type0 = dataStack.at(dataStack.size() - 1);
-  unsigned char type1 = dataStack.at(dataStack.size() - 2);
-  unsigned char type2 = dataStack.at(dataStack.size() - 3);
-  if (
-    type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID || type2 == xSTRING || type2 == xINVALID) {
-    return false;
-  }
-  if (type0 == type1 && type0 == type2) {
-    if (type0 == xINTEGER) {
-      if (userIntegers.size() < 3) {
-        return false;
-      }
-      int i0, i1, i2;
-      if (popIntegerFromStack(&i0) == false) {
-        return false;
-      }
-      if (popIntegerFromStack(&i1) == false) {
-        return false;
-      }
-      if (popIntegerFromStack(&i2) == false) {
-        return false;
-      }
-      putIntegerOnStack(i0);
-      putIntegerOnStack(i2);
-      putIntegerOnStack(i1);
-      return true;
-    } else {
-      float f0, f1, f2;
-      if (popFloatFromStack(&f0) == false) {
-        return false;
-      }
-      if (popFloatFromStack(&f1) == false) {
-        return false;
-      }
-      if (popFloatFromStack(&f2) == false) {
-        return false;
-      }
-      putFloatOnStack(f0);
-      putFloatOnStack(f2);
-      putFloatOnStack(f1);
-      return true;
+  unsigned char type0;
+  for (ix = 0; ix < levels; ix++) {
+    type0 = dataStack.at(dataStack.size() - ix - 1);
+    if (type0 != xINTEGER && type0 != xFLOAT) {
+      return false;
     }
-  } else {
-    return false;
   }
-  return false;
+  if (type0 == xINTEGER) {
+    ix = userIntegers.at(userIntegers.size() - 1);
+    userIntegers.insert(userIntegers.end() - levels, ix);
+    userIntegers.pop_back();
+  } else if (type0 == xFLOAT) {
+    ix = userFloats.at(userFloats.size() - 1);
+    userFloats.insert(userFloats.end() - levels, ix);
+    userFloats.pop_back();
+  }
+  return true;
+}
+
+bool handleROT() {
+  putIntegerOnStack(3);
+  return handleROLL();
 }
 
 bool handleSWAP() {
@@ -1333,7 +1328,8 @@ bool handleEXEC() {
   if (popStringFromStack(&s) == false) {
     return false;
   }
-  Serial.printf("%s\n", s.c_str());
+  sprintf(msg, "%s\n", s.c_str());
+  Serial.print(msg);
   int savedExecutionPointer = executionPointer;
   vector<string> myChunks;
   myChunks = tokenize((char *)s.c_str(), myChunks);
@@ -1362,7 +1358,8 @@ void evaluate(vector<string> chunks) {
       if (isInteger(d, &i0)) valid = false;
       else if (isFloat(d, &f0)) valid = false;
       if (!valid) {
-        Serial.printf("%s name: `%s` is not valid!\n", ((c == "VARINT") ? "VAR" : "CONST"), c.c_str());
+        sprintf(msg, "%s name: `%s` is not valid!\n", ((c == "VARINT") ? "VAR" : "CONST"), c.c_str());
+        Serial.print(msg);
         return;
       }
       bool thisIsInt = false;
@@ -1387,7 +1384,8 @@ void evaluate(vector<string> chunks) {
     } else if (isPrinting && c.back() == '"') {
       // print that
       c.pop_back();
-      Serial.printf("%s ", c.c_str());
+      sprintf(msg, "%s ", c.c_str());
+      Serial.print(msg);
       isPrinting = false;
       executionPointer += 1;
     } else if (c == ":") {
@@ -1416,7 +1414,8 @@ void evaluate(vector<string> chunks) {
     } else {
       if (lookup(c, &r)) {
         if (r == false) {
-          Serial.printf("%s returned false. Aborting!\n", c.c_str());
+          sprintf(msg, "%s returned false. Aborting!\n", c.c_str());
+          Serial.print(msg);
           return;
         }
         executionPointer += 1;
@@ -1500,7 +1499,8 @@ void setup() {
   delay(3000);
   initForth();
   strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-  Serial.printf("• Running code:\n\t%s\n", code);
+  sprintf(msg, "• Running code:\n\t%s\n", code);
+  Serial.print(msg);
   Serial.println("\ttokenize.");
   chunks = tokenize(code, chunks);
   Serial.println("\tevaluate.");
@@ -1538,7 +1538,8 @@ void loop() {
     vector<string> chunks;
     uint8_t ix, iy = userStrings.size();
     for (ix = 0; ix < iy; ix++) {
-      Serial.printf("\t%s\n", userStrings[ix].c_str());
+      sprintf(msg, "\t%s\n", userStrings[ix].c_str());
+      Serial.print(msg);
       chunks = tokenize((char *)userStrings[ix].c_str(), chunks);
     }
     evaluate(chunks);
