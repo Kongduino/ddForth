@@ -85,6 +85,7 @@ bool handleROLL();
 bool handleRput();
 bool handleSQR();
 bool handleStore();
+bool handleStorePlus();
 bool handleSWAP();
 bool handleUNTIL();
 bool handleUPRINT();
@@ -209,6 +210,7 @@ nativeCommand nativeCommands[] = {
   { handleBASE10, "DEC" },
   { handleBASE16, "HEX" },
   { handleStore, "!" },
+  { handleStorePlus, "!+" },
   { handleRetrieve, "@" },
   { handleCR, "CR" },
   { showStack, ".S" },

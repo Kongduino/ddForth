@@ -676,6 +676,43 @@ bool handleStore() {
   return true;
 }
 
+bool handleStorePlus() {
+  xxxxxx = snprintf((char *)msg, 255, "handleStorePlus: userIntegers.size %zu dataStack.size() %zu ", userIntegers.size(), dataStack.size());
+  logThis();
+  if (dataStack.size() < 1) {
+    logStackOverflow((char *)"handleStorePlus");
+    return false;
+  }
+  // We are not necessarily storing an int
+  // check the type of the address vs type in the stack
+  // ie 0-127, 256-383 = int, else float
+  int ad, x;
+  float fx;
+  if (dataStack.at(dataStack.size() - 1) != xINTEGER) {
+    xxxxxx = snprintf((char *)msg, 255, "handleStorePlus No Int Address!\n");
+    logThis();
+    return false;
+  }
+  if (popIntegerFromStack(&ad) == false) {
+    logStackOverflow((char *)"handleStorePlus2");
+    return false;
+  }
+  xxxxxx = snprintf((char *)msg, 255, "handleStorePlus Int Address : %d.\n", ad);
+  logThis();
+  if (ad < 128) {
+    xxxxxx = snprintf((char *)msg, 255, "storing %d into myVARs[%d].\n", x, ad);
+    logThis();
+    myVARs.at(ad) += 1;
+    return true;
+  } else if (ad < 256) {
+    xxxxxx = snprintf((char *)msg, 255, "storing %f into myFVARs[%d].\n", fx, ad);
+    logThis();
+    myFVARs.at(ad - 128) += 1.0;
+    return true;
+  }
+  return false;
+}
+
 bool handleRetrieve() {
   logStack((char *)"handleRetrieve");
   if (!checkTypes(1, xINTEGER)) {
@@ -1527,11 +1564,14 @@ int main(int argc, char** argv) {
   chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);
+  chunks.clear();
 
   strcpy(code, ": RNDCOL RANDOM RANDOM RANDOM DRAWCOLOR ; 0 BEGIN RNDCOL RANDOM 500 + RANDOM DRAWPIXEL 1 + DUP 800 > UNTIL");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
 
 //   strcpy(code, "0 BEGIN RNDCOL RANDOMI 400 MOD 368 + RANDOM 300 +  32 32 FILLRECT 1 + DUP 50 > UNTIL");
 //   cout << "Running code:" << endl << "\t" << code << endl;
@@ -1543,11 +1583,12 @@ int main(int argc, char** argv) {
 //   chunks = tokenize(code, chunks);
 //   evaluate(chunks);
 
-  memset(code, 0, 256);
-  strcpy(code, "255 0 0 DRAWCOLOR 1799 0 DO I 10.0 / 180 + SIN 50.0 * 500.0 + I 10.0 / 180 + COS 50.0 * 350.0 + I 10.0 / SIN 50.0 * 500.0 + I 10.0 / COS 50.0 * 350.0 + I 0 0 DRAWCOLOR DRAWLINE LOOP");
+  strcpy(code, "255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 500.0 + I 10.0 / 180 + COS 50.0 * 350.0 + I 10.0 / SIN 50.0 * 500.0 + I 10.0 / COS 50.0 * 350.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
 
   cout << endl << endl;
   SDL_Color color = { 128, 255, 0, SDL_ALPHA_OPAQUE };
