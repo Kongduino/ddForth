@@ -1,3 +1,4 @@
+#include <cmath> // For sin, cos, tan
 extern vector<int> dataStack;
 extern int executionPointer;
 extern vector<int> jumpStack;
@@ -460,6 +461,56 @@ bool handleSQRT() {
   return false;
 }
 
+bool handleSIN() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleSIN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::sin(f0));
+  return true;
+}
+
+bool handleCOS() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleCOS");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::cos(f0));
+  return true;
+}
+
 bool handleMOD() {
   return handle2Nums(math_MOD);
 }
@@ -542,4 +593,3 @@ bool handleBASE16() {
   StoreINT("BASE", 16);
   return true;
 }
-

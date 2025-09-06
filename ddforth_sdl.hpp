@@ -7,11 +7,24 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+#include "sdl_helper.hpp"
 #include "random.hpp"
 
 using namespace std;
 
-#define myVERSION 1089
+#define myVERSION 1090
+
+void drawText(char*, float, float);
+bool handleDrawPixel();
+bool handleDrawLine();
+bool handleDrawColor();
+void foreColor(unsigned char, unsigned char, unsigned char);
+void drawLine(int, int, int, int);
+void drawPixel(int, int);
+void fillRect(int, int, int, int);
+bool handleFillRect();
+void drawRect(int, int, int, int);
+bool handleDrawRect();
 
 bool getRandom(unsigned char *, int);
 void hexDump(unsigned char *, int);
@@ -174,9 +187,9 @@ nativeCommand nativeCommands[] = {
   { handleNOT, "NOT" },  
   { handleNEGATE, "NEGATE" },
   { handleSQR, "SQR" },
-  { handleSQRT, "SQRT" },
-  { handleSIN, "SIN" },
   { handleCOS, "COS" },
+  { handleSIN, "SIN" },
+  { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
   { handleLINE, "LINE" },
@@ -220,6 +233,11 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { getRandomByte, "RANDOM" },
   { getRandomUInt, "RANDOMI" },
+  { handleDrawColor, "DRAWCOLOR" },
+  { handleDrawPixel, "DRAWPIXEL" },
+  { handleDrawLine, "DRAWLINE" },
+  { handleFillRect, "FILLRECT" },
+  { handleDrawRect, "DRAWRECT" },
 };
 
 int nativeCmdCount = 0;
@@ -262,6 +280,8 @@ void initForth() {
   computedWords.push_back("CONST");
   computedWords.push_back(": ... ;");
   userCmdCount = userCommands.size();
+  xxxxxx = snprintf((char *)msg, 255, "random ");
+  logThis();
   getRandom();
 }
 
