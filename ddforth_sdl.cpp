@@ -3,6 +3,7 @@
 using namespace std;
 
 bool handleCLS() {
+  if (!handleDrawColor()) return false;
   SDL_RenderClear(renderer);
   return true;
 }
@@ -1245,13 +1246,13 @@ int main(int argc, char** argv) {
   //   memset(code, 0, 256);
   //  cout << endl << endl;
   // Clear screen
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // Black background
-  SDL_RenderClear(renderer);
+  // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // Black background
+  // SDL_RenderClear(renderer);
   // Set drawing color to red
   // Draw a line from (100, 100) to (400, 300)
   SDL_RenderDebugTextFormat(renderer, 555.0, 100.0, "Hello...");
   SDL_Surface* text;
-  strcpy(code, "400 100 DO 127 I I 3 + 2 / DRAWCOLOR I 100 400 I - 100 + 400 DRAWLINE 100 I 400 400 I - 100 + DRAWLINE LOOP");
+  strcpy(code, "99 99 99 CLS 400 100 DO 127 I I 3 + 2 / DRAWCOLOR I 100 400 I - 100 + 400 DRAWLINE 100 I 400 400 I - 100 + DRAWLINE LOOP");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
@@ -1286,6 +1287,7 @@ int main(int argc, char** argv) {
   SDL_Color color = { 128, 255, 0, SDL_ALPHA_OPAQUE };
   drawText(font, color, (char*)"ddForth Ready!", 10, 12, 120, 32);
   SDL_RenderPresent(renderer);
+
   while (!quit) {
     // Handle events on queue
     while (SDL_PollEvent(&e) != 0) {
