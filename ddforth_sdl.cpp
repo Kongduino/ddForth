@@ -1280,7 +1280,7 @@ int main(int argc, char** argv) {
   chunks = tokenize(code, chunks);
   evaluate(chunks);
 
-  strcpy(code, "CLEAR 10 BEGIN DUP 60 + DUP 300 + SWAP DUP 18 RANDOM RANDOM RANDOM .DT\" Hello_World!\" .S 24 + DUP 180 < WHILE DROP");
+  strcpy(code, "CLEAR 10 BEGIN DUP 60 + DUP 300 + SWAP DUP DUP 3 / RANDOM RANDOM RANDOM .DT\" Hello_World!\" .S 24 + DUP 180 < WHILE DROP");
   cout << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
