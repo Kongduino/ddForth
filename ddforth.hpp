@@ -255,6 +255,7 @@ char numerics[] = "0123456789abcdef";
 
 #include "Files.hpp"
 #include "Numbers.hpp"
+#include "Stack.hpp"
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");
