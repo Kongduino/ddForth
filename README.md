@@ -10,8 +10,25 @@ Run `./ddforth "WORDS"` to get the list of words that have been implemented.
 
 For IoT versions, you might need to edit the `platform.txt` file to remove `-fno-exceptions` and/or set `-fexceptions` in the `compiler.cpp.flags` section.
 
+### Fonts
+
+* [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
+* [Roboto](https://fonts.google.com/specimen/Roboto)
+
 
 ```
+	.V WORDS
++-----------------------------------------+
+| Num     |  VAR Name   | Addr | Value    |
++-----------------------------------------+
+|   0/2   | BASE        |    0 |       10 |
+|   1/2   | VER.        |    1 |     1098 |
++-----------------------------------------+
++-----------------------------------------+
+| Num     | FCONST Name | Addr | Value    |
++-----------------------------------------+
+|   0/1   | PI          |  384 |3.141593 |
++-----------------------------------------+
 Handled in Code:
 ----------------
  • VAR         (Handled in code)
@@ -20,7 +37,7 @@ Handled in Code:
 
 Native Commands:
 ----------------
-WORDS + - * / FACT MOD SQR SQRT EMIT KEY . ." U. DUP DROP SWAP DEPTH ROT OVER BASE BIN DEC HEX ! @ CR .S .V = < <= > >= <> BEGIN UNTIL WHILE DO LOOP I I' J 
+WORDS + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE SQR SQRT SIN COS TAN EMIT KEY LINE . ." .s U. DUP DROP SWAP DEPTH CLEAR ROT ROLL OVER BASE BIN DEC HEX ! !+ @ CR .S .V = < <= > >= <> BEGIN UNTIL WHILE DO LOOP I I' J >R R> EXEC LOAD RANDOM RANDOMI 
 
 User Commands:
 --------------
@@ -36,6 +53,11 @@ User Commands:
  • 2-          2 -
  • 2*          2 *
  • 2/          2 /
+ • pi          PI @
+ • ++          + +
+ • NIP         SWAP DROP
+ • TUCK        SWAP OVER
+ • -ROT        ROT ROT
 ```
 
 ## REGULAR VERSION

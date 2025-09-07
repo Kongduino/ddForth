@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define myVERSION 1089
+#define myVERSION 1098
 
 bool getRandom(unsigned char *, int);
 void hexDump(unsigned char *, int);

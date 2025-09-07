@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define myVERSION 1090
+#define myVERSION 1098
 
 void drawText(char*, float, float);
 bool handleDrawPixel();
@@ -316,5 +316,3 @@ void logUnknownBlock(char *who) {
   cout << msg;
 #endif
 }
-
-
