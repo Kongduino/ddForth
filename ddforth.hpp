@@ -43,6 +43,7 @@ bool handleOR();
 bool handleSQRT();
 bool handleSIN();
 bool handleCOS();
+bool handleTAN();
 bool handleXOR();
 bool handleNEGATE();
 
@@ -72,6 +73,7 @@ bool handleROLL();
 bool handleRput();
 bool handleSQR();
 bool handleStore();
+bool handleStorePlus();
 bool handleSWAP();
 bool handleUNTIL();
 bool handleUPRINT();
@@ -177,6 +179,7 @@ nativeCommand nativeCommands[] = {
   { handleSQRT, "SQRT" },
   { handleSIN, "SIN" },
   { handleCOS, "COS" },
+  { handleTAN, "TAN" },
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
   { handleLINE, "LINE" },
@@ -196,6 +199,7 @@ nativeCommand nativeCommands[] = {
   { handleBASE10, "DEC" },
   { handleBASE16, "HEX" },
   { handleStore, "!" },
+  { handleStorePlus, "!+" },
   { handleRetrieve, "@" },
   { handleCR, "CR" },
   { showStack, ".S" },

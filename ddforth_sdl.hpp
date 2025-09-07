@@ -56,6 +56,7 @@ bool handleOR();
 bool handleSQRT();
 bool handleSIN();
 bool handleCOS();
+bool handleTAN();
 bool handleXOR();
 bool handleNEGATE();
 
@@ -190,6 +191,7 @@ nativeCommand nativeCommands[] = {
   { handleSQR, "SQR" },
   { handleCOS, "COS" },
   { handleSIN, "SIN" },
+  { handleTAN, "TAN" },
   { handleSQRT, "SQRT" },
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },

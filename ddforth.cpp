@@ -483,6 +483,43 @@ bool handleStore() {
   return true;
 }
 
+bool handleStorePlus() {
+  xxxxxx = snprintf((char *)msg, 255, "handleStorePlus: userIntegers.size %zu dataStack.size() %zu ", userIntegers.size(), dataStack.size());
+  logThis();
+  if (dataStack.size() < 1) {
+    logStackOverflow((char *)"handleStorePlus");
+    return false;
+  }
+  // We are not necessarily storing an int
+  // check the type of the address vs type in the stack
+  // ie 0-127, 256-383 = int, else float
+  int ad, x;
+  float fx;
+  if (dataStack.at(dataStack.size() - 1) != xINTEGER) {
+    xxxxxx = snprintf((char *)msg, 255, "handleStorePlus No Int Address!\n");
+    logThis();
+    return false;
+  }
+  if (popIntegerFromStack(&ad) == false) {
+    logStackOverflow((char *)"handleStorePlus2");
+    return false;
+  }
+  xxxxxx = snprintf((char *)msg, 255, "handleStorePlus Int Address : %d.\n", ad);
+  logThis();
+  if (ad < 128) {
+    xxxxxx = snprintf((char *)msg, 255, "storing %d into myVARs[%d].\n", x, ad);
+    logThis();
+    myVARs.at(ad) += 1;
+    return true;
+  } else if (ad < 256) {
+    xxxxxx = snprintf((char *)msg, 255, "storing %f into myFVARs[%d].\n", fx, ad);
+    logThis();
+    myFVARs.at(ad - 128) += 1.0;
+    return true;
+  }
+  return false;
+}
+
 bool handleRetrieve() {
   logStack((char *)"handleRetrieve");
   if (!checkTypes(1, xINTEGER)) {

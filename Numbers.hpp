@@ -511,6 +511,31 @@ bool handleCOS() {
   return true;
 }
 
+bool handleTAN() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleTAN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleTAN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleTAN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::tan(f0));
+  return true;
+}
+
 bool handleMOD() {
   return handle2Nums(math_MOD);
 }
