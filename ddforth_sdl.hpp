@@ -248,32 +248,12 @@ nativeCommand nativeCommands[] = {
 
 int nativeCmdCount = 0;
 
-struct userCommand {
-  string name;
-  string command;
-};
-vector<userCommand> userCommands {
-  {"0=", "0 ="},
-  {"0>", "0 >"},
-  {"0<", "0 <"},
-  {"TRUE", "1 ="},
-  {"FALSE", "0 ="},
-  {"?", "@ ."},
-  {"1+", "1 +"},
-  {"1-", "1 -"},
-  {"2+", "2 +"},
-  {"2-", "2 -"},
-  {"2*", "2 *"},
-  {"2/", "2 /"},
-  {"pi", "PI @"},
-};
-int userCmdCount = 0;
-
 char numerics[] = "0123456789abcdef";
 
 #include "Files.hpp"
 #include "Numbers.hpp"
 #include "Stack.hpp"
+#include "ExtraCommands.hpp"
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");
