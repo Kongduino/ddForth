@@ -1252,7 +1252,7 @@ int main(int argc, char** argv) {
   // Draw a line from (100, 100) to (400, 300)
   SDL_RenderDebugTextFormat(renderer, 555.0, 100.0, "Hello...");
   SDL_Surface* text;
-  strcpy(code, "99 99 99 CLS 400 100 DO 127 I I 3 + 2 / DRAWCOLOR I 100 400 I - 100 + 400 DRAWLINE 100 I 400 400 I - 100 + DRAWLINE LOOP");
+  strcpy(code, "127 127 127 CLS 300 0 DO 127 I I 3 + 2 / DRAWCOLOR I 100 300 I - 400 DRAWLINE 0 I 100 + 300 400 I - DRAWLINE LOOP");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
@@ -1266,17 +1266,21 @@ int main(int argc, char** argv) {
   memset(code, 0, 256);
   chunks.clear();
 
-//   strcpy(code, "0 BEGIN RNDCOL RANDOMI 400 MOD 368 + RANDOM 300 +  32 32 FILLRECT 1 + DUP 50 > UNTIL");
-//   cout << "Running code:" << endl << "\t" << code << endl;
-//   chunks = tokenize(code, chunks);
-//   evaluate(chunks);
-// 
-//   strcpy(code, "0 BEGIN RNDCOL RANDOMI 768 MOD RANDOMI 568 MOD  32 32 DRAWRECT 1 + DUP 100 > UNTIL");
-//   cout << "Running code:" << endl << "\t" << code << endl;
-//   chunks = tokenize(code, chunks);
-//   evaluate(chunks);
+  strcpy(code, "0 BEGIN RNDCOL RANDOMI 400 MOD 368 + RANDOM 300 +  32 32 FILLRECT 1 + DUP 50 > UNTIL");
+  cout << "Running code:" << endl << "\t" << code << endl;
+  chunks = tokenize(code, chunks);
+  evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
 
-  strcpy(code, "WORDS CR 255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 500.0 + I 10.0 / 180 + COS 50.0 * 350.0 + I 10.0 / SIN 50.0 * 500.0 + I 10.0 / COS 50.0 * 350.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
+  strcpy(code, "0 BEGIN RNDCOL RANDOMI 768 MOD RANDOMI 568 MOD  32 32 DRAWRECT 1 + DUP 100 > UNTIL");
+  cout << "Running code:" << endl << "\t" << code << endl;
+  chunks = tokenize(code, chunks);
+  evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
+
+  strcpy(code, "WORDS CR 255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 100.0 + I 10.0 / 180 + COS 50.0 * 500.0 + I 10.0 / SIN 50.0 * 100.0 + I 10.0 / COS 50.0 * 500.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
