@@ -5,9 +5,9 @@
 #include <cstdio>
 #include <string>
 #include <termios.h>
-#include <unistd.h>
+#include <unistd.h>  // For read
+#include <poll.h>    // For poll
 #include <vector>
-#include "sdl_helper.hpp"
 #include "random.hpp"
 
 using namespace std;
@@ -26,6 +26,7 @@ bool handleFillRect();
 void drawRect(int, int, int, int);
 bool handleDrawRect();
 bool handleCLS();
+bool handleDRAWSTRING();
 
 bool getRandom(unsigned char *, int);
 void hexDump(unsigned char *, int);
@@ -139,6 +140,7 @@ vector<int> userIntegers;
 vector<string> blocks;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
+bool isDrawing = false;
 map<string, int> varAddresses;
 map<string, int> fvarAddresses;
 map<string, int> constAddresses;
@@ -200,6 +202,7 @@ nativeCommand nativeCommands[] = {
   { handleLINE, "LINE" },
   { handlePRINT, "." },
   { handlePRINTSTRING, ".\"" },
+  { handleDRAWSTRING, ".DT\"" },
   { handlePRINTSTACKSTRING, ".s" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
@@ -256,6 +259,7 @@ char numerics[] = "0123456789abcdef";
 #include "Numbers.hpp"
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
+#include "sdl_helper.hpp"
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");

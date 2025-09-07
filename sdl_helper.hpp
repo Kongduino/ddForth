@@ -5,6 +5,7 @@
 using namespace std;
 
 SDL_Renderer* renderer;
+static TTF_Font* font = NULL;
 
 void drawLine(int x0, int y0, int x1, int y1) {
   SDL_RenderLine(renderer, (float)x0, (float)y0, (float)x1, (float)y1);
@@ -14,13 +15,49 @@ void foreColor(unsigned char r, unsigned char g, unsigned char b) {
   SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
-void drawText(
-  TTF_Font* font,
-  SDL_Color color,
-  char* mytext, int x, int y, int w, int h) {
+void drawText(string mytext) {
+  cout << " DRAW TEXT ";
+  int r, g, b;
+  int x, y, w, h;
+  if (popIntegerFromStack(&b) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText b Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&g) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText g Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&r) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText r Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&h) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText h Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&w) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText w Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&y) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText y Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  if (popIntegerFromStack(&x) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "drawText x Missing Integer on stack!\n");
+    logThis();
+    return;
+  }
+  SDL_Color color = { (Uint8)r, (Uint8)g, (Uint8)b, SDL_ALPHA_OPAQUE };
   SDL_Surface* text;
   SDL_Texture* texture = NULL;
-  text = TTF_RenderText_Blended(font, mytext, 0, color);
+  text = TTF_RenderText_Blended(font, mytext.c_str(), 0, color);
   if (text) {
     texture = SDL_CreateTextureFromSurface(renderer, text);
     SDL_DestroySurface(text);
