@@ -561,6 +561,12 @@ bool handlePRINTSTRING() {
   return true;
 }
 
+bool handleSTACKSTRING() {
+  isPrinting = true;
+  isStackingString = true;
+  return true;
+}
+
 bool handlePRINTSTACKSTRING() {
   string s;
   if(popStringFromStack(&s) == false) {
@@ -850,10 +856,14 @@ void evaluate(vector<string> chunks) {
         StoreCONSTFLOAT(d, f0);
       }
     } else if (isPrinting && c.back() == '"') {
-      // print that
       c.pop_back();
-      cout << c << " ";
       isPrinting = false;
+      if(isStackingString) {
+        isStackingString = false;
+        putStringOnStack(c);
+      } else {
+        cout << c << " ";
+      }
       executionPointer += 1;
     } else if (c == ":") {
       // creation of a word

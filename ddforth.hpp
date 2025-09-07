@@ -65,8 +65,8 @@ bool handleLOOP();
 bool handleOVER();
 bool handlePlus();
 bool handlePRINT();
-bool handlePRINTSTACKSTRING();
 bool handlePRINTSTRING();
+bool handleSTACKSTRING();
 bool handleRetrieve();
 bool handleRget();
 bool handleROT();
@@ -125,6 +125,7 @@ vector<int> userIntegers;
 vector<string> blocks;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
+bool isStackingString = false;
 map<string, int> varAddresses;
 map<string, int> fvarAddresses;
 map<string, int> constAddresses;
@@ -186,6 +187,7 @@ nativeCommand nativeCommands[] = {
   { handleLINE, "LINE" },
   { handlePRINT, "." },
   { handlePRINTSTRING, ".\"" },
+  { handleSTACKSTRING, "s\"" },
   { handlePRINTSTACKSTRING, ".s" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },

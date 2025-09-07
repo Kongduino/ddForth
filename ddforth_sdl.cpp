@@ -755,6 +755,12 @@ bool handleLINE() {
   return putStringOnStack(s);
 }
 
+bool handleSTACKSTRING() {
+  isPrinting = true;
+  isStackingString = true;
+  return true;
+}
+
 bool handlePRINTSTRING() {
   isPrinting = true;
   isDrawing = false;
@@ -1059,15 +1065,17 @@ void evaluate(vector<string> chunks) {
     } else if (isPrinting && c.back() == '"') {
       // print or draw that
       c.pop_back();
-      if(!isDrawing) {
-        cout << c << " ";
-        isPrinting = false;
-      } else {
+      isPrinting = false;
+      if(isStackingString) {
+        isStackingString = false;
+        putStringOnStack(c);
+      } else if (isDrawing) {
         cout << " isDrawing ";
         // x y w h r g b .DT" Hello World"
-        isPrinting = false;
         isDrawing = false;
         drawText(c);
+      } else {
+        cout << c << " ";
       }
       executionPointer += 1;
     } else if (c == ":") {
