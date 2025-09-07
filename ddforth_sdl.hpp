@@ -25,6 +25,7 @@ void fillRect(int, int, int, int);
 bool handleFillRect();
 void drawRect(int, int, int, int);
 bool handleDrawRect();
+bool handleCLS();
 
 bool getRandom(unsigned char *, int);
 void hexDump(unsigned char *, int);
@@ -244,6 +245,7 @@ nativeCommand nativeCommands[] = {
   { handleDrawLine, "DRAWLINE" },
   { handleFillRect, "FILLRECT" },
   { handleDrawRect, "DRAWRECT" },
+  { handleCLS, "CLS" },
 };
 
 int nativeCmdCount = 0;

@@ -2,6 +2,11 @@
 
 using namespace std;
 
+bool handleCLS() {
+  SDL_RenderClear(renderer);
+  return true;
+}
+
 bool handleDrawPixel() {
   int x0, y0;
   if (popIntegerFromStack(&y0) == false) {
@@ -1270,7 +1275,7 @@ int main(int argc, char** argv) {
 //   chunks = tokenize(code, chunks);
 //   evaluate(chunks);
 
-  strcpy(code, "255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 500.0 + I 10.0 / 180 + COS 50.0 * 350.0 + I 10.0 / SIN 50.0 * 500.0 + I 10.0 / COS 50.0 * 350.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
+  strcpy(code, "WORDS CR 255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 500.0 + I 10.0 / 180 + COS 50.0 * 350.0 + I 10.0 / SIN 50.0 * 500.0 + I 10.0 / COS 50.0 * 350.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
   cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
