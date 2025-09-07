@@ -580,11 +580,12 @@ bool showStack() {
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
   int myStrings = userStrings.size() - 1;
-  // logStackOverflow((char*)"showStack");
-  cout << "\tdataStack.size()\t" << (dataStack.size());
+#if defined(DEBUG)
+  cout << "\tdataStack.size()\t" << (x + 1);
   cout << "\tmyInts\t" << (myInts + 1);
   cout << "\tmyFloats\t" << (myFloats + 1);
   cout << "\tmyStrings\t" << (myStrings + 1) << endl;
+#endif
   cout << "+-----------------------+" << endl;
   while (x > -1) {
     int type0 = dataStack.at(x);
@@ -603,7 +604,7 @@ bool showStack() {
     }
     x -= 1;
   }
-  cout << "+------------------------+" << endl;
+  cout << "+-----------------------+" << endl;
   return true;
 }
 
@@ -981,6 +982,15 @@ bool handleDUP() {
       }
   }
   return false;
+}
+
+bool handleCLEAR() {
+  logStack((char *)"handleCLEAR");
+  dataStack.clear();
+  userStrings.clear();
+  userFloats.clear();
+  userIntegers.clear();
+  return true;
 }
 
 bool handleDEPTH() {

@@ -63,6 +63,7 @@ bool handleNEGATE();
 bool handleBEGIN();
 bool handleCR();
 bool handleDEPTH();
+bool handleCLEAR();
 bool handleDO();
 bool handleDROP();
 bool handleDUP();
@@ -126,15 +127,15 @@ void logInconsistent(char *who);
 void logStackOverflow(char *who);
 void logThis();
 
-vector<int> dataStack;
 int executionPointer = -1;
 vector<int> jumpStack;
 vector<int> jumpStackType;
 vector<int> loopStack;
+vector<int> dataStack;
 vector<string> userStrings;
+vector<float> userFloats;
 vector<int> userIntegers;
 vector<string> blocks;
-vector<float> userFloats;
 unsigned char myRAM[64 * 1024] = { 0 };
 bool isPrinting = false;
 map<string, int> varAddresses;
@@ -204,6 +205,7 @@ nativeCommand nativeCommands[] = {
   { handleDROP, "DROP" },
   { handleSWAP, "SWAP" },
   { handleDEPTH, "DEPTH" },
+  { handleCLEAR, "CLEAR" },
   { handleROT, "ROT" },
   { handleROLL, "ROLL" },
   { handleOVER, "OVER" },
