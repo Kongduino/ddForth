@@ -22,5 +22,6 @@ vector<string> loadFile(char *fn) {
   while (std::getline(inputFile, line)) {
     thisBlock.push_back(line);
   }
+  inputFile.close();
   return thisBlock;
 }

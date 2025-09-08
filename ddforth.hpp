@@ -75,6 +75,7 @@ bool handlePRINTSTRING();
 bool handleSTACKSTRING();
 bool handlePRINTSTACKSTRING();
 bool handleAPPENDSTACKSTRING();
+bool handlePREPENDSTACKSTRING();
 bool handleRetrieve();
 bool handleRget();
 bool handleROT();
@@ -94,6 +95,7 @@ bool handleLEFT();
 bool handleRIGHT();
 bool handleMID();
 bool handleLEN();
+bool handleSUBSTR();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -206,7 +208,8 @@ nativeCommand nativeCommands[] = {
   { handlePRINTSTRING, ".\"" },
   { handleSTACKSTRING, "s\"" },
   { handlePRINTSTACKSTRING, ".s" },
-  { handleAPPENDSTACKSTRING, ">s" },
+  { handlePREPENDSTACKSTRING, ">s" },
+  { handleAPPENDSTACKSTRING, "s<" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -246,11 +249,11 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { getRandomByte, "RANDOM" },
   { getRandomUInt, "RANDOMI" },
-  { handleLEFT, "LEFT$" },
-  { handleMID, "MID$" },
-  { handleRIGHT, "RIGHT$" },
-  { handleLEN, "LEN$" },
-
+  { handleLEFT, "LEFTSTR" },
+  { handleMID, "MIDSTR" },
+  { handleRIGHT, "RIGHTSTR" },
+  { handleLEN, "LENSTR" },
+  { handleSUBSTR, "SUBSTR" },
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"

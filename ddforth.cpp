@@ -535,18 +535,6 @@ bool printOtherBases(int number, unsigned int base) {
   return true;
 }
 
-bool handleEMIT() {
-  int i0;
-  char c;
-  if (popIntegerFromStack(&i0) == false) {
-    logStackOverflow((char *)"handleEMIT1");
-    return false;
-  }
-  c = i0;
-  printf("%c", c);
-  return true;
-}
-
 bool handleKEY() {
   xxxxxx = snprintf((char *)msg, 255, "handleKEY\n");
   logThis();
@@ -938,7 +926,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   while (ix < ln) {
     char c = cc[ix++];
     if (c == ' ' && insideString) {
-      cout << "space inside string ";
+      // cout << "space inside string ";
     } else if (c < '!' && !insideString) {
       // skip if not yet in a string
       // else add chunk
@@ -949,7 +937,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
         if ((bf == ".\"" || bf == ".DT\"") && !insideString) {
           // if (isPrinting && !insideString) {
           insideString = true;
-          cout << "inside string ";
+          // cout << "inside string ";
           xxxxxx = snprintf((char *)msg, 255, "inside string ");
           logThis();
           cout << "" << endl;
@@ -1022,6 +1010,9 @@ bool handleLOAD() {
 int main(int argc, char **argv) {
   vector<string> chunks;
   initForth();
+#if defined(NEED_SDL)
+#include "sdl_inc2.hpp"
+#else
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
       vector<string> thisBlock = loadFile(argv[2]);
@@ -1029,16 +1020,13 @@ int main(int argc, char **argv) {
         cerr << "Unable to open file!" << endl;
         return -1;
       }
-      string line, fullBlock;
+      string line;
       for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
         line = *it;
-        fullBlock.append(line);
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
         cout << "Read: " << line << " chunks: " << chunks.size() << endl;
       }
-      blocks.push_back(fullBlock);
-      evaluate(chunks);
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
@@ -1048,13 +1036,9 @@ int main(int argc, char **argv) {
   } else {
     strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
   }
-  cout << "Running code:" << endl << "\t" << code << endl;
   chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);
-
-#if defined(NEED_SDL)
-#include "sdl_inc2.hpp"
 #endif
 
   cout << endl << endl;
