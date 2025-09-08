@@ -16,6 +16,9 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 * [Roboto](https://fonts.google.com/specimen/Roboto)
 
 
+![MacMini.gif](MacMini.gif)
+
+
 ```
 	.V WORDS
 myVARs.size: 2 myFVARs.size: 0 varAddresses.size: 2 fvarAddresses.size: 0
