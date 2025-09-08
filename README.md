@@ -16,7 +16,7 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 * [Roboto](https://fonts.google.com/specimen/Roboto)
 
 
-![MacMini.gif](MacMini.gif)
+![MacMini.gif](assets/MacMini.gif)
 
 
 ```
