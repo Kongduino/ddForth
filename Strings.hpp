@@ -29,6 +29,7 @@ bool handlePRINTSTRING() {
 }
 
 bool handleSTACKSTRING() {
+  cout << " handleSTACKSTRING ";
   insideString = true;
   isStackingString = true;
   return true;

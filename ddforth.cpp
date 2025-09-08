@@ -839,16 +839,13 @@ void evaluate(vector<string> chunks) {
       c.pop_back();
       insideString = false;
       if(isStackingString) {
-        // cout << " isStackingString/action ";
         isStackingString = false;
         putStringOnStack(c);
 #if defined(NEED_SDL)
       } else if(isDrawing) {
-        // cout << " isDrawing/action ";
         drawText(c);
 #endif
       } else {
-        // cout << " isPrinting/action ";
         cout << c << " ";
         isPrinting = false;
       }
@@ -926,7 +923,8 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   while (ix < ln) {
     char c = cc[ix++];
     if (c == ' ' && insideString) {
-      // cout << "space inside string ";
+      cout << " space inside string ";
+      buffer[buffIndex++] = ' ';
     } else if (c < '!' && !insideString) {
       // skip if not yet in a string
       // else add chunk
@@ -934,8 +932,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
         string bf = chunks.at(chunks.size() - 1);
-        if ((bf == ".\"" || bf == ".DT\"") && !insideString) {
-          // if (isPrinting && !insideString) {
+        if ((bf == ".\"" || bf == ".DT\"" || bf == "s\"") && !insideString) {
           insideString = true;
           // cout << "inside string ";
           xxxxxx = snprintf((char *)msg, 255, "inside string ");
