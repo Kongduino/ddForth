@@ -126,6 +126,18 @@ bool handleWORDS() {
   return true;
 }
 
+bool handleSETINT() {
+  float f0;
+  int i0;
+  if (popFloatFromStack(&f0) == false) {
+    logStackOverflow((char *)"handleSETINT f0");
+    return false;
+  }
+  i0 = f0;
+  putIntegerOnStack(i0);
+  return true;
+}
+
 bool handleDO() {
   // Max min DO ... LOOP
   xxxxxx = snprintf((char *)msg, 255, "\n\n--> DO at executionPointer: %d ", executionPointer);

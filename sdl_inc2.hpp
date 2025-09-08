@@ -44,6 +44,17 @@
   chunks.clear();
 
   SDL_RenderPresent(renderer);
+//   SDL_Surface *surface = SDL_GetWindowSurface(window);
+//   SDL_LockSurface(surface);
+//   Uint32* pixel_ptr = (Uint32*)surface->pixels;
+//   int x=10, y = 10;
+//   Uint32 pixel_value = pixel_ptr[(y * surface->pitch / 4) + x];
+//   // Assumes 32-bit pixels and pitch is a multiple of 4 bytes
+//   Uint8 r, g, b, a;
+//   SDL_GetRGB(pixel_value, (const SDL_PixelFormatDetails *)&surface->format, NULL, &r, &g, &b);
+//     xxxxxx = snprintf((char *)msg, 255, "r: %d, g: %d, b: %d\n", r,g,b);
+//   cout << msg;
+//   SDL_UnlockSurface(surface);
 
   while (!quit) {
     // Handle events on queue

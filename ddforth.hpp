@@ -51,6 +51,7 @@ bool handleTAN();
 bool handleXOR();
 bool handleNEGATE();
 bool handleINVERT();
+bool handleSETINT();
 
 bool handleBEGIN();
 bool handleCR();
@@ -190,6 +191,7 @@ nativeCommand nativeCommands[] = {
   { handleSIN, "SIN" },
   { handleCOS, "COS" },
   { handleTAN, "TAN" },
+  { handleSETINT, "INT"},
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
   { handleLINE, "LINE" },
