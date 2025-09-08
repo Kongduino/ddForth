@@ -210,6 +210,11 @@ nativeCommand nativeCommands[] = {
   { handlePRINTSTACKSTRING, ".s" },
   { handlePREPENDSTACKSTRING, ">s" },
   { handleAPPENDSTACKSTRING, "s<" },
+  { handleLEFT, "LEFTSTR" },
+  { handleMID, "MIDSTR" },
+  { handleRIGHT, "RIGHTSTR" },
+  { handleLEN, "LENSTR" },
+  { handleSUBSTR, "SUBSTR" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -249,11 +254,6 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { getRandomByte, "RANDOM" },
   { getRandomUInt, "RANDOMI" },
-  { handleLEFT, "LEFTSTR" },
-  { handleMID, "MIDSTR" },
-  { handleRIGHT, "RIGHTSTR" },
-  { handleLEN, "LENSTR" },
-  { handleSUBSTR, "SUBSTR" },
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"

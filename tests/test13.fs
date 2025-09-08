@@ -4,4 +4,4 @@ CR DEPTH DUP VAR COUNT
 COUNT @ / .
 ;
 
-LINE EXEC ." Average is: " AVERAGE
+LINE EXEC ." Average: " AVERAGE
