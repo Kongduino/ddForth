@@ -569,43 +569,6 @@ bool handleLINE() {
   return putStringOnStack(s);
 }
 
-bool handlePRINTSTRING() {
-  insideString = true;
-  isPrinting = true;
-  return true;
-}
-
-bool handleSTACKSTRING() {
-  insideString = true;
-  isStackingString = true;
-  return true;
-}
-
-bool handlePRINTSTACKSTRING() {
-  string s;
-  if(popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handlePRINTSTACKSTRING");
-    return false;
-  }
-  cout << s << " ";
-  return true;
-}
-
-bool handleAPPENDSTACKSTRING() {
-  string s, v;
-  if(popStringFromStack(&v) == false) {
-    logStackOverflow((char *)"handleAPPENDSTACKSTRING");
-    return false;
-  }
-  if(popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handleAPPENDSTACKSTRING");
-    return false;
-  }
-  s.append(v);
-  putStringOnStack(s);
-  return true;
-}
-
 bool handlePRINT() {
   logStack((char *)"handlePRINT");
   if (dataStack.size() == 0) {

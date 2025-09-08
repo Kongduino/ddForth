@@ -89,6 +89,12 @@ bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
 bool handleLOAD();
+
+bool handleLEFT();
+bool handleRIGHT();
+bool handleMID();
+bool handleLEN();
+
 bool lookup(string);
 bool lookupUC(string);
 bool lookupVAR(string);
@@ -110,6 +116,7 @@ void logUnknownBlock(char *);
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
+
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -239,6 +246,12 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { getRandomByte, "RANDOM" },
   { getRandomUInt, "RANDOMI" },
+  { handleLEFT, "LEFT$" },
+  { handleMID, "MID$" },
+  { handleRIGHT, "RIGHT$" },
+  { handleLEN, "LEN$" },
+
+
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
 #endif
@@ -249,6 +262,7 @@ int nativeCmdCount = 0;
 char numerics[] = "0123456789abcdef";
 
 #include "Files.hpp"
+#include "Strings.hpp"
 #include "Numbers.hpp"
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
