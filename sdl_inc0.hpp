@@ -15,5 +15,6 @@ void drawRect(int, int, int, int);
 bool handleDrawRect();
 bool handleCLS();
 bool handleDRAWSTRING();
+bool handleFONT();
 
 bool isDrawing = false;

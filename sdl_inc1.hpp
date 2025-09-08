@@ -5,3 +5,4 @@
   { handleDrawRect, "DRAWRECT" },
   { handleCLS, "CLS" },
   { handleDRAWSTRING, ".DT\"" },
+  { handleFONT, "FONT" },

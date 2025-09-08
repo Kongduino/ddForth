@@ -320,10 +320,28 @@ bool handleDrawRect() {
 extern bool insideString;
 
 bool handleDRAWSTRING() {
-  cout << " handleDRAWSTRING ";
   isPrinting = false;
   isDrawing = true;
   insideString = true;
   return true;
 }
 
+bool handleFONT() {
+  if (dataStack.at(dataStack.size() - 1) != xSTRING) {
+    logInconsistent((char *)"handleFONT");
+    return false;
+  }
+  string s;
+  if(popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleFONT");
+    return false;
+  }
+  char fname[256];
+  xxxxxx = snprintf(fname, 255, "./Fonts/%s.ttf", s.c_str());
+  font = TTF_OpenFont(fname, 32.0f);
+  if (!font) {
+    SDL_Log("Couldn't open font: %s\n", SDL_GetError());
+    return false;
+  }
+  return true;
+}
