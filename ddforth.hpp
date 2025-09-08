@@ -18,6 +18,10 @@ void hexDump(unsigned char *, int);
 bool getRandomByte();
 bool getRandomUInt();
 
+#if defined(NEED_SDL)
+#include "sdl_inc0.hpp"
+#endif
+
 bool handle2Nums(unsigned char);
 bool handleABS();
 bool handleAND();
@@ -46,6 +50,7 @@ bool handleCOS();
 bool handleTAN();
 bool handleXOR();
 bool handleNEGATE();
+bool handleINVERT();
 
 bool handleBEGIN();
 bool handleCR();
@@ -67,6 +72,8 @@ bool handlePlus();
 bool handlePRINT();
 bool handlePRINTSTRING();
 bool handleSTACKSTRING();
+bool handlePRINTSTACKSTRING();
+bool handleAPPENDSTACKSTRING();
 bool handleRetrieve();
 bool handleRget();
 bool handleROT();
@@ -177,6 +184,7 @@ nativeCommand nativeCommands[] = {
   { handleXOR, "XOR" },
   { handleNOT, "NOT" },  
   { handleNEGATE, "NEGATE" },
+  { handleINVERT, "INVERT" },
   { handleSQR, "SQR" },
   { handleSQRT, "SQRT" },
   { handleSIN, "SIN" },
@@ -189,6 +197,7 @@ nativeCommand nativeCommands[] = {
   { handlePRINTSTRING, ".\"" },
   { handleSTACKSTRING, "s\"" },
   { handlePRINTSTACKSTRING, ".s" },
+  { handleAPPENDSTACKSTRING, ">s" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -228,6 +237,9 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { getRandomByte, "RANDOM" },
   { getRandomUInt, "RANDOMI" },
+#if defined(NEED_SDL)
+#include "sdl_inc1.hpp"
+#endif
 };
 
 int nativeCmdCount = 0;
@@ -238,6 +250,9 @@ char numerics[] = "0123456789abcdef";
 #include "Numbers.hpp"
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
+#if defined(NEED_SDL)
+#include "sdl_helper.hpp"
+#endif
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");

@@ -11,9 +11,17 @@ test: ddforth
 	./ddforth $(TEST)
 
 clean:
-	rm -f ddforth ddforth_debug
+	rm -f ddforth ddforth_debug ddforth_SDL ddforth_SDL_debug
 
 debug: ddforth.cpp
-	$(CPP) -DDEBUG ddforth.cpp -o ddforth_debug
+	$(CPP) $(CFLAGS) -DDEBUG ddforth.cpp -o ddforth_debug
 
-all: ddforth debug
+sdl: ddforth.cpp
+	$(CPP) $(CFLAGS) -DNEED_SDL -g -c ddforth.cpp -I/usr/local/include/SDL3/ -I/usr/local/include/SDL3_ttf
+	$(CPP) -o ddforth_SDL ddforth.o -L/usr/local/lib -l SDL3 -l SDL3_ttf
+	./in.sh
+	$(CPP) $(CFLAGS) -DDEBUG -DNEED_SDL -g -c ddforth.cpp -I/usr/local/include/SDL3/ -I/usr/local/include/SDL3_ttf
+	$(CPP) -o ddforth_SDL_debug ddforth.o -L/usr/local/lib -l SDL3 -l SDL3_ttf
+	./in_debug.sh
+
+all: ddforth debug sdl

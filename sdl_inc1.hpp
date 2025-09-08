@@ -1,0 +1,7 @@
+  { handleDrawColor, "DRAWCOLOR" },
+  { handleDrawPixel, "DRAWPIXEL" },
+  { handleDrawLine, "DRAWLINE" },
+  { handleFillRect, "FILLRECT" },
+  { handleDrawRect, "DRAWRECT" },
+  { handleCLS, "CLS" },
+  { handleDRAWSTRING, ".DT\"" },

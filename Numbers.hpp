@@ -574,6 +574,25 @@ bool handleNEGATE() {
   return true;
 }
 
+bool handleINVERT() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID || type0 == xFLOAT) {
+    logInconsistent((char *)"handleINVERT");
+    return false;
+  }
+  int i0;
+  unsigned int i1;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleINVERT");
+      return false;
+    }
+    i1 = i0;
+    putIntegerOnStack(~i1);
+    return true;
+  }
+  return false;
+}
 bool handleFact() {
   int factorial = 1;
   int n;

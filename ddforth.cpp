@@ -1,4 +1,5 @@
 #include "ddforth.hpp"
+bool insideString;
 
 using namespace std;
 
@@ -557,12 +558,13 @@ bool handleLINE() {
 }
 
 bool handlePRINTSTRING() {
+  insideString = true;
   isPrinting = true;
   return true;
 }
 
 bool handleSTACKSTRING() {
-  isPrinting = true;
+  insideString = true;
   isStackingString = true;
   return true;
 }
@@ -574,6 +576,21 @@ bool handlePRINTSTACKSTRING() {
     return false;
   }
   cout << s << " ";
+  return true;
+}
+
+bool handleAPPENDSTACKSTRING() {
+  string s, v;
+  if(popStringFromStack(&v) == false) {
+    logStackOverflow((char *)"handleAPPENDSTACKSTRING");
+    return false;
+  }
+  if(popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleAPPENDSTACKSTRING");
+    return false;
+  }
+  s.append(v);
+  putStringOnStack(s);
   return true;
 }
 
@@ -855,14 +872,22 @@ void evaluate(vector<string> chunks) {
         logThis();
         StoreCONSTFLOAT(d, f0);
       }
-    } else if (isPrinting && c.back() == '"') {
+    } else if (insideString && c.back() == '"') {
       c.pop_back();
-      isPrinting = false;
+      insideString = false;
       if(isStackingString) {
+        cout << " isStackingString/action ";
         isStackingString = false;
         putStringOnStack(c);
+#if defined(NEED_SDL)
+      } else if(isDrawing) {
+        cout << " isDrawing/action ";
+        drawText(c);
+#endif
       } else {
+        cout << " isPrinting/action ";
         cout << c << " ";
+        isPrinting = false;
       }
       executionPointer += 1;
     } else if (c == ":") {
@@ -934,23 +959,27 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   unsigned int ln = strlen(cc), ix = 0;
   char buffer[256] = { 0 };
   unsigned int buffIndex = 0;
-  bool insideString = false;
+  insideString = false;
   while (ix < ln) {
     char c = cc[ix++];
-    if (c < '!' && !insideString) {
+    if (c == ' ' && insideString) {
+      cout << "space inside string ";
+    } else if (c < '!' && !insideString) {
       // skip if not yet in a string
       // else add chunk
       if (buffIndex > 0) {
         buffer[buffIndex] = 0;
         chunks.push_back(buffer);
-        if (chunks.at(chunks.size() - 1) == ".\"" && !insideString) {
+        string bf = chunks.at(chunks.size() - 1);
+        if ((bf == ".\"" || bf == ".DT\"") && !insideString) {
           // if (isPrinting && !insideString) {
           insideString = true;
+          cout << "inside string ";
           xxxxxx = snprintf((char *)msg, 255, "inside string ");
           logThis();
           cout << "" << endl;
         }
-        xxxxxx = snprintf((char *)msg, 255, "\n* Adding `%s`", buffer);
+        xxxxxx = snprintf((char *)msg, 255, "\n* Adding `%s`\n", buffer);
         logThis();
         memset(buffer, 0, 256);
         buffIndex = 0;
@@ -1048,6 +1077,11 @@ int main(int argc, char **argv) {
   chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);
+
+#if defined(NEED_SDL)
+#include "sdl_inc2.hpp"
+#endif
+
   cout << endl << endl;
   return 0;
 }
