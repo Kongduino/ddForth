@@ -1,4 +1,3 @@
-#undef DEBUG
   // Initialize SDL
   if (!SDL_Init(SDL_INIT_VIDEO) || !TTF_Init()) {
     SDL_Log("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -29,37 +28,17 @@
   // Event handler
   SDL_Event e;
   // Main application loop
-  strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-  strcpy(code, "127 127 127 CLS 300 0 DO 127 I I 3 + 2 / DRAWCOLOR I 100 300 I - 400 DRAWLINE 0 I 100 + 300 400 I - DRAWLINE LOOP");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-
-  strcpy(code, ": RNDCOL RANDOM RANDOM RANDOM DRAWCOLOR ; 0 BEGIN RNDCOL RANDOM 500 + RANDOM DRAWPIXEL 1 + DUP 800 > UNTIL");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-
-  strcpy(code, "0 BEGIN RNDCOL RANDOMI 400 MOD 368 + RANDOM 300 +  32 32 FILLRECT 1 + DUP 50 > UNTIL");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-
-  strcpy(code, "0 BEGIN RNDCOL RANDOMI 768 MOD RANDOMI 568 MOD  32 32 DRAWRECT 1 + DUP 100 > UNTIL");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-
-  strcpy(code, "WORDS CR 255 VAR r 0 VAR g 127 VAR b 1799 0 DO I 10.0 / 180 + SIN 50.0 * 100.0 + I 10.0 / 180 + COS 50.0 * 500.0 + I 10.0 / SIN 50.0 * 100.0 + I 10.0 / COS 50.0 * 500.0 + I g b DRAWCOLOR DRAWLINE LOOP .V");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
-  evaluate(chunks);
-  memset(code, 0, 256);
-  chunks.clear();
-
-#define DEBUG
-
-  strcpy(code, "CLEAR 10 BEGIN DUP 60 + DUP 300 + SWAP DUP DUP 3 / RANDOM RANDOM RANDOM .DT\" Hello_World!\" .S 24 + DUP 180 < WHILE DROP");
-  cout << code << endl;
-  chunks = tokenize(code, chunks);
+  vector<string> thisBlock = loadFile((char *)"tests/t.fs");
+  if (thisBlock.size() == 0) {
+    cerr << "Unable to open file!" << endl;
+    return -1;
+  }
+  for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+    string line = *it;
+    strcpy(code, line.c_str());
+    chunks = tokenize(code, chunks);
+    cout << "Read: " << line << " chunks: " << chunks.size() << endl;
+  }
   evaluate(chunks);
   memset(code, 0, 256);
   chunks.clear();
