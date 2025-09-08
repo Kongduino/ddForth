@@ -28,6 +28,9 @@
   // Event handler
   SDL_Event e;
   // Main application loop
+  evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
   vector<string> thisBlock = loadFile((char *)"tests/t.fs");
   if (thisBlock.size() == 0) {
     cerr << "Unable to open file!" << endl;

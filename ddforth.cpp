@@ -888,16 +888,16 @@ void evaluate(vector<string> chunks) {
       c.pop_back();
       insideString = false;
       if(isStackingString) {
-        cout << " isStackingString/action ";
+        // cout << " isStackingString/action ";
         isStackingString = false;
         putStringOnStack(c);
 #if defined(NEED_SDL)
       } else if(isDrawing) {
-        cout << " isDrawing/action ";
+        // cout << " isDrawing/action ";
         drawText(c);
 #endif
       } else {
-        cout << " isPrinting/action ";
+        // cout << " isPrinting/action ";
         cout << c << " ";
         isPrinting = false;
       }
