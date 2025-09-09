@@ -1,8 +1,8 @@
 #include <cmath>  // For std::sqrt
 #include <fcntl.h>
-#include <iostream>
 #include <map>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <termios.h>
 #include <unistd.h>
@@ -254,3 +254,28 @@ bool handleRSTRIPSTR() {
   putStringOnStack(s);
   return true;
 }
+
+bool handleSTRINT() {
+  string s;
+  int i0;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleINTSTR");
+    return false;
+  }
+  i0 = std::atoi(s.c_str());
+  putIntegerOnStack(i0);
+  return true;
+}
+
+bool handleINTSTR() {
+  string s;
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleSTRINT");
+    return false;
+  }
+  s = std::to_string(i0);
+  putStringOnStack(s);
+  return true;
+}
+

@@ -103,6 +103,8 @@ bool handleMULTSTR();
 bool handleSTRIPSTR();
 bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
+bool handleINTSTR();
+bool handleSTRINT();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -228,6 +230,8 @@ nativeCommand nativeCommands[] = {
   { handleSTRIPSTR, "STRIPSTR" },
   { handleLSTRIPSTR, "LSTRIPSTR" },
   { handleRSTRIPSTR, "RSTRIPSTR" },
+  { handleINTSTR, "INTSTR"},
+  { handleSTRINT, "STRINT"},
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
