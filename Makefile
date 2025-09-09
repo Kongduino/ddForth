@@ -19,9 +19,8 @@ debug: ddforth.cpp
 sdl: ddforth.cpp
 	$(CPP) $(CFLAGS) -DNEED_SDL -g -c ddforth.cpp -I/usr/local/include/SDL3/ -I/usr/local/include/SDL3_ttf
 	$(CPP) -o ddforth_SDL ddforth.o -L/usr/local/lib -l SDL3 -l SDL3_ttf
-	./in.sh
 	$(CPP) $(CFLAGS) -DDEBUG -DNEED_SDL -g -c ddforth.cpp -I/usr/local/include/SDL3/ -I/usr/local/include/SDL3_ttf
 	$(CPP) -o ddforth_SDL_debug ddforth.o -L/usr/local/lib -l SDL3 -l SDL3_ttf
-	./in_debug.sh
+	./in.sh
 
 all: ddforth debug sdl
