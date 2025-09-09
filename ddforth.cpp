@@ -1017,23 +1017,29 @@ int main(int argc, char **argv) {
         cerr << "Unable to open file!" << endl;
         return -1;
       }
+      int lineCount = 0;
       string line;
       for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
         line = *it;
+        while (!line.empty() && line.back() == '\n')
+          line.pop_back();
+        lineCount += 1;
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
-        cout << "Read: " << line << " chunks: " << chunks.size() << endl;
+        cout << " • Read: " << line;
       }
+      cout << endl << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
     }
   } else if (argc == 2) {
     strcpy(code, argv[1]);
+    chunks = tokenize(code, chunks);
   } else {
     strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
+    chunks = tokenize(code, chunks);
   }
-  chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);
 #endif

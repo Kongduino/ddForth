@@ -29,7 +29,6 @@ bool handlePRINTSTRING() {
 }
 
 bool handleSTACKSTRING() {
-  cout << " handleSTACKSTRING ";
   insideString = true;
   isStackingString = true;
   return true;
@@ -148,3 +147,24 @@ bool handleLEN() {
   return true;
 }
 
+bool handleLowercase() {
+  string s;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleLowercase");
+    return false;
+  }
+  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+  putStringOnStack(s);
+  return true;
+}
+
+bool handleUppercase() {
+  string s;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleUppercase");
+    return false;
+  }
+  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+  putStringOnStack(s);
+  return true;
+}
