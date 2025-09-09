@@ -470,6 +470,8 @@ Stack empty!
 Original string:  HeLlO 
 UPPERCASE:  HELLO 
 lowercase:  hello 
+Stack  +... 10 times as a string, add a + at the end and print: 
++...+...+...+...+...+...+...+...+...+...+ 
 ```
 
 ## DEBUG VERSION

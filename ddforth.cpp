@@ -3,6 +3,9 @@ bool insideString;
 
 using namespace std;
 
+
+// Need to add the same for STRING
+
 void StoreCONSTFLOAT(string name, float value) {
   map<string, int>::iterator it;
   it = fconstAddresses.find(name);
@@ -797,6 +800,7 @@ void evaluate(vector<string> chunks) {
       string d = chunks.at(executionPointer++);
       int i0;
       float f0;
+      string s0;
       bool valid = true;
       if (isInteger(d, &i0)) valid = false;
       else if (isFloat(d, &f0)) valid = false;
@@ -806,6 +810,7 @@ void evaluate(vector<string> chunks) {
       }
       bool thisIsInt = false;
       bool thisIsFloat = false;
+      bool thisIsString = false;
       // we need a number
       if (popIntegerFromStack(&i0) == false) {
         xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
@@ -813,11 +818,21 @@ void evaluate(vector<string> chunks) {
         if (popFloatFromStack(&f0) == false) {
           xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack either!\n");
           logThis();
+          if (popStringFromStack(&s0) == false) {
+            xxxxxx = snprintf((char *)msg, 255, "No STRING on the stack either!\n");
+            logThis();
+          } else {
+            thisIsString = true;
+          }
         } else {
           thisIsFloat = true;
         }
       } else thisIsInt = true;
-      if (!thisIsFloat && !thisIsInt) return;
+      if (!thisIsFloat && !thisIsInt && !thisIsString) {
+        xxxxxx = snprintf((char *)msg, 255, "No INT / FLOAT / STRING on the stack!\n");
+        logThis();
+        return;
+      }
       if (c == "VAR" && thisIsInt) {
         xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", d.c_str(), i0);
         logThis();
@@ -834,7 +849,7 @@ void evaluate(vector<string> chunks) {
         xxxxxx = snprintf((char *)msg, 255, "FLOAT CONST name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreCONSTFLOAT(d, f0);
-      }
+      } // Need to add the same for STRING
     } else if (insideString && c.back() == '"') {
       c.pop_back();
       insideString = false;
