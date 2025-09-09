@@ -3,3 +3,4 @@ s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR CR .S CR
 s" Hello!" s" (123)" .S >s s" (456)" .S s< .S .s CLEAR .S CR
 s" HeLlO" DUP DUP ." Original string: " .s CR ." UPPERCASE: " UPPERSTR .s CR ." lowercase: " LOWERSTR .s CR
 s" +..." DUP ." Stack " .s RANDOM 10 MOD 1 + DUP . ." times as a string, add a + at the end and print:" CR MULTSTR s" +" s< .s CR
+s" \tfff  " DUP .s 9 . CR LSTRIPSTR DUP .s 10 . CR RSTRIPSTR .s 11 .

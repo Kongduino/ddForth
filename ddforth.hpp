@@ -100,6 +100,9 @@ bool handleSUBSTR();
 bool handleLowercase();
 bool handleUppercase();
 bool handleMULTSTR();
+bool handleSTRIPSTR();
+bool handleLSTRIPSTR();
+bool handleRSTRIPSTR();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -222,6 +225,9 @@ nativeCommand nativeCommands[] = {
   { handleLowercase, "LOWERSTR"},
   { handleUppercase, "UPPERSTR"},
   { handleMULTSTR, "MULTSTR"},
+  { handleSTRIPSTR, "STRIPSTR" },
+  { handleLSTRIPSTR, "LSTRIPSTR" },
+  { handleRSTRIPSTR, "RSTRIPSTR" },
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -313,10 +319,10 @@ void logInconsistent(char *who) {
 }
 
 void logStackOverflow(char *who) {
-#if defined(DEBUG)
+//#if defined(DEBUG)
   xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
-#endif
+//#endif
 }
 
 void logJumpStackOverflow(char *who) {
