@@ -923,7 +923,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   while (ix < ln) {
     char c = cc[ix++];
     if (c == ' ' && insideString) {
-      cout << " space inside string ";
+      // cout << " space inside string ";
       buffer[buffIndex++] = ' ';
     } else if (c < '!' && !insideString) {
       // skip if not yet in a string

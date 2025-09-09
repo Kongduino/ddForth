@@ -438,9 +438,11 @@ Then you next to press ENTER.
 
 ```
 ./ddforth -f test14.fs
-Read: s" Hello!" LENSTR 0 DO 0 I 1 + SUBSTR .s CR LOOP CLEAR .S CR chunks: 16
-Read: s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR CR .S CR chunks: 33
-Read: s" Hello!" s" (123)" .S >s s" (456)" .S s< .S .s CLEAR CR .S chunks: 48
+ • Read: s" Hello!" LENSTR 0 DO 0 I 1 + SUBSTR .s CR LOOP CLEAR .S CR
+ • Read: s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR CR .S CR
+ • Read: s" Hello!" s" (123)" .S >s s" (456)" .S s< .S .s CLEAR .S CR
+ • Read: s" HeLlO" DUP DUP ." Original string: " .s CR ." UPPERCASE: " UPPERSTR .s CR ." lowercase: " LOWERSTR .s CR
+Read: 4 lines, chunks: 66
 H 
 He 
 Hel 
@@ -464,60 +466,10 @@ Stack empty!
 +-----------------------+
 | 0	| STR.	| (123)Hello!(456)	|
 +-----------------------+
-(123)Hello!(456) 
-Stack empty! 
-+-----------------------+
-| 0	| STR.	| (123)	|
-| 1	| STR.	| Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (456)	|
-| 1	| STR.	| (123)Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (123)Hello!(456)	|
-+-----------------------+
-(123)Hello!(456) 
-Stack empty! 
-
-./ddforth -f test15.fs
-Read: s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR .S chunks: 15
-!olleHStack empty! !olleHStack empty! 
-
-./ddforth -f test16.fs
-Read: s" Hello!" s" (123)" .S >s s" (456)" .S s< .S .s chunks: 12
-
-+-----------------------+
-| 0	| STR.	| (123)	|
-| 1	| STR.	| Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (456)	|
-| 1	| STR.	| (123)Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (123)Hello!(456)	|
-+-----------------------+
-(123)Hello!(456) 
-+-----------------------+
-| 0	| STR.	| (123)	|
-| 1	| STR.	| Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (456)	|
-| 1	| STR.	| (123)Hello!	|
-+-----------------------+
-
-+-----------------------+
-| 0	| STR.	| (123)Hello!(456)	|
-+-----------------------+
-(123)Hello!(456) 
-
+(123)Hello!(456) Stack empty! 
+Original string:  HeLlO 
+UPPERCASE:  HELLO 
+lowercase:  hello 
 ```
 
 ## DEBUG VERSION
