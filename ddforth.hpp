@@ -128,6 +128,9 @@ vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
 
+bool handleIF();
+bool handleTHEN();
+bool handleELSE();
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -271,6 +274,9 @@ nativeCommand nativeCommands[] = {
   { handleLOAD, "LOAD" },
   { putRandomByteOnStack, "RANDOM" },
   { putRandomUIntOnStack, "RANDOMI" },
+  { handleIF, "IF" },
+  { handleTHEN, "THEN" },
+  { handleELSE, "ELSE" },
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
@@ -349,5 +355,3 @@ void logUnknownBlock(char *who) {
   cout << msg;
 #endif
 }
-
-
