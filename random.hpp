@@ -1,7 +1,9 @@
+using namespace std;
 #include <fstream>
 #include <iostream>
 
 bool putIntegerOnStack(int);
+unsigned char getRND();
 
 unsigned char randomBuffer[256];
 int randomIndex = 0;
@@ -32,7 +34,7 @@ void hexDump(unsigned char *buf, int len) {
   printf("%s\n", "   +------------------------------------------------+ +----------------+");
 }
 
-bool getRandom() {
+bool getRandomBuffer() {
   std::ifstream urandom("/dev/urandom", std::ios::in | std::ios::binary);
   if (urandom.is_open()) {
     std::vector<char> random_bytes(256);
@@ -50,22 +52,34 @@ bool getRandom() {
   }
 }
 
-bool getRandomByte() {
-  int i0;
-  if (randomIndex == 256) getRandom();
-  i0 = randomBuffer[randomIndex++];
-  putIntegerOnStack(i0);
+unsigned char getRND() {
+  if (randomIndex == 256) getRandomBuffer();
+  uint8_t x = randomBuffer[randomIndex++];
+  return x;
+}
+
+unsigned char getRandomByte() {
+  uint8_t x = 0, b;
+  for (uint8_t j = 0; j < 8; j++) {
+    b = (getRND() & 0b00000001);
+    while (b == (getRND() & 0b00000001)) {
+      // von Neumann extractor.
+      b = (getRND() & 0b00000001);
+    }
+    x = (x << 1) | b;
+  }
+  return x;
+}
+
+bool putRandomByteOnStack() {
+  uint8_t x = getRandomByte();
+  putIntegerOnStack((int)x);
   return true;
 }
 
-bool getRandomUInt() {
+bool putRandomUIntOnStack() {
   int i0;
-  unsigned char c0, c1;
-  if (randomIndex == 256) getRandom();
-  c0 = randomBuffer[randomIndex++];
-  if (randomIndex == 256) getRandom();
-  c1 = randomBuffer[randomIndex++];
-  i0 = c0 + (c1 << 8);
+  i0 = getRandomByte() + (getRandomByte() << 8);
   putIntegerOnStack(i0);
   return true;
 }

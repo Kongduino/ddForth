@@ -13,9 +13,10 @@ using namespace std;
 
 #define myVERSION 1098
 
-bool getRandom(unsigned char *, int);
+bool getRandomBuffer();
 void hexDump(unsigned char *, int);
-bool getRandomByte();
+unsigned char getRandomByte();
+bool putRandomByteOnStack();
 bool getRandomUInt();
 
 #if defined(NEED_SDL)
@@ -258,8 +259,8 @@ nativeCommand nativeCommands[] = {
   { handleRget, "R>" },
   { handleEXEC, "EXEC" },
   { handleLOAD, "LOAD" },
-  { getRandomByte, "RANDOM" },
-  { getRandomUInt, "RANDOMI" },
+  { putRandomByteOnStack, "RANDOM" },
+  { putRandomUIntOnStack, "RANDOMI" },
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
@@ -291,7 +292,7 @@ void initForth() {
   computedWords.push_back("CONST");
   computedWords.push_back(": ... ;");
   userCmdCount = userCommands.size();
-  getRandom();
+  getRandomBuffer();
 }
 
 void logStack(char *who) {

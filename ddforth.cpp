@@ -690,6 +690,7 @@ bool lookupUC(string name) {
 bool lookup(string c, bool *r) {
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     if (c == nativeCommands[ix].name) {
+      // cout << endl << "Calling " << nativeCommands[ix].name << endl;
       *r = nativeCommands[ix].ptr();
       return true;
     }
