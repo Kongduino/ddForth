@@ -923,7 +923,6 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   while (ix < ln) {
     char c = cc[ix++];
     if (c == ' ' && insideString) {
-      // cout << " space inside string ";
       buffer[buffIndex++] = ' ';
     } else if (c < '!' && !insideString) {
       // skip if not yet in a string
@@ -934,10 +933,8 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
         string bf = chunks.at(chunks.size() - 1);
         if ((bf == ".\"" || bf == ".DT\"" || bf == "s\"") && !insideString) {
           insideString = true;
-          // cout << "inside string ";
           xxxxxx = snprintf((char *)msg, 255, "inside string ");
           logThis();
-          cout << "" << endl;
         }
         xxxxxx = snprintf((char *)msg, 255, "\n* Adding `%s`\n", buffer);
         logThis();
@@ -1026,9 +1023,9 @@ int main(int argc, char **argv) {
         lineCount += 1;
         strcpy(code, line.c_str());
         chunks = tokenize(code, chunks);
-        cout << " • Read: " << line;
+        cout << " • Read: " << line << endl;
       }
-      cout << endl << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
+      cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;

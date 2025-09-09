@@ -168,3 +168,20 @@ bool handleUppercase() {
   putStringOnStack(s);
   return true;
 }
+
+bool handleMULTSTR() {
+  string s, v;
+  int i, i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleMULTSTR1");
+    return false;
+  }
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleMULTSTR2");
+    return false;
+  }
+  for(i = 0; i < i0; i++)
+    v.append(s);
+  putStringOnStack(v);
+  return true;
+}

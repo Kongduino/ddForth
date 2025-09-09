@@ -98,6 +98,7 @@ bool handleLEN();
 bool handleSUBSTR();
 bool handleLowercase();
 bool handleUppercase();
+bool handleMULTSTR();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -219,6 +220,7 @@ nativeCommand nativeCommands[] = {
   { handleSUBSTR, "SUBSTR" },
   { handleLowercase, "LOWERSTR"},
   { handleUppercase, "UPPERSTR"},
+  { handleMULTSTR, "MULTSTR"},
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
