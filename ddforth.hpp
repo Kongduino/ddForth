@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <cstdio>
+#include <cstring>
 #include <string>
 #include <termios.h>
 #include <unistd.h>
