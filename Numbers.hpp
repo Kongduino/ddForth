@@ -34,6 +34,12 @@ enum mathTypes {
   math_LOWER,
   math_LOWEREQUAL,
   math_DIFFERENT,
+  math_EQUALQ,
+  math_GREATERQ,
+  math_LOWERQ,
+  math_GREATEREQUALQ,
+  math_LOWEREQUALQ,
+  math_DIFFERENTQ,
   math_MOD,
   math_MIN,
   math_MAX,
@@ -114,6 +120,24 @@ bool handle2Nums(unsigned char X) {
         case math_EQUAL:
           {
             putIntegerOnStack((i0 == i1));
+            break;
+          }
+        case math_EQUALQ:
+          {
+            putIntegerOnStack(i0);
+            putIntegerOnStack((i0 == i1));
+            break;
+          }
+        case math_LOWERQ:
+          {
+            putIntegerOnStack(i0);
+            putIntegerOnStack((i0 < i1));
+            break;
+          }
+        case math_GREATERQ:
+          {
+            putIntegerOnStack(i0);
+            putIntegerOnStack((i0 > i1));
             break;
           }
         case math_MOD:
@@ -209,6 +233,36 @@ bool handle2Nums(unsigned char X) {
         case math_EQUAL:
           {
             putIntegerOnStack((f0 == f1));
+            break;
+          }
+        case math_EQUALQ:
+          {
+            putFloatOnStack(f0);
+            putIntegerOnStack((f0 == f1));
+            break;
+          }
+        case math_GREATERQ:
+          {
+            putFloatOnStack(f0);
+            putIntegerOnStack((f0 > f1));
+            break;
+          }
+        case math_GREATEREQUALQ:
+          {
+            putFloatOnStack(f0);
+            putIntegerOnStack((f0 >= f1));
+            break;
+          }
+        case math_LOWERQ:
+          {
+            putFloatOnStack(f0);
+            putIntegerOnStack((f0 < f1));
+            break;
+          }
+        case math_LOWEREQUALQ:
+          {
+            putFloatOnStack(f0);
+            putIntegerOnStack((f0 <= f1));
             break;
           }
         case math_MOD:
@@ -407,6 +461,30 @@ bool handleEqual() {
 
 bool handleDifferent() {
   return handle2Nums(math_EQUAL);
+}
+
+bool handleEqualQ() {
+  return handle2Nums(math_EQUALQ);
+}
+
+bool handleGreaterQ() {
+  return handle2Nums(math_GREATERQ);
+}
+
+bool handleLowerQ() {
+  return handle2Nums(math_LOWERQ);
+}
+
+bool handleGreaterEqualQ() {
+  return handle2Nums(math_GREATEREQUALQ);
+}
+
+bool handleLowerEqualQ() {
+  return handle2Nums(math_LOWEREQUALQ);
+}
+
+bool handleDifferentQ() {
+  return handle2Nums(math_DIFFERENTQ);
 }
 
 bool handleEXP() {

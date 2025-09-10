@@ -40,6 +40,12 @@ bool handleGreater();
 bool handleGreaterEqual();
 bool handleLower();
 bool handleLowerEqual();
+bool handleEqualQ();
+bool handleGreaterQ();
+bool handleLowerQ();
+bool handleGreaterEqualQ();
+bool handleLowerEqualQ();
+bool handleDifferentQ();
 bool handleMAX();
 bool handleMIN();
 bool handleMinus();
@@ -288,6 +294,12 @@ nativeCommand nativeCommands[] = {
   { handleGreater, ">" },
   { handleGreaterEqual, ">=" },
   { handleDifferent, "<>" },
+  { handleEqualQ, "=?" },
+  { handleGreaterQ, ">?" },
+  { handleLowerQ, "<?" },
+  { handleLowerEqualQ, "<=?" },
+  { handleGreaterEqualQ, ">=?" },
+  { handleDifferentQ, "<>?" },
   { handleBEGIN, "BEGIN" },
   { handleUNTIL, "UNTIL" },
   { handleWHILE, "WHILE" },
@@ -338,6 +350,8 @@ void initForth() {
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
   computedWords.push_back(": ... ;");
+  computedWords.push_back("IF...THEN...ELSE");
+  computedWords.push_back("( THIS IS A COMMENT. )");
   userCmdCount = userCommands.size();
   getRandomBuffer();
   int v0, v1, v2;
