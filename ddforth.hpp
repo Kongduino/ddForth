@@ -343,7 +343,7 @@ void initForth() {
   int v0, v1, v2;
   float f0;
   v0 = (myVERSION / 1000);
-  v1 = ((myVERSION - (v0 * 1000))) / 10;
+  v1 = ((myVERSION - (v0 * 1000))) / 100;
   v2 = (myVERSION / 100) * 100;
   f0 = (myVERSION - v2);
   v2 = f0;
