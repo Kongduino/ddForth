@@ -51,6 +51,18 @@ bool handleSQRT();
 bool handleSIN();
 bool handleCOS();
 bool handleTAN();
+bool handleASIN();
+bool handleACOS();
+bool handleATAN();
+bool handleSINH();
+bool handleCOSH();
+bool handleTANH();
+bool handleLOG();
+bool handleLOG10();
+bool handleROUND();
+bool handleFLOOR();
+bool handleCEIL();
+bool handleEXP();
 bool handleXOR();
 bool handleNEGATE();
 bool handleINVERT();
@@ -215,6 +227,18 @@ nativeCommand nativeCommands[] = {
   { handleSIN, "SIN" },
   { handleCOS, "COS" },
   { handleTAN, "TAN" },
+  { handleASIN, "ASIN" },
+  { handleACOS, "ACOS" },
+  { handleATAN, "ATAN" },
+  { handleSINH, "SINH" },
+  { handleCOSH, "COSH" },
+  { handleTANH, "TANH" },
+  { handleLOG, "LOG" },
+  { handleLOG10, "LOG10" },
+  { handleROUND, "ROUND" },
+  { handleFLOOR, "FLOOR" },
+  { handleCEIL, "CEIL" },
+  { handleEXP, "EXP" },
   { handleSETINT, "INT"},
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
@@ -306,7 +330,8 @@ void initForth() {
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
-  StoreCONSTFLOAT("PI", 3.141592653);
+  StoreCONSTFLOAT("PI", 3.141592653f);
+  StoreCONSTFLOAT("E",  2.718281828459045f);
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");

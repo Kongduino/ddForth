@@ -409,6 +409,150 @@ bool handleDifferent() {
   return handle2Nums(math_EQUAL);
 }
 
+bool handleEXP() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleEXP");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleEXP");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleEXP");
+      return false;
+    }
+  }
+  putFloatOnStack(std::exp(f0));
+  return true;
+}
+
+bool handleCEIL() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleCEIL");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleCEIL");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleCEIL");
+      return false;
+    }
+  }
+  putFloatOnStack(std::ceil(f0));
+  return true;
+}
+
+bool handleFLOOR() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleFLOOR");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleFLOOR");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleFLOOR");
+      return false;
+    }
+  }
+  putFloatOnStack(std::floor(f0));
+  return true;
+}
+
+bool handleROUND() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleROUND");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleROUND");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleROUND");
+      return false;
+    }
+  }
+  putFloatOnStack(std::round(f0));
+  return true;
+}
+
+bool handleLOG() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleLOG");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleLOG");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleLOG");
+      return false;
+    }
+  }
+  putFloatOnStack(std::log(f0));
+  return true;
+}
+
+bool handleLOG10() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleLOG10");
+    return false;
+  }
+  float f0;
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleLOG10");
+      return false;
+    }
+    f0 = i0;
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleLOG10");
+      return false;
+    }
+  }
+  putFloatOnStack(std::log(f0));
+  return true;
+}
+
 bool handleSQR() {
   unsigned char type0 = dataStack.at(dataStack.size() - 1);
   if (type0 == xSTRING || type0 == xINVALID) {
@@ -512,6 +656,156 @@ bool handleCOS() {
 }
 
 bool handleTAN() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleTAN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleTAN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleTAN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::tan(f0));
+  return true;
+}
+
+bool handleASIN() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleSIN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::asin(f0));
+  return true;
+}
+
+bool handleACOS() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleCOS");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::acos(f0));
+  return true;
+}
+
+bool handleATAN() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleATAN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleATAN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleATAN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::atan(f0));
+  return true;
+}
+
+bool handleSINH() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleSIN");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleSIN");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::sin(f0));
+  return true;
+}
+
+bool handleCOSH() {
+  unsigned char type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xSTRING || type0 == xINVALID) {
+    logInconsistent((char *)"handleCOS");
+    return false;
+  }
+  int i0;
+  float f0;
+  if (type0 == xINTEGER) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = i0 * (3.141592653 / 180.0);
+  } else {
+    if (popFloatFromStack(&f0) == false) {
+      logStackOverflow((char *)"handleCOS");
+      return false;
+    }
+    f0 = f0 * (3.141592653 / 180.0);
+  }
+  putFloatOnStack(std::cos(f0));
+  return true;
+}
+
+bool handleTANH() {
   unsigned char type0 = dataStack.at(dataStack.size() - 1);
   if (type0 == xSTRING || type0 == xINVALID) {
     logInconsistent((char *)"handleTAN");

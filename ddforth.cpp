@@ -638,14 +638,14 @@ bool lookupVAR(string name) {
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putIntegerOnStack(it->second - 128);
     return true;
   }
 
   it = constAddresses.find(name);
   if (it != constAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putIntegerOnStack(it->second - 256);
     // 0 --> 255 = var
     // 256 --> xxx = const
     return true;
