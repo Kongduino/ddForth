@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+#include <algorithm> // std::transform
 #include "random.hpp"
 
 using namespace std;
