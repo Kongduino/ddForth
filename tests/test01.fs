@@ -1,3 +1,4 @@
+( testing imbricated DO...LOOP with EMIT )
 CR ." OUTSIDE LOOP" CR
 -10 BEGIN
   DUP . DUP -1 * CR
