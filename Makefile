@@ -30,3 +30,6 @@ sdl: ddforth.cpp
 	rm -f *.o
 
 all: ddforth debug sdl
+
+install: ddforth
+	sudo cp ddforth /usr/local/bin:wq
