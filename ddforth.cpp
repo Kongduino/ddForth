@@ -857,7 +857,6 @@ void evaluate(vector<string> chunks) {
       isInsideIF = false;
     } else if (isInsideIF && isTrueIF && skipElse) {
       // cout << "isInsideIF && isTrueIF && skipElse\n";
-      executionPointer += 1;
       while (chunks.at(executionPointer) != "ELSE") {
         // cout << "  • skipping " << chunks.at(executionPointer) << endl;
         executionPointer += 1;
@@ -869,7 +868,6 @@ void evaluate(vector<string> chunks) {
       isInsideParens = false;
       while (chunks.at(executionPointer) != ")")
         executionPointer += 1;
-      executionPointer += 1;
     } else if (lookupVAR(c)) {
       xxxxxx = snprintf((char *)msg, 255, "Put address of %s on stack. ", c.c_str());
       logThis();
