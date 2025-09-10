@@ -21,18 +21,17 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 
 ```
 	.V WORDS
-myVARs.size: 2 myFVARs.size: 0 varAddresses.size: 2 fvarAddresses.size: 0
-myCONSTs.size: 0 myFCONSTs.size: 1 constAddresses.size: 0 fconstAddresses.size: 1
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
 |   0/2   | BASE        |    0 |       10 |
-|   1/2   | VER.        |    1 |     1098 |
+|   1/2   | VER.        |    1 |     1100 |
 +-----------------------------------------+
 +-----------------------------------------+
 | Num     | FCONST Name | Addr | Value    |
 +-----------------------------------------+
-|   0/1   | PI          |  384 |3.141593 |
+|   0/2   | E           |  385 | 2.718282 |
+|   1/2   | PI          |  384 | 3.141593 |
 +-----------------------------------------+
 Handled in Code:
 ----------------
@@ -42,7 +41,7 @@ Handled in Code:
 
 Native Commands:
 ----------------
-WORDS + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT SQR SQRT SIN COS TAN INT EMIT KEY LINE . ." s" .s >s s< LEFTSTR MIDSTR RIGHTSTR LENSTR SUBSTR U. DUP DROP SWAP DEPTH CLEAR ROT ROLL OVER BASE BIN DEC HEX ! !+ @ CR .S .V = < <= > >= <> BEGIN UNTIL WHILE DO LOOP I I' J >R R> EXEC LOAD RANDOM RANDOMI 
+WORDS + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT SQR SQRT SIN COS TAN ASIN ACOS ATAN SINH COSH TANH LOG LOG10 ROUND FLOOR CEIL EXP INT EMIT KEY LINE . ." s" .s +STR STR+ LEFTSTR MIDSTR RIGHTSTR LENSTR SUBSTR LOWERSTR UPPERSTR MULTSTR STRIPSTR LSTRIPSTR RSTRIPSTR INTSTR STRINT U. DUP DROP SWAP DEPTH CLEAR ROT ROLL OVER BASE BIN DEC HEX ! !+ @ CR .S .V = < <= > >= <> BEGIN UNTIL WHILE DO LOOP I I' J >R R> EXEC LOAD RANDOM RANDOMI IF THEN ELSE EXIT ( 
 
 User Commands:
 --------------
