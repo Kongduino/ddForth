@@ -13,7 +13,7 @@
 
 using namespace std;
 
-#define myVERSION 1098
+#include "myversion.hpp"
 
 bool getRandomBuffer();
 void hexDump(unsigned char *, int);
