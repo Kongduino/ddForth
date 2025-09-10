@@ -1133,6 +1133,17 @@ int main(int argc, char **argv) {
   evaluate(chunks);
   memset(code, 0, 256);
 #endif
-  cout << endl << endl;
+  chunks.clear();
+  cout << endl << endl << "OK ";
+
+  while(true) {
+    std::cin.getline(code, 256);
+    chunks = tokenize(code, chunks);
+    evaluate(chunks);
+    memset(code, 0, 256);
+    chunks.clear();
+    cout << "OK ";
+  }
+
   return 0;
 }
