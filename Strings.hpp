@@ -40,7 +40,6 @@ bool handlePRINTSTACKSTRING() {
     logStackOverflow((char *)"handlePRINTSTACKSTRING");
     return false;
   }
-  // cout << "handlePRINTSTACKSTRING ";
   printf("%s", s.c_str());
   return true;
 }
@@ -131,7 +130,6 @@ bool handleSUBSTR() {
     return false;
   }
   putStringOnStack(s);
-  // cout << "handleSUBSTR `" << s << "` "<< i0 << ":" << i1 <<" ie `" << s.substr(i0, i1) << "` ";
   putStringOnStack(s.substr(i0, i1));
   return true;
 }

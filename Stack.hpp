@@ -80,7 +80,6 @@ bool handleOVER() {
   }
   if (type0 == type1) {
     if (type0 == xINTEGER) {
-      // cout << "2 INTs ";
       int i0, i1;
       if (popIntegerFromStack(&i0) == false) {
         logStackOverflow((char *)"handleOVER1");

@@ -692,7 +692,6 @@ bool lookupUC(string name) {
 bool lookup(string c, bool *r) {
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     if (c == nativeCommands[ix].name) {
-      // cout << endl << "Calling " << nativeCommands[ix].name << endl;
       *r = nativeCommands[ix].ptr();
       return true;
     }
@@ -773,20 +772,16 @@ bool isInsideIF = false;
 bool isTrueIF = false;
 bool skipElse = false;
 bool handleIF() {
-  // cout << " handleIF\n";
   int i0;
   if (popIntegerFromStack((int *)&i0) == false) {
     logStackOverflow((char *)"handleIF");
     return false;
   }
-  // cout << " " << i0 << endl;
   isInsideIF = true;
   if (i0 == 0) {
-    // cout << " isTrueIF = false\n";
     isTrueIF = false;
     skipElse = false;
   } else {
-    // cout << " isTrueIF = true\n";
     isTrueIF = true;
     skipElse = false;
   }
@@ -794,13 +789,11 @@ bool handleIF() {
 }
 
 bool handleTHEN() {
-  //  cout << " handleTHEN ";
   skipElse = true;
   return true;
 }
 
 bool handleELSE() {
-  //  cout << " handleELSE ";
   isInsideIF = false;
   isTrueIF = false;
   skipElse = false;
@@ -848,20 +841,15 @@ void evaluate(vector<string> chunks) {
       executionPointer = chunks.size();
     } else if (isInsideIF && !isTrueIF) {
       // Skip to after then
-      // cout << "isInsideIF && isFalseIF\n";
       while (chunks.at(executionPointer) != "THEN") {
-        // cout << "  • SKIPPING " << chunks.at(executionPointer) << endl;
         executionPointer += 1;
       }
       executionPointer += 1;
       isInsideIF = false;
     } else if (isInsideIF && isTrueIF && skipElse) {
-      // cout << "isInsideIF && isTrueIF && skipElse\n";
       while (chunks.at(executionPointer) != "ELSE") {
-        // cout << "  • skipping " << chunks.at(executionPointer) << endl;
         executionPointer += 1;
       }
-      // cout << "ELSE we stop\n";
       isInsideIF = false;
     } else if (isInsideParens) {
       executionPointer += 1;
@@ -1138,10 +1126,18 @@ int main(int argc, char **argv) {
 
   while(true) {
     std::cin.getline(code, 256);
+    if (std::cin.eof()) {
+      std::cin.clear(); // Clear error flags (eofbit, failbit, badbit)
+      cout << " the end\n\n\n";
+      return 0;
+    }
+    if(code[0] == 0) {
+    } else {
     chunks = tokenize(code, chunks);
     evaluate(chunks);
     memset(code, 0, 256);
     chunks.clear();
+    }
     cout << "OK ";
   }
 
