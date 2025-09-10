@@ -32,4 +32,4 @@ sdl: ddforth.cpp
 all: ddforth debug sdl
 
 install: ddforth
-	sudo cp ddforth /usr/local/bin:wq
+	sudo cp ddforth /usr/local/bin/
