@@ -112,23 +112,17 @@ bool handleRget() {
 }
 
 bool handleWORDS() {
-  cout << "Handled in Code:" << endl
-       << "----------------" << endl;
+  cout << "Handled in Code:" << endl << "----------------" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
     printf(" • %-11s (Handled in code)\n", s.c_str());
   }
-  cout << endl
-       << "Native Commands:" << endl
-       << "----------------" << endl;
+  cout << endl << "Native Commands:" << endl << "----------------" << endl;
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
     cout << nativeCommands[ix].name << " ";
   }
-  cout << endl
-       << endl
-       << "User Commands:" << endl
-       << "--------------" << endl;
+  cout << endl << endl << "User Commands:" << endl << "--------------" << endl;
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
@@ -332,8 +326,7 @@ bool showVars() {
   if (myVARs.size() > 0) {
     cout << endl << "+-----------------------------------------+" << endl;
     cout << "| Num     |  VAR Name   | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = varAddresses.begin();
     int ix = 0;
     while (it != varAddresses.end()) {
@@ -348,8 +341,7 @@ bool showVars() {
   if (myFVARs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FVAR Name   | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fvarAddresses.begin();
     int ix = 0;
     while (it != fvarAddresses.end()) {
@@ -364,8 +356,7 @@ bool showVars() {
   if (myCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     |  CONST Name | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = constAddresses.begin();
     int ix = 0;
     while (it != constAddresses.end()) {
@@ -380,8 +371,7 @@ bool showVars() {
   if (myFCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FCONST Name | Addr | Value    |";
-    cout << endl
-         << "+-----------------------------------------+" << endl;
+    cout << endl << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fconstAddresses.begin();
     int ix = 0;
     while (it != fconstAddresses.end()) {
@@ -895,8 +885,7 @@ void evaluate(vector<string> chunks) {
       if (isInteger(d, &i0)) valid = false;
       else if (isFloat(d, &f0)) valid = false;
       if (!valid) {
-        cout << endl
-             << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
+        cout << endl << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
         return;
       }
       bool thisIsInt = false;
@@ -1146,8 +1135,6 @@ int main(int argc, char **argv) {
   evaluate(chunks);
   memset(code, 0, 256);
 #endif
-
-  cout << endl
-       << endl;
+  cout << endl << endl;
   return 0;
 }

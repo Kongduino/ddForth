@@ -340,6 +340,14 @@ void initForth() {
   computedWords.push_back(": ... ;");
   userCmdCount = userCommands.size();
   getRandomBuffer();
+  int v0, v1, v2;
+  float f0;
+  v0 = (myVERSION / 1000);
+  v1 = ((myVERSION - (v0 * 1000))) / 10;
+  v2 = (myVERSION / 100) * 100;
+  f0 = (myVERSION - v2);
+  v2 = f0;
+  printf("ddForth v%d.%d.%d\n", v0, v1, v2);
 }
 
 void logStack(char *who) {
