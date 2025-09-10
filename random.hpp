@@ -1,6 +1,14 @@
 using namespace std;
 #include <fstream>
+#include <cmath> // For std::sqrt
+#include <fcntl.h>
 #include <iostream>
+#include <map>
+#include <cstdio>
+#include <string>
+#include <termios.h>
+#include <unistd.h>
+#include <vector>
 
 bool putIntegerOnStack(int);
 unsigned char getRND();

@@ -805,6 +805,12 @@ bool handleELSE() {
   return true;
 }
 
+bool isExiting = false;
+bool handleEXIT() {
+  isExiting = true;
+  return true;
+}
+
 void evaluate(vector<string> chunks) {
   bool r;
   int i0;
@@ -829,7 +835,10 @@ void evaluate(vector<string> chunks) {
     }
     cout << "+-------+---------------------------------------------------+" << endl;
 #endif
-    if (isInsideIF && !isTrueIF) {
+    if (isExiting) {
+      isExiting = false;
+      executionPointer = chunks.size();
+    } else if (isInsideIF && !isTrueIF) {
       // Skip to after then
       // cout << "isInsideIF && isFalseIF\n";
       while(chunks.at(executionPointer) != "THEN") {

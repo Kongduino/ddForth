@@ -127,6 +127,7 @@ void logUnknownBlock(char *);
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
+bool handleEXIT();
 
 bool handleIF();
 bool handleTHEN();
@@ -277,6 +278,7 @@ nativeCommand nativeCommands[] = {
   { handleIF, "IF" },
   { handleTHEN, "THEN" },
   { handleELSE, "ELSE" },
+  { handleEXIT, "EXIT" },
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
