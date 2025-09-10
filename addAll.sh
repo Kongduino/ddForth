@@ -1,5 +1,5 @@
 #!/bin/sh
-git add *.hpp *.cpp README.md tests/*.* Fonts/Roboto* assets/*.*
+git add *.hpp *.cpp README.md tests/*.* Fonts/Roboto* assets/*.* Makefile addAll.sh
 git commit -m "$1"
 git push
 
