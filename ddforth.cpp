@@ -321,14 +321,16 @@ bool handleWHILE() {
 }
 
 bool showVars() {
+#if defined(DEBUG)
   cout << endl << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
        << " varAddresses.size: " << varAddresses.size()
        << " fvarAddresses.size: " << fvarAddresses.size() << endl;
   cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
        << " constAddresses.size: " << constAddresses.size()
-       << " fconstAddresses.size: " << fconstAddresses.size() << endl;
+       << " fconstAddresses.size: " << fconstAddresses.size();
+#endif
   if (myVARs.size() > 0) {
-    cout << "+-----------------------------------------+" << endl;
+    cout << endl << "+-----------------------------------------+" << endl;
     cout << "| Num     |  VAR Name   | Addr | Value    |";
     cout << endl
          << "+-----------------------------------------+" << endl;
