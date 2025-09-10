@@ -105,6 +105,7 @@ bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
 bool handleLOAD();
+bool handleParens();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -305,6 +306,7 @@ nativeCommand nativeCommands[] = {
   { handleTHEN, "THEN" },
   { handleELSE, "ELSE" },
   { handleEXIT, "EXIT" },
+  { handleParens, "("},
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"

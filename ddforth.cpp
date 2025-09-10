@@ -112,17 +112,23 @@ bool handleRget() {
 }
 
 bool handleWORDS() {
-  cout << "Handled in Code:" << endl << "----------------" << endl;
+  cout << "Handled in Code:" << endl
+       << "----------------" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
     printf(" • %-11s (Handled in code)\n", s.c_str());
   }
-  cout << endl << "Native Commands:" << endl << "----------------" << endl;
+  cout << endl
+       << "Native Commands:" << endl
+       << "----------------" << endl;
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
     cout << nativeCommands[ix].name << " ";
   }
-  cout << endl << endl << "User Commands:" << endl << "--------------" << endl;
+  cout << endl
+       << endl
+       << "User Commands:" << endl
+       << "--------------" << endl;
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
@@ -315,7 +321,7 @@ bool handleWHILE() {
 }
 
 bool showVars() {
-  cout << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
+  cout << endl << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
        << " varAddresses.size: " << varAddresses.size()
        << " fvarAddresses.size: " << fvarAddresses.size() << endl;
   cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
@@ -324,7 +330,8 @@ bool showVars() {
   if (myVARs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     |  VAR Name   | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
+    cout << endl
+         << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = varAddresses.begin();
     int ix = 0;
     while (it != varAddresses.end()) {
@@ -339,7 +346,8 @@ bool showVars() {
   if (myFVARs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FVAR Name   | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
+    cout << endl
+         << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fvarAddresses.begin();
     int ix = 0;
     while (it != fvarAddresses.end()) {
@@ -354,7 +362,8 @@ bool showVars() {
   if (myCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     |  CONST Name | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
+    cout << endl
+         << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = constAddresses.begin();
     int ix = 0;
     while (it != constAddresses.end()) {
@@ -369,13 +378,14 @@ bool showVars() {
   if (myFCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FCONST Name | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
+    cout << endl
+         << "+-----------------------------------------+" << endl;
     map<string, int>::iterator it = fconstAddresses.begin();
     int ix = 0;
     while (it != fconstAddresses.end()) {
       string n = it->first;
       printf(
-        "| %3d/%-3zu | %-11s | %4d |%8f |\n",
+        "| %3d/%-3zu | %-11s | %4d |%9f |\n",
         (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
       it++;
     }
@@ -556,7 +566,7 @@ bool handleKEY() {
 bool handleLINE() {
   string s;
   // cin.ignore(numeric_limits<streamsize>::max(), '\n');
-  getline(cin, s); // Reads the entire line
+  getline(cin, s);  // Reads the entire line
   return putStringOnStack(s);
 }
 
@@ -754,7 +764,7 @@ bool isFloat(string c, float *f0) {
 
 bool handleEXEC() {
   string s;
-  if(popStringFromStack(&s) == false) {
+  if (popStringFromStack(&s) == false) {
     logStackOverflow((char *)"handleEXEC");
     return false;
   }
@@ -792,13 +802,13 @@ bool handleIF() {
 }
 
 bool handleTHEN() {
-//  cout << " handleTHEN ";
+  //  cout << " handleTHEN ";
   skipElse = true;
   return true;
 }
 
 bool handleELSE() {
-//  cout << " handleELSE ";
+  //  cout << " handleELSE ";
   isInsideIF = false;
   isTrueIF = false;
   skipElse = false;
@@ -808,6 +818,12 @@ bool handleELSE() {
 bool isExiting = false;
 bool handleEXIT() {
   isExiting = true;
+  return true;
+}
+
+bool isInsideParens = false;
+bool handleParens() {
+  isInsideParens = true;
   return true;
 }
 
@@ -841,7 +857,7 @@ void evaluate(vector<string> chunks) {
     } else if (isInsideIF && !isTrueIF) {
       // Skip to after then
       // cout << "isInsideIF && isFalseIF\n";
-      while(chunks.at(executionPointer) != "THEN") {
+      while (chunks.at(executionPointer) != "THEN") {
         // cout << "  • SKIPPING " << chunks.at(executionPointer) << endl;
         executionPointer += 1;
       }
@@ -850,12 +866,18 @@ void evaluate(vector<string> chunks) {
     } else if (isInsideIF && isTrueIF && skipElse) {
       // cout << "isInsideIF && isTrueIF && skipElse\n";
       executionPointer += 1;
-      while(chunks.at(executionPointer) != "ELSE") {
+      while (chunks.at(executionPointer) != "ELSE") {
         // cout << "  • skipping " << chunks.at(executionPointer) << endl;
         executionPointer += 1;
       }
       // cout << "ELSE we stop\n";
       isInsideIF = false;
+    } else if (isInsideParens) {
+      executionPointer += 1;
+      isInsideParens = false;
+      while (chunks.at(executionPointer) != ")")
+        executionPointer += 1;
+      executionPointer += 1;
     } else if (lookupVAR(c)) {
       xxxxxx = snprintf((char *)msg, 255, "Put address of %s on stack. ", c.c_str());
       logThis();
@@ -871,7 +893,8 @@ void evaluate(vector<string> chunks) {
       if (isInteger(d, &i0)) valid = false;
       else if (isFloat(d, &f0)) valid = false;
       if (!valid) {
-        cout << endl << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
+        cout << endl
+             << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
         return;
       }
       bool thisIsInt = false;
@@ -915,15 +938,15 @@ void evaluate(vector<string> chunks) {
         xxxxxx = snprintf((char *)msg, 255, "FLOAT CONST name: %s initialized with %f\n", d.c_str(), f0);
         logThis();
         StoreCONSTFLOAT(d, f0);
-      } // Need to add the same for STRING
+      }  // Need to add the same for STRING
     } else if (insideString && c.back() == '"') {
       c.pop_back();
       insideString = false;
-      if(isStackingString) {
+      if (isStackingString) {
         isStackingString = false;
         putStringOnStack(c);
 #if defined(NEED_SDL)
-      } else if(isDrawing) {
+      } else if (isDrawing) {
         drawText(c);
 #endif
       } else {
@@ -1122,6 +1145,7 @@ int main(int argc, char **argv) {
   memset(code, 0, 256);
 #endif
 
-  cout << endl << endl;
+  cout << endl
+       << endl;
   return 0;
 }
