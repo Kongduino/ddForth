@@ -1,3 +1,13 @@
+#include <fstream>
+#include <cmath> // For std::sqrt
+#include <fcntl.h>
+#include <iostream>
+#include <map>
+#include <cstdio>
+#include <string>
+#include <termios.h>
+#include <unistd.h>
+#include <vector>
 #include "ddforth.hpp"
 bool insideString;
 
