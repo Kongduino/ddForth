@@ -112,6 +112,9 @@ bool handleWHILE();
 bool handleWORDS();
 bool handleLOAD();
 bool handleParens();
+bool handleCELLS();
+bool handleCELLSTORE();
+bool handleCELLRETRIEVE();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -319,6 +322,10 @@ nativeCommand nativeCommands[] = {
   { handleELSE, "ELSE" },
   { handleEXIT, "EXIT" },
   { handleParens, "("},
+  { handleCELLS, "CELLS"},
+  { handleCELLSTORE, ">CELL"},
+  { handleCELLRETRIEVE, "CELL>"},
+
 #include "lowercase.hpp"
 
 #if defined(NEED_SDL)

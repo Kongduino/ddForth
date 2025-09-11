@@ -812,6 +812,85 @@ bool handleParens() {
   return true;
 }
 
+bool handleCELLS() {
+  int number; // number of cells
+  if (popIntegerFromStack(&number) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLS: No INT on the stack!\n");
+    logThis();
+    return false;
+  }
+  int i0;
+  float f0;
+  string s0;
+  bool thisIsInt = false;
+  bool thisIsFloat = false;
+  bool thisIsString = false;
+  // we need something
+  if (popIntegerFromStack(&i0) == false) {
+    // xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
+    // logThis();
+    if (popFloatFromStack(&f0) == false) {
+      // xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack either!\n");
+      // logThis();
+      if (popStringFromStack(&s0) == false) {
+        //xxxxxx = snprintf((char *)msg, 255, "No STRING on the stack either!\n");
+        // logThis();
+        return false;
+      } else {
+        thisIsString = true;
+      }
+    } else {
+      thisIsFloat = true;
+    }
+  } else thisIsInt = true;
+  for (int ix = 0; ix < number; ix++) {
+    if (thisIsInt) putIntegerOnStack(i0);
+    else if (thisIsFloat) putFloatOnStack(f0);
+    else putStringOnStack(s0);
+  }
+  return true;
+}
+
+bool handleCELLSTORE() {
+  int number;  // cell number
+  if (popIntegerFromStack(&number) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE: No INT on the stack!\n");
+    logThis();
+    return false;
+  }
+  if (number >= dataStack.size() - 1) {
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE: Not enough cells on the stack!\n");
+    logThis();
+    return false;
+  }
+  int type0 = dataStack.at(dataStack.size() - 2);
+  if (type0 == xINTEGER) {
+    int i0;
+    if (popIntegerFromStack(&i0) == false) {
+      xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE: No INT to store on the stack!\n");
+      logThis();
+      return false;
+    }
+    cout << " storing " << i0 << " at position " << (dataStack.size() - 1 - number) << endl;
+    dataStack.at(dataStack.size() - 1 - number) = i0;
+    return true;
+  }
+}
+
+bool handleCELLRETRIEVE() {
+  int number;  // cell number
+  if (popIntegerFromStack(&number) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE: No INT on the stack!\n");
+    logThis();
+    return false;
+  }
+  int type0 = dataStack.at(dataStack.size() - 1);
+  if (type0 == xINTEGER) {
+    putIntegerOnStack(dataStack.at(dataStack.size() - 1 - number));
+    return true;
+  }
+}
+
 void evaluate(vector<string> chunks) {
   bool r;
   int i0;
@@ -877,7 +956,7 @@ void evaluate(vector<string> chunks) {
       bool thisIsInt = false;
       bool thisIsFloat = false;
       bool thisIsString = false;
-      // we need a number
+      // we need something
       if (popIntegerFromStack(&i0) == false) {
         xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
         logThis();
@@ -1120,9 +1199,9 @@ int main(int argc, char **argv) {
   }
   evaluate(chunks);
   memset(code, 0, 256);
-#endif
   chunks.clear();
   cout << endl << endl << "OK ";
+#endif
 
   while(true) {
     std::cin.getline(code, 256);
@@ -1140,6 +1219,5 @@ int main(int argc, char **argv) {
     }
     cout << "OK ";
   }
-
   return 0;
 }
