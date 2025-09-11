@@ -319,6 +319,7 @@ nativeCommand nativeCommands[] = {
   { handleELSE, "ELSE" },
   { handleEXIT, "EXIT" },
   { handleParens, "("},
+#include "lowercase.hpp"
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
