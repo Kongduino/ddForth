@@ -79,3 +79,6 @@
   { handleTHEN, "then" },
   { handleELSE, "else" },
   { handleEXIT, "exit" },
+  { handleCELLS, "array"},
+  { handleCELLSTORE, ">ix"},
+  { handleCELLRETRIEVE, "ix>"},

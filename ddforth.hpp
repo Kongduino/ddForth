@@ -322,9 +322,9 @@ nativeCommand nativeCommands[] = {
   { handleELSE, "ELSE" },
   { handleEXIT, "EXIT" },
   { handleParens, "("},
-  { handleCELLS, "CELLS"},
-  { handleCELLSTORE, ">CELL"},
-  { handleCELLRETRIEVE, "CELL>"},
+  { handleCELLS, "ARRAY"},
+  { handleCELLSTORE, ">IX"},
+  { handleCELLRETRIEVE, "IX>"},
 
 #include "lowercase.hpp"
 
