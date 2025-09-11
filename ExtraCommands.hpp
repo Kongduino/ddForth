@@ -22,6 +22,11 @@ vector<userCommand> userCommands {
   {"NIP", "SWAP DROP"},
   {"TUCK", "SWAP OVER"},
   {"-ROT", "ROT ROT"},
+  {"nip", "swap drop"},
+  {"tuck", "swap over"},
+  {"-rot", "rot rot"},
+  {"true", "1 ="},
+  {"false", "0 ="},
 
 };
 int userCmdCount = 0;
