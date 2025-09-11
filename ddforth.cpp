@@ -871,10 +871,10 @@ bool handleCELLSTORE() {
       logThis();
       return false;
     }
-    cout << " storing " << i0 << " at position " << (dataStack.size() - 1 - number) << endl;
-    dataStack.at(dataStack.size() - 1 - number) = i0;
+    userIntegers.at(userIntegers.size() - 1 - number) = i0;
     return true;
   }
+  return false;
 }
 
 bool handleCELLRETRIEVE() {
@@ -886,9 +886,10 @@ bool handleCELLRETRIEVE() {
   }
   int type0 = dataStack.at(dataStack.size() - 1);
   if (type0 == xINTEGER) {
-    putIntegerOnStack(dataStack.at(dataStack.size() - 1 - number));
+    putIntegerOnStack(userIntegers.at(userIntegers.size() - 1 - number));
     return true;
   }
+  return false;
 }
 
 void evaluate(vector<string> chunks) {
