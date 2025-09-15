@@ -7,10 +7,11 @@ showTagada
 showTagada
 33 s" tagada" IX+ 11 s" tagada" +IX
 showTagada
-1 10 s" TT" array s" TT" alist 13 3 s" TT" >IX 3 s" TT" IX> . CR s" TT" alist CR
-." <ROT Left rot, ie UP, x 2:" CR
-s" TT" <ROT s" TT" <ROT s" TT" alist
-." ROT> Right rot, ie DOWN, x 6:" CR
 : nROT> 0 DO DUP ROT> LOOP CLEAR ;
+: n<ROT 0 DO DUP <ROT LOOP CLEAR ;
+1 10 s" TT" array s" TT" alist 13 3 s" TT" >IX 3 s" TT" IX> . CR s" TT" alist CR
+." <ROT Left rot, ie UP, x 3:" CR
+s" TT" 3 n<ROT s" TT" alist CR
+." ROT> Right rot, ie DOWN, x 6:" CR
 s" TT" 6 nROT>
 s" TT" alist
