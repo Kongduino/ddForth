@@ -27,6 +27,8 @@ vector<userCommand> userCommands {
   {"-rot", "rot rot"},
   {"true", "1 ="},
   {"false", "0 ="},
+  {"nROT>", "0 DO DUP ROT> LOOP CLEAR"},
+  {"n<ROT", "0 DO DUP <ROT LOOP CLEAR"},
 
 };
 int userCmdCount = 0;
