@@ -1,6 +1,6 @@
 using namespace std;
 #include <fstream>
-#include <cmath> // For std::sqrt
+#include <cmath>  // For std::sqrt
 #include <fcntl.h>
 #include <iostream>
 #include <map>
@@ -10,20 +10,22 @@ using namespace std;
 #include <unistd.h>
 #include <vector>
 
+void printText(char *);
 bool putIntegerOnStack(int);
 unsigned char getRND();
 
+extern char msg[256];
 unsigned char randomBuffer[256];
 int randomIndex = 0;
 
 void hexDump(unsigned char *buf, int len) {
-  char alphabet[17]="0123456789abcdef";
+  char alphabet[17] = "0123456789abcdef";
   printf("%s\n", "   +------------------------------------------------+ +----------------+");
   printf("%s\n", "   |.0 .1 .2 .3 .4 .5 .6 .7 .8 .9 .a .b .c .d .e .f | |      ASCII     |");
   for (int i = 0; i < len; i += 16) {
     if (i % 128 == 0)
       printf("%s\n", "   +------------------------------------------------+ +----------------+");
-    char s[]="|                                                | |................|";
+    char s[] = "|                                                | |................|";
     char ix = 1, iy = 52;
     for (char j = 0; j < 16; j++) {
       if (i + j < len) {
@@ -35,7 +37,7 @@ void hexDump(unsigned char *buf, int len) {
       }
     }
     char index = i / 16;
-    if(i<256) printf("%s", " ");
+    if (i < 256) printf("%s", " ");
     printf("%x.", index);
     printf("%s\n", s);
   }
@@ -43,21 +45,11 @@ void hexDump(unsigned char *buf, int len) {
 }
 
 bool getRandomBuffer() {
-  std::ifstream urandom("/dev/urandom", std::ios::in | std::ios::binary);
-  if (urandom.is_open()) {
-    std::vector<char> random_bytes(256);
-    urandom.read(random_bytes.data(), 256);
-    urandom.close();
-    memcpy(randomBuffer, random_bytes.data(), 256);
 #if defined(DEBUG)
-    hexDump(randomBuffer, 256);
+  hexDump(randomBuffer, 256);
 #endif
-    randomIndex = 0;
-    return true;
-  } else {
-    std::cerr << "Error: Could not open /dev/urandom" << std::endl;
-    return false;
-  }
+  randomIndex = 0;
+  return true;
 }
 
 unsigned char getRND() {

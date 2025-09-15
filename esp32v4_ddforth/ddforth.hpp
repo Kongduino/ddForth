@@ -25,8 +25,6 @@ bool getRandomUInt();
 #include "sdl_inc0.hpp"
 #endif
 
-void initScreen();
-void printText(char *);
 bool handle2Nums(unsigned char);
 bool handleABS();
 bool handleAND();
@@ -132,6 +130,7 @@ bool handleRSTRIPSTR();
 bool handleINTSTR();
 bool handleSTRINT();
 
+
 bool lookup(string);
 bool lookupUC(string);
 bool lookupVAR(string);
@@ -150,6 +149,10 @@ void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
 void logUnknownBlock(char *);
+void logStack(char *);
+void logInconsistent(char *who);
+void logStackOverflow(char *who);
+void logThis();
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
@@ -165,10 +168,6 @@ void StoreINT(string, int);
 void StoreFLOAT(string, float);
 void StoreCONSTFLOAT(string, float);
 bool checkTypes(int, unsigned char);
-void logStack(char *);
-void logInconsistent(char *who);
-void logStackOverflow(char *who);
-void logThis();
 
 int executionPointer = -1;
 vector<int> jumpStack;
@@ -328,6 +327,8 @@ nativeCommand nativeCommands[] = {
   { handleCELLSTORE, ">IX" },
   { handleCELLRETRIEVE, "IX>" },
 
+  { handleDrawLINE, "D_LINE" },
+
 #include "lowercase.hpp"
 
 #if defined(NEED_SDL)
@@ -361,14 +362,17 @@ void initForth() {
   v2 = (myVERSION / 100) * 100;
   f0 = (myVERSION - v2);
   v2 = f0;
-  sprintf(msg, "ddForth v%d.%d.%d\n", v0, v1, v2);
-  cout << msg;
+  sprintf(msg, "ddForth v%d.%d.%d", v0, v1, v2);
+  cout << msg << endl;
   printText(msg);
   xxxxxx = snprintf((char *)msg, 255, "init ");
   logThis();
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
+  StoreINT("HEIGHT", display.getHeight());
+  StoreINT("WIDTH", display.getWidth());
+  
   StoreCONSTFLOAT("PI", 3.141592653f);
   StoreCONSTFLOAT("E", 2.718281828459045f);
   // words that are handled in code (evaluate)
@@ -400,7 +404,7 @@ void logInconsistent(char *who) {
 
 void logStackOverflow(char *who) {
   //#if defined(DEBUG)
-  xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
+  sprintf((char *)msg, "%s Stack overflow!\n", who);
   cout << msg;
   //#endif
 }

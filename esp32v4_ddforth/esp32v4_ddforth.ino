@@ -140,8 +140,12 @@ bool handleSETINT() {
   float f0;
   int i0;
   if (popFloatFromStack(&f0) == false) {
-    logStackOverflow((char *)"handleSETINT f0");
-    return false;
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSETINT f0");
+      return false;
+    }
+    // Idiot user is trying to convert an INT to an INT...
+    f0 = i0;
   }
   i0 = f0;
   putIntegerOnStack(i0);
@@ -1190,6 +1194,8 @@ void setup() {
   chunks = tokenize(code, chunks);
   strcpy(code, "BASE 16 ! A5 BASE A ! . CR -13 DUP DUP .S . U. HEX . DEC CR BASE ? .V CR");
   chunks = tokenize(code, chunks);
+  // strcpy(code, "0 BEGIN DUP DUP 0 SWAP 2 /  WIDTH @ SWAP D_LINE 2 + DUP 10 .S < WHILE");
+  // chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);
   chunks.clear();

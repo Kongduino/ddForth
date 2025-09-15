@@ -115,6 +115,12 @@ bool handleParens();
 bool handleCELLS();
 bool handleCELLSTORE();
 bool handleCELLRETRIEVE();
+bool handleCELLLENGTH();
+bool handleCELLAPPEND();
+bool handleCELLPREPEND();
+bool handleCELLLIST();
+bool handleCELLLROT();
+bool handleCELLRROT();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -184,6 +190,9 @@ map<string, int> varAddresses;
 map<string, int> fvarAddresses;
 map<string, int> constAddresses;
 map<string, int> fconstAddresses;
+map<string, vector<int>> myIntArrays;
+map<string, vector<float>> myFloatArrays;
+map<string, vector<string>> myStringArrays;
 vector<int> myVARs;
 vector<float> myFVARs;
 vector<int> myCONSTs;
@@ -325,6 +334,12 @@ nativeCommand nativeCommands[] = {
   { handleCELLS, "ARRAY"},
   { handleCELLSTORE, ">IX"},
   { handleCELLRETRIEVE, "IX>"},
+  { handleCELLLENGTH, "LEN>"},
+  { handleCELLAPPEND, "IX+"},
+  { handleCELLPREPEND, "+IX"},
+  { handleCELLLROT, "<ROT"},
+  { handleCELLRROT, "ROT>"},
+  { handleCELLLIST, "ALIST"},
 
 #include "lowercase.hpp"
 
