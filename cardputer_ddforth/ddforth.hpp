@@ -11,6 +11,7 @@
 #include <algorithm>  // std::transform
 #include "random.hpp"
 #include "display.hpp"
+
 using namespace std;
 
 #include "myversion.hpp"
@@ -115,6 +116,12 @@ bool handleParens();
 bool handleCELLS();
 bool handleCELLSTORE();
 bool handleCELLRETRIEVE();
+bool handleCELLLENGTH();
+bool handleCELLAPPEND();
+bool handleCELLPREPEND();
+bool handleCELLLIST();
+bool handleCELLLROT();
+bool handleCELLRROT();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -129,7 +136,6 @@ bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
 bool handleINTSTR();
 bool handleSTRINT();
-
 
 bool lookup(string);
 bool lookupUC(string);
@@ -149,10 +155,6 @@ void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);
 void logUnknownBlock(char *);
-void logStack(char *);
-void logInconsistent(char *who);
-void logStackOverflow(char *who);
-void logThis();
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
@@ -166,8 +168,14 @@ vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 void StoreINT(string, int);
 void StoreFLOAT(string, float);
+void StoreSTRING(string, string);
 void StoreCONSTFLOAT(string, float);
+void StoreCONSTSTR(string, string);
 bool checkTypes(int, unsigned char);
+void logStack(char *);
+void logInconsistent(char *who);
+void logStackOverflow(char *who);
+void logThis();
 
 int executionPointer = -1;
 vector<int> jumpStack;
@@ -183,12 +191,19 @@ bool isPrinting = false;
 bool isStackingString = false;
 std::map<string, int> varAddresses;
 std::map<string, int> fvarAddresses;
+std::map<string, int> strvarAddresses;
 std::map<string, int> constAddresses;
 std::map<string, int> fconstAddresses;
+std::map<string, int> strconstAddresses;
+std::map<string, vector<int>> myIntArrays;
+std::map<string, vector<float>> myFloatArrays;
+std::map<string, vector<string>> myStringArrays;
 vector<int> myVARs;
 vector<float> myFVARs;
 vector<int> myCONSTs;
 vector<float> myFCONSTs;
+vector<string> mySTRVARs;
+vector<string> mySTRCONSTs;
 vector<string> computedWords;
 char code[256] = { 0 };
 int xxxxxx;
@@ -326,6 +341,14 @@ nativeCommand nativeCommands[] = {
   { handleCELLS, "ARRAY" },
   { handleCELLSTORE, ">IX" },
   { handleCELLRETRIEVE, "IX>" },
+  { handleCELLLENGTH, "LEN>" },
+  { handleCELLAPPEND, "IX+" },
+  { handleCELLPREPEND, "+IX" },
+  { handleCELLLROT, "<ROT" },
+  { handleCELLRROT, "ROT>" },
+  { handleCELLLIST, "ALIST" },
+
+#include "lowercase.hpp"
 
 #if defined(NEED_SDL)
 #include "sdl_inc1.hpp"
@@ -336,6 +359,7 @@ int nativeCmdCount = 0;
 
 char numerics[] = "0123456789abcdef";
 
+#include "Files.hpp"
 #include "Strings.hpp"
 #include "Numbers.hpp"
 #include "Stack.hpp"
@@ -345,30 +369,11 @@ char numerics[] = "0123456789abcdef";
 #endif
 
 void initForth() {
-  for (int xx = 0; xx < 9; xx++) {
-    cout << ".";
-    delay(500);
-  }
-  initScreen();
-  cout << "!" << endl;
-  int v0, v1, v2;
-  float f0;
-  v0 = (myVERSION / 1000);
-  v1 = ((myVERSION - (v0 * 1000))) / 100;
-  v2 = (myVERSION / 100) * 100;
-  f0 = (myVERSION - v2);
-  v2 = f0;
-  sprintf(msg, "ddForth v%d.%d.%d", v0, v1, v2);
-  cout << msg << endl;
-  printText(msg);
   xxxxxx = snprintf((char *)msg, 255, "init ");
   logThis();
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
-  StoreINT("HEIGHT", display.getHeight());
-  StoreINT("WIDTH", display.getWidth());
-  
   StoreCONSTFLOAT("PI", 3.141592653f);
   StoreCONSTFLOAT("E", 2.718281828459045f);
   // words that are handled in code (evaluate)
@@ -379,6 +384,31 @@ void initForth() {
   computedWords.push_back("( THIS IS A COMMENT. )");
   userCmdCount = userCommands.size();
   getRandomBuffer();
+  int v0, v1, v2;
+  float f0;
+  v0 = (myVERSION / 1000);
+  v1 = ((myVERSION - (v0 * 1000))) / 100;
+  v2 = (myVERSION / 100) * 100;
+  f0 = (myVERSION - v2);
+  v2 = f0;
+  auto cfg = M5.config();
+  M5Cardputer.begin(cfg, true);
+  display.setRotation(1);
+  display.setTextWrap(true);
+  display.setTextSize(1.0);
+  display.setTextFont(&fonts::FreeMono12pt7b);
+  display.setTextColor(TFT_WHITE);
+  xxxxxx = snprintf(
+    (char *)msg, 255,
+    " ddForth %d.%d", v0, v1);
+  Matrix();
+  delay(2000);
+  display.clear();
+  xxxxxx = snprintf(
+    (char *)msg, 255,
+    "ddForth v%d.%d.%d", v0, v1, v2);
+  cout << msg << endl;
+  display.println(msg);
 }
 
 void logStack(char *who) {
@@ -400,7 +430,7 @@ void logInconsistent(char *who) {
 
 void logStackOverflow(char *who) {
   //#if defined(DEBUG)
-  sprintf((char *)msg, "%s Stack overflow!\n", who);
+  xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
   //#endif
 }

@@ -7,7 +7,7 @@ using namespace std;
 // Need to add the same for STRING
 
 void StoreCONSTFLOAT(string name, float value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = fconstAddresses.find(name);
   if (it == fconstAddresses.end()) {
     myFCONSTs.push_back(value);
@@ -21,7 +21,7 @@ void StoreCONSTFLOAT(string name, float value) {
 }
 
 void StoreCONSTINT(string name, int value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = constAddresses.find(name);
   if (it == constAddresses.end()) {
     myCONSTs.push_back(value);
@@ -35,7 +35,7 @@ void StoreCONSTINT(string name, int value) {
 }
 
 void StoreCONSTSTR(string name, string value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = strconstAddresses.find(name);
   if (it == strconstAddresses.end()) {
     mySTRCONSTs.push_back(value);
@@ -49,7 +49,7 @@ void StoreCONSTSTR(string name, string value) {
 }
 
 void StoreSTRING(string name, string value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
     xxxxxx = snprintf((char *)msg, 255, "STRVAR %s found at %d\n", name.c_str(), (it->second));
@@ -67,7 +67,7 @@ void StoreSTRING(string name, string value) {
 }
 
 void StoreFLOAT(string name, float value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     xxxxxx = snprintf((char *)msg, 255, "FVAR %s found at %d\n", name.c_str(), (it->second));
@@ -85,7 +85,7 @@ void StoreFLOAT(string name, float value) {
 }
 
 void StoreINT(string name, int value) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     myVARs.at(it->second) = value;
@@ -100,7 +100,7 @@ void StoreINTaddress(int ad, int value) {
 }
 
 int GetINT(string name) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     return myVARs.at(it->second);
@@ -110,7 +110,7 @@ int GetINT(string name) {
 }
 
 int GetINTaddress(string name) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     return it->second;
@@ -144,18 +144,23 @@ bool handleRget() {
 }
 
 bool handleWORDS() {
-  cout << "Handled in Code:" << endl << "----------------" << endl;
+  cout << "Handled in Code:" << endl
+       << "----------------" << endl;
   for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
     string s = *it;
     printf(" • %-11s (Handled in code)\n", s.c_str());
   }
-  cout << endl << "Native Commands:" << endl << "----------------" << endl;
+  cout << endl
+       << "Native Commands:" << endl
+       << "----------------" << endl;
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
     cout << nativeCommands[ix].name << " ";
   }
-  cout << endl << endl
-       << "User Commands:" << endl << "--------------" << endl;
+  cout << endl
+       << endl
+       << "User Commands:" << endl
+       << "--------------" << endl;
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
@@ -349,7 +354,8 @@ bool handleWHILE() {
 
 bool showVars() {
 #if defined(DEBUG)
-  cout << endl << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
+  cout << endl
+       << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
        << " varAddresses.size: " << varAddresses.size()
        << " fvarAddresses.size: " << fvarAddresses.size() << endl;
   cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
@@ -357,10 +363,12 @@ bool showVars() {
        << " fconstAddresses.size: " << fconstAddresses.size();
 #endif
   if (myVARs.size() > 0) {
-    cout << endl << "+-----------------------------------------+" << endl;
+    cout << endl
+         << "+-----------------------------------------+" << endl;
     cout << "| Num     |  VAR Name   | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
-    map<string, int>::iterator it = varAddresses.begin();
+    cout << endl
+         << "+-----------------------------------------+" << endl;
+    std::map<string, int>::iterator it = varAddresses.begin();
     int ix = 0;
     while (it != varAddresses.end()) {
       string n = it->first;
@@ -374,8 +382,9 @@ bool showVars() {
   if (myFVARs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FVAR Name   | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
-    map<string, int>::iterator it = fvarAddresses.begin();
+    cout << endl
+         << "+-----------------------------------------+" << endl;
+    std::map<string, int>::iterator it = fvarAddresses.begin();
     int ix = 0;
     while (it != fvarAddresses.end()) {
       string n = it->first;
@@ -389,8 +398,9 @@ bool showVars() {
   if (myCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     |  CONST Name | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
-    map<string, int>::iterator it = constAddresses.begin();
+    cout << endl
+         << "+-----------------------------------------+" << endl;
+    std::map<string, int>::iterator it = constAddresses.begin();
     int ix = 0;
     while (it != constAddresses.end()) {
       string n = it->first;
@@ -404,8 +414,9 @@ bool showVars() {
   if (myFCONSTs.size() > 0) {
     cout << "+-----------------------------------------+" << endl;
     cout << "| Num     | FCONST Name | Addr | Value    |";
-    cout << endl << "+-----------------------------------------+" << endl;
-    map<string, int>::iterator it = fconstAddresses.begin();
+    cout << endl
+         << "+-----------------------------------------+" << endl;
+    std::map<string, int>::iterator it = fconstAddresses.begin();
     int ix = 0;
     while (it != fconstAddresses.end()) {
       string n = it->first;
@@ -542,7 +553,7 @@ bool handleRetrieve() {
   if (ad < 128) return putIntegerOnStack(myVARs.at(ad));
   else if (ad < 256) return putFloatOnStack(myFVARs.at(ad - 128));
   else if (ad < 384) putIntegerOnStack(myCONSTs.at(ad - 256));
-  else if (ad < 512)  return putStringOnStack(mySTRVARs.at(ad - 512));
+  else if (ad < 512) return putStringOnStack(mySTRVARs.at(ad - 512));
   else return putStringOnStack(mySTRCONSTs.at(ad - 640));
   return true;
 }
@@ -570,7 +581,8 @@ bool printOtherBases(int number, unsigned int base) {
     buffer[ix - n] = b;
     n += 1;
   }
-  printf("%s ", buffer);
+  sprintf(msg, "%s ", buffer);
+  commonPrint(msg);
   return true;
 }
 
@@ -612,8 +624,10 @@ bool handlePRINT() {
           return false;
         }
         int base = GetINT("BASE");
-        if (base == 10) cout << i0 << " ";
-        else printOtherBases(i0, base);
+        if (base == 10) {
+          sprintf(msg, "%d ", i0);
+          commonPrint(msg);
+        } else printOtherBases(i0, base);
         break;
       }
     case xFLOAT:
@@ -623,7 +637,8 @@ bool handlePRINT() {
           logStackOverflow((char *)"handlePRINT2");
           return false;
         }
-        printf("%f ", f0);
+        sprintf(msg, "%.6f ", f0);
+        commonPrint(msg);
         break;
       }
   }
@@ -650,7 +665,8 @@ bool handleUPRINT() {
           logStackOverflow((char *)"handleUPRINT1");
           return false;
         }
-        cout << i0 << " ";
+        sprintf(msg, "%d ", i0);
+        commonPrint(msg);
         break;
       }
     case xFLOAT:
@@ -664,7 +680,7 @@ bool handleUPRINT() {
 }
 
 bool lookupVAR(string name) {
-  map<string, int>::iterator it;
+  std::map<string, int>::iterator it;
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     // found it
@@ -864,7 +880,7 @@ bool handleCELLLENGTH() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLENGTH %s/INT does not exist!\n", name.c_str());
@@ -874,7 +890,7 @@ bool handleCELLLENGTH() {
     putIntegerOnStack(tmp.size());
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLENGTH %s/float does not exist!\n", name.c_str());
@@ -884,7 +900,7 @@ bool handleCELLLENGTH() {
     putIntegerOnStack(tmpF.size());
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLENGTH %s/String does not exist!\n", name.c_str());
@@ -897,8 +913,8 @@ bool handleCELLLENGTH() {
 }
 
 bool handleCELLS() {
-  int number; // number of cells
-  string name; // array name
+  int number;   // number of cells
+  string name;  // array name
   // originalValue number name ARRAY
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLS: No NAME on the stack!\n");
@@ -913,7 +929,7 @@ bool handleCELLS() {
   switch (dataStack.at(dataStack.size() - 1)) {
     case (xINTEGER):
       {
-        map<string, vector<int>>::iterator it;
+        std::map<string, vector<int>>::iterator it;
         it = myIntArrays.find(name);
         if (it != myIntArrays.end()) {
           xxxxxx = snprintf((char *)msg, 255, "handleCELLS %s already exists!\n", name.c_str());
@@ -934,7 +950,7 @@ bool handleCELLS() {
       }
     case (xFLOAT):
       {
-        map<string, vector<float>>::iterator it;
+        std::map<string, vector<float>>::iterator it;
         it = myFloatArrays.find(name);
         if (it != myFloatArrays.end()) {
           xxxxxx = snprintf((char *)msg, 255, "handleCELLS %s already exists!\n", name.c_str());
@@ -955,7 +971,7 @@ bool handleCELLS() {
       }
     case (xSTRING):
       {
-        map<string, vector<string>>::iterator it;
+        std::map<string, vector<string>>::iterator it;
         it = myStringArrays.find(name);
         if (it != myStringArrays.end()) {
           xxxxxx = snprintf((char *)msg, 255, "handleCELLS %s already exists!\n", name.c_str());
@@ -979,14 +995,14 @@ bool handleCELLS() {
 }
 
 bool handleCELLLIST() {
-  string name; // array name
+  string name;  // array name
   int ix;
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLIST: No NAME on the stack!\n");
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLIST %s/INT does not exist!\n", name.c_str());
@@ -994,13 +1010,13 @@ bool handleCELLLIST() {
   } else {
     vector<int> tmp = it->second;
     ix = 0;
-    for (std::vector<int>::iterator it = tmp.begin() ; it != tmp.end(); ++it) {
+    for (std::vector<int>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
       xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %d\n", ix++, *it);
       cout << msg;
     }
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLIST %s/float does not exist!\n", name.c_str());
@@ -1008,13 +1024,13 @@ bool handleCELLLIST() {
   } else {
     vector<float> tmpF = itF->second;
     ix = 0;
-    for (std::vector<float>::iterator itF = tmpF.begin() ; itF != tmpF.end(); ++itF) {
+    for (std::vector<float>::iterator itF = tmpF.begin(); itF != tmpF.end(); ++itF) {
       xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %f\n", ix, *itF);
       cout << msg;
     }
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLIST %s/String does not exist!\n", name.c_str());
@@ -1023,7 +1039,7 @@ bool handleCELLLIST() {
   }
   vector<string> tmpS = itS->second;
   ix = 0;
-  for (std::vector<string>::iterator itS = tmpS.begin() ; itS != tmpS.end(); ++itS) {
+  for (std::vector<string>::iterator itS = tmpS.begin(); itS != tmpS.end(); ++itS) {
     xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %hhd\n", ix, *itS->c_str());
     cout << msg;
   }
@@ -1031,8 +1047,8 @@ bool handleCELLLIST() {
 }
 
 bool handleCELLSTORE() {
-  int number; // cell number
-  string name; // array name
+  int number;   // cell number
+  string name;  // array name
   // value number name >IX
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE: No NAME on the stack!\n");
@@ -1044,7 +1060,7 @@ bool handleCELLSTORE() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE %s/INT does not exist!\n", name.c_str());
@@ -1065,7 +1081,7 @@ bool handleCELLSTORE() {
     myIntArrays[name] = tmp;
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE %s/FLOAT does not exist!\n", name.c_str());
@@ -1086,7 +1102,7 @@ bool handleCELLSTORE() {
     myFloatArrays[name] = tmpF;
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLSTORE %s/String does not exist!\n", name.c_str());
@@ -1110,8 +1126,8 @@ bool handleCELLSTORE() {
 }
 
 bool handleCELLRETRIEVE() {
-  int number; // cell number
-  string name; // array name
+  int number;   // cell number
+  string name;  // array name
   // number name ARRAY
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE: No NAME on the stack!\n");
@@ -1123,28 +1139,28 @@ bool handleCELLRETRIEVE() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/INT does not exist!\n", name.c_str());
     logThis();
   } else {
     vector<int> tmp = it->second;
-    if (number >=tmp.size() || number < 0) {
+    if (number >= tmp.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/%zu INT out of range!\n", number, tmp.size());
       logThis();
     }
     putIntegerOnStack(tmp.at(number));
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/FLOAT does not exist!\n", name.c_str());
     logThis();
   } else {
     vector<float> tmpF = itF->second;
-    if (number >=tmpF.size() || number < 0) {
+    if (number >= tmpF.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
       logThis();
     }
@@ -1152,7 +1168,7 @@ bool handleCELLRETRIEVE() {
     return true;
   }
 
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/String does not exist!\n", name.c_str());
@@ -1160,7 +1176,7 @@ bool handleCELLRETRIEVE() {
     return false;
   }
   vector<string> tmpS = itS->second;
-  if (number >=tmpS.size() || number < 0) {
+  if (number >= tmpS.size() || number < 0) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
     logThis();
   }
@@ -1176,7 +1192,7 @@ bool handleCELLPREPEND() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLPREPEND %s/INT does not exist!\n", name.c_str());
@@ -1193,7 +1209,7 @@ bool handleCELLPREPEND() {
     myIntArrays[name] = tmp;
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLPREPEND %s/FLOAT does not exist!\n", name.c_str());
@@ -1210,7 +1226,7 @@ bool handleCELLPREPEND() {
     myFloatArrays[name] = tmpF;
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLPREPEND %s/String does not exist!\n", name.c_str());
@@ -1237,7 +1253,7 @@ bool handleCELLAPPEND() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLAPPEND %s/INT does not exist!\n", name.c_str());
@@ -1254,7 +1270,7 @@ bool handleCELLAPPEND() {
     myIntArrays[name] = tmp;
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLAPPEND %s/FLOAT does not exist!\n", name.c_str());
@@ -1271,7 +1287,7 @@ bool handleCELLAPPEND() {
     myFloatArrays[name] = tmpF;
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLAPPEND %s/String does not exist!\n", name.c_str());
@@ -1297,7 +1313,7 @@ bool handleCELLLROT() {
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLROT %s/INT does not exist!\n", name.c_str());
@@ -1310,7 +1326,7 @@ bool handleCELLLROT() {
     myIntArrays[name] = tmp;
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLROT %s/float does not exist!\n", name.c_str());
@@ -1323,7 +1339,7 @@ bool handleCELLLROT() {
     myFloatArrays[name] = tmpF;
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLLROT %s/String does not exist!\n", name.c_str());
@@ -1339,13 +1355,13 @@ bool handleCELLLROT() {
 }
 
 bool handleCELLRROT() {
-  string name; // array name
+  string name;  // array name
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRROT: No NAME on the stack!\n");
     logThis();
     return false;
   }
-  map<string, vector<int>>::iterator it;
+  std::map<string, vector<int>>::iterator it;
   it = myIntArrays.find(name);
   if (it == myIntArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRROT %s/INT does not exist!\n", name.c_str());
@@ -1358,7 +1374,7 @@ bool handleCELLRROT() {
     myIntArrays[name] = tmp;
     return true;
   }
-  map<string, vector<float>>::iterator itF;
+  std::map<string, vector<float>>::iterator itF;
   itF = myFloatArrays.find(name);
   if (itF == myFloatArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRROT %s/float does not exist!\n", name.c_str());
@@ -1371,7 +1387,7 @@ bool handleCELLRROT() {
     myFloatArrays[name] = tmpF;
     return true;
   }
-  map<string, vector<string>>::iterator itS;
+  std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRROT %s/String does not exist!\n", name.c_str());
@@ -1446,7 +1462,8 @@ void evaluate(vector<string> chunks) {
       if (isInteger(d, &i0)) valid = false;
       else if (isFloat(d, &f0)) valid = false;
       if (!valid) {
-        cout << endl << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
+        cout << endl
+             << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
         return;
       }
       bool thisIsInt = false;
@@ -1500,7 +1517,7 @@ void evaluate(vector<string> chunks) {
         xxxxxx = snprintf((char *)msg, 255, "STRING CONST name: %s initialized with %s\n", d.c_str(), s0.c_str());
         logThis();
         StoreCONSTSTR(d, s0);
-      } 
+      }
     } else if (insideString && c.back() == '"') {
       c.pop_back();
       insideString = false;
@@ -1667,64 +1684,93 @@ bool handleLOAD() {
   // Later on add a buffer editor.
 }
 
-int main(int argc, char **argv) {
-  vector<string> chunks;
+LGFX_Sprite kbdSprite(&display);
+void setup() {
+  Serial.begin(115200);
   initForth();
-#if defined(NEED_SDL)
-#include "sdl_inc2.hpp"
-#else
-  if (argc == 3) {
-    if (strcmp(argv[1], "-f") == 0) {
-      vector<string> thisBlock = loadFile(argv[2]);
-      if (thisBlock.size() == 0) {
-        cerr << "Unable to open file!" << endl;
-        return -1;
-      }
-      int lineCount = 0;
-      string line;
-      for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
-        line = *it;
-        while (!line.empty() && line.back() == '\n')
-          line.pop_back();
-        lineCount += 1;
-        strcpy(code, line.c_str());
-        chunks = tokenize(code, chunks);
-        cout << " • Read: " << line << endl;
-      }
-      cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
-    } else {
-      cerr << argv[1] << "!= -f" << endl;
-      return 0;
-    }
-  } else if (argc == 2) {
-    strcpy(code, argv[1]);
-    chunks = tokenize(code, chunks);
-  } else {
-    strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-    chunks = tokenize(code, chunks);
-  }
-  evaluate(chunks);
-  memset(code, 0, 256);
-  chunks.clear();
-  cout << endl << endl
-       << "OK ";
-#endif
+  commonPrint("OK ");
+  kbdSprite.createSprite(240, 104);
+  kbdSprite.setTextFont(&fonts::FreeMono12pt7b);
+  kbdSprite.setTextSize(1.0);
+  kbdSprite.drawString(msg, 4, 4);
+}
 
+char kbdData[256];
+uint8_t kbdIdx;
+void loop() {
+  char kbdData[256];
+  uint8_t kbdIdx;
+  uint8_t fh = kbdSprite.fontHeight();
+  uint16_t py = 4;
+  kbdIdx = 0;
+  memset(kbdData, 0, 256);
+  uint32_t t0, t1;
+  uint8_t px = 0;
+  char carret[2] = { ' ', '_' };
+  t0 = millis();
   while (true) {
-    std::cin.getline(code, 256);
-    if (std::cin.eof()) {
-      std::cin.clear();  // Clear error flags (eofbit, failbit, badbit)
-      cout << " the end\n\n\n";
-      return 0;
-    }
-    if (code[0] == 0) {
-    } else {
-      chunks = tokenize(code, chunks);
-      evaluate(chunks);
-      memset(code, 0, 256);
-      chunks.clear();
-    }
-    cout << "OK ";
+    M5Cardputer.update();
+    if (M5Cardputer.Keyboard.isChange()) {
+      if (M5Cardputer.Keyboard.isPressed()) {
+        Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
+        if (status.del) {
+          if (kbdIdx > 0) kbdIdx--;
+          kbdData[kbdIdx] = 0;
+        }
+        if (status.enter) {
+          vector<string> chunks;
+          kbdData[kbdIdx] = 0;
+          strcpy(code, kbdData);
+          chunks = tokenize(code, chunks);
+          display.clear();
+          display.setTextDatum(top_left);
+          display.setCursor(0, 0);
+          // display.drawString("", 4, 4);
+          sprintf(msg, "OK %s\n", kbdData);
+          commonPrint(msg);
+          evaluate(chunks);
+          memset(code, 0, 256);
+          chunks.clear();
+          kbdIdx = 0;
+          return;
+        } else {
+          for (auto i : status.word) {
+            if (i > 31) kbdData[kbdIdx++] = i;
+          }
+        }
+        Serial.println(msg);
+        kbdSprite.fillRect(0, 0, 240, 128, TFT_BLACK);
+        px = 255 - px;
+        memset(msg, 0, 256);
+        sprintf(msg, "OK %s%c", kbdData, carret[px & 1]);
+        uint8_t tw = strlen(msg);
+        if (tw < 16) {
+          kbdSprite.drawString(msg, 4, 4);
+        } else {
+          uint8_t n = 0;
+          char c;
+          py = 4;
+          while (n < kbdIdx + 3) {
+            uint8_t nx = n + 15;
+            c = msg[nx];
+            msg[nx] = 0;
+            kbdSprite.drawString(msg + n, 4, py);
+            // Serial.print("From ");
+            // Serial.print(n);
+            // Serial.print(" to ");
+            // Serial.print(nx);
+            // Serial.print(": '");
+            // Serial.print(msg + n);
+            // Serial.print("' at py ");
+            // Serial.println(py);
+            msg[nx] = c;
+            py += fh;
+            n += 15;
+          }
+        }
+        // kbdSprite.drawString("OK ", 4, 204);
+        kbdSprite.pushSprite(0, 24);
+      }
+    } else delay(100);
   }
-  return 0;
 }
