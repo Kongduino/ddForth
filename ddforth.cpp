@@ -21,7 +21,7 @@ void StoreCONSTFLOAT(string name, float value) {
     myFCONSTs.push_back(value);
     ad = myFCONSTs.size() - 1 + 384;
     fconstAddresses[name] = ad;
-    xxxxxx = snprintf((char *)msg, 255, "FCONST %s created as %f at address %d\n", name.c_str(), value, ad);
+    xxxxxx = snprintf((char *)msg, 255, "FCONST name: %s initialized with %f\n", name.c_str(), value);
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "FCONST %s already exists!\n", name.c_str());
@@ -35,7 +35,7 @@ void StoreCONSTINT(string name, int value) {
   if (it == constAddresses.end()) {
     myCONSTs.push_back(value);
     constAddresses[name] = myCONSTs.size() - 1 + 256;
-    xxxxxx = snprintf((char *)msg, 255, "CONST %s created as %d\n", name.c_str(), value);
+    xxxxxx = snprintf((char *)msg, 255, "INT CONST name: %s initialized with %d\n", name.c_str(), value);
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "CONST %s already exists!\n", name.c_str());
@@ -49,7 +49,7 @@ void StoreCONSTSTR(string name, string value) {
   if (it == strconstAddresses.end()) {
     mySTRCONSTs.push_back(value);
     strconstAddresses[name] = mySTRCONSTs.size() - 1 + 640;
-    xxxxxx = snprintf((char *)msg, 255, "STRCONST %s created as %s, address %d\n", name.c_str(), value.c_str(), strconstAddresses[name]);
+    xxxxxx = snprintf((char *)msg, 255, "STR CONST name: %s initialized with %s\n", name.c_str(), value.c_str());
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "STRCONST %s already exists!\n", name.c_str());
@@ -61,16 +61,13 @@ void StoreSTRING(string name, string value) {
   std::map<string, int>::iterator it;
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "STRVAR %s found at %d\n", name.c_str(), (it->second));
+    xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s updated to %s\n", name.c_str(), value.c_str());
     logThis();
     mySTRVARs.at(it->second) = value;
   } else {
     mySTRVARs.push_back(value);
     strvarAddresses[name] = mySTRVARs.size() - 1 + 512;
-    xxxxxx = snprintf(
-      (char *)msg, 255,
-      "STRVAR %s created at %d. strvarAddresses.size: %zu. mySTRVARs.size: %zu\n",
-      name.c_str(), strvarAddresses[name], strvarAddresses.size(), mySTRVARs.size());
+    xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s initialized with %s\n", name.c_str(), value.c_str());
     logThis();
   }
 }
@@ -79,16 +76,13 @@ void StoreFLOAT(string name, float value) {
   std::map<string, int>::iterator it;
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "FVAR %s found at %d\n", name.c_str(), (it->second));
+    xxxxxx = snprintf((char *)msg, 255, "FVAR name: %s updated to %f\n", name.c_str(), value);
     logThis();
     myFVARs.at(it->second) = value;
   } else {
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
-    xxxxxx = snprintf(
-      (char *)msg, 255,
-      "FVAR %s created at %d. fvarAddresses.size: %zu. myFVARs.size: %zu\n",
-      name.c_str(), fvarAddresses[name], fvarAddresses.size(), myFVARs.size());
+    xxxxxx = snprintf((char *)msg, 255, "FVAR name: %s initialized with %f\n", name.c_str(), value);
     logThis();
   }
 }
@@ -98,7 +92,11 @@ void StoreINT(string name, int value) {
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     myVARs.at(it->second) = value;
+    xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s updated to %d\n", name.c_str(), value);
+    logThis();
   } else {
+    xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", name.c_str(), value);
+    logThis();
     myVARs.push_back(value);
     varAddresses[name] = myVARs.size() - 1;
   }
@@ -1468,46 +1466,52 @@ void evaluate(vector<string> chunks) {
       // creation of a variable
       executionPointer += 1;
       string d = chunks.at(executionPointer++);
-      int i0;
+      int i0, x = dataStack.at(dataStack.size() - 1);
       float f0;
       string s0;
-      bool valid = true;
-      if (isInteger(d, &i0)) valid = false;
-      else if (isFloat(d, &f0)) valid = false;
-      if (!valid) {
-        cout << endl << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
-        return;
-      }
-      bool thisIsInt = false;
-      bool thisIsFloat = false;
-      bool thisIsString = false;
+      bool thisIsInt = (x) == xINTEGER;
+      bool thisIsFloat = (x) == xFLOAT;
+      bool thisIsString = (x) == xSTRING;
       // we need something
-      if (popIntegerFromStack(&i0) == false) {
-        xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
-        logThis();
-        if (popFloatFromStack(&f0) == false) {
-          xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack either!\n");
-          logThis();
-          if (popStringFromStack(&s0) == false) {
-            xxxxxx = snprintf((char *)msg, 255, "No STRING on the stack either!\n");
-            logThis();
-          } else {
-            thisIsString = true;
-            xxxxxx = snprintf((char *)msg, 255, "STRING on the stack!\n");
-            logThis();
-          }
-        } else {
-          thisIsFloat = true;
-        }
-      } else thisIsInt = true;
       if (!thisIsFloat && !thisIsInt && !thisIsString) {
         xxxxxx = snprintf((char *)msg, 255, "No INT / FLOAT / STRING on the stack!\n");
         logThis();
+        cleanup();
         return;
       }
+      switch (x) {
+        case xINTEGER:
+          {
+            if (popIntegerFromStack(&i0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+        case xFLOAT:
+          {
+            if (popFloatFromStack(&f0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+        case xSTRING:
+          {
+            if (popStringFromStack(&s0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No STR on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+      }
       if (cl == "var" && thisIsInt) {
-        xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", d.c_str(), i0);
-        logThis();
         StoreINT(d, i0);
       } else if (cl == "var" && thisIsFloat) {
         xxxxxx = snprintf((char *)msg, 255, "FLOAT VAR name: %s initialized with %f\n", d.c_str(), f0);
@@ -1529,7 +1533,7 @@ void evaluate(vector<string> chunks) {
         xxxxxx = snprintf((char *)msg, 255, "STRING CONST name: %s initialized with %s\n", d.c_str(), s0.c_str());
         logThis();
         StoreCONSTSTR(d, s0);
-      } 
+      }
     } else if (insideString && c.back() == '"') {
       c.pop_back();
       insideString = false;
