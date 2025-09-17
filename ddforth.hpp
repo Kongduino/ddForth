@@ -135,6 +135,9 @@ bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
 bool handleINTSTR();
 bool handleSTRINT();
+bool handleCSPLIT();
+bool handleSPLITDELIM();
+bool handleVARRAY();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -287,6 +290,10 @@ nativeCommand nativeCommands[] = {
   { handleRSTRIPSTR, "RSTRIPSTR" },
   { handleINTSTR, "INTSTR"},
   { handleSTRINT, "STRINT"},
+  { handleCSPLIT, "CSPLIT"},
+  { handleSPLITDELIM, "SPLITD"},
+  { handleVARRAY, "VARRAY"},
+
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
