@@ -1112,6 +1112,49 @@ bool handleCELLS() {
   return false;
 }
 
+bool handleARRAYLIST() {
+  cout << "Integer arrays: ";
+  if (myIntArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myIntArrays.size() << endl;
+    std::map<string, vector<int>>::iterator it;
+    for (
+      std::map<string, vector<int>>::iterator it = myIntArrays.begin();
+      it != myIntArrays.end();
+      ++it
+    )
+      std::cout << "* "<< it->first << endl;
+  }
+  cout << "Float arrays: ";
+  if (myFloatArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myFloatArrays.size() << endl;
+    std::map<string, vector<int>>::iterator itF;
+    for (
+      std::map<string, vector<float>>::iterator itF = myFloatArrays.begin();
+      itF != myFloatArrays.end();
+      ++itF
+    )
+      std::cout << "* "<< itF->first << endl;
+  }
+  cout << "String arrays: ";
+  if (myStringArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myStringArrays.size() << endl;
+    std::map<string, vector<string>>::iterator it;
+    for (
+      std::map<string, vector<string>>::iterator itS = myStringArrays.begin();
+      itS != myStringArrays.end();
+      ++itS
+    )
+      std::cout << "* "<< itS->first << endl;
+  }
+  return true;
+}
+
 bool handleCELLLIST() {
   string name; // array name
   int ix;

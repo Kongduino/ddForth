@@ -113,6 +113,7 @@ bool handleWORDS();
 bool handleLOAD();
 bool handleParens();
 bool handleCELLS();
+bool handleARRAYLIST();
 bool handleCELLSTORE();
 bool handleCELLRETRIEVE();
 bool handleCELLLENGTH();
@@ -345,6 +346,7 @@ nativeCommand nativeCommands[] = {
   { handleEXIT, "EXIT" },
   { handleParens, "("},
   { handleCELLS, "ARRAY"},
+  { handleARRAYLIST, "ARRAYS"},
   { handleCELLSTORE, ">IX"},
   { handleCELLRETRIEVE, "IX>"},
   { handleCELLLENGTH, "LEN>"},

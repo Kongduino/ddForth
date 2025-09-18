@@ -17,4 +17,4 @@ LOOP
 
 1 2 3 4 4 s" ints" VARRAY CR s" ints" alist
 1.1 2.2 3.3 4.4 4 s" floats" VARRAY CR s" floats" alist
-s" un|deux|trois|quatre" s" |" SPLITD .S s" strings" VARRAY CR s" strings" alist
+s" un|deux|trois|quatre" s" |" SPLITD s" strings" VARRAY CR s" strings" alist

@@ -83,6 +83,7 @@
   { handleELSE, "else" },
   { handleEXIT, "exit" },
   { handleCELLS, "array"},
+  { handleARRAYLIST, "arrays"},
   { handleCELLSTORE, ">ix"},
   { handleCELLRETRIEVE, "ix>"},
   { handleCELLLENGTH, "len>"},
