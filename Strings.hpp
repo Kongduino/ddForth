@@ -299,7 +299,7 @@ bool handleCSPLIT() {
     if (c == x) {
       T = s.substr (lastIX, ix - lastIX);
       putStringOnStack(T);
-      cout << "Push `" << T << "`." << endl;
+      // cout << "Push `" << T << "`." << endl;
       lastIX = ix + 1;
       count += 1;
     }
@@ -307,7 +307,7 @@ bool handleCSPLIT() {
   if(lastIX < ix) {
     T = s.substr (lastIX, ix - lastIX);
     putStringOnStack(T);
-    cout << "Push `" << T << "`." << endl;
+    // cout << "Push `" << T << "`." << endl;
     count += 1;
   }
   putIntegerOnStack(count);

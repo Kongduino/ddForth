@@ -214,7 +214,7 @@ bool handleVARRAY() {
     }
     case xSTRING:
     {
-      cout << " STRING VARRAY ";
+      // cout << " STRING VARRAY ";
       std::map<string, vector<string>>::iterator itS;
       itS = myStringArrays.find(name);
       if (itS != myStringArrays.end()) {
@@ -1155,6 +1155,46 @@ bool handleARRAYLIST() {
   return true;
 }
 
+bool handleARRAYSUM() {
+  string name; // array name
+  int ix;
+  float f0;
+  if (popStringFromStack(&name) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM: No NAME on the stack!\n");
+    logThis();
+    return false;
+  }
+  std::map<string, vector<int>>::iterator it;
+  it = myIntArrays.find(name);
+  if (it == myIntArrays.end()) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM %s/INT does not exist!\n", name.c_str());
+    logThis();
+  } else {
+    vector<int> tmp = it->second;
+    ix = 0;
+    for (std::vector<int>::iterator it = tmp.begin() ; it != tmp.end(); ++it) {
+      ix += *it;
+    }
+    putIntegerOnStack(ix);
+    return true;
+  }
+  std::map<string, vector<float>>::iterator itF;
+  itF = myFloatArrays.find(name);
+  if (itF == myFloatArrays.end()) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM %s/float does not exist!\n", name.c_str());
+    logThis();
+  } else {
+    vector<float> tmpF = itF->second;
+    f0 = 0.0;
+    for (std::vector<float>::iterator itF = tmpF.begin() ; itF != tmpF.end(); ++itF) {
+      f0 += *itF;
+    }
+    putFloatOnStack(ix);
+    return true;
+  }
+  return false;
+}
+
 bool handleCELLLIST() {
   string name; // array name
   int ix;
@@ -1310,6 +1350,7 @@ bool handleCELLRETRIEVE() {
     if (number >=tmp.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/%zu INT out of range!\n", number, tmp.size());
       logThis();
+      return false;
     }
     putIntegerOnStack(tmp.at(number));
     return true;
@@ -1324,6 +1365,7 @@ bool handleCELLRETRIEVE() {
     if (number >=tmpF.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
       logThis();
+      return false;
     }
     putFloatOnStack(tmpF.at(number));
     return true;
@@ -1332,14 +1374,19 @@ bool handleCELLRETRIEVE() {
   std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/String does not exist!\n", name.c_str());
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/STRING does not exist!\n", name.c_str());
     logThis();
     return false;
   }
   vector<string> tmpS = itS->second;
   if (number >=tmpS.size() || number < 0) {
-    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
+    xxxxxx = snprintf(
+      (char *)msg, 255,
+      "handleCELLRETRIEVE %d/STRING/%zu out of range!\n",
+      number, tmpS.size()
+    );
     logThis();
+    return false;
   }
   putStringOnStack(tmpS.at(number));
   return true;

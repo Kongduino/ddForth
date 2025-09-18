@@ -122,6 +122,7 @@ bool handleCELLPREPEND();
 bool handleCELLLIST();
 bool handleCELLLROT();
 bool handleCELLRROT();
+bool handleARRAYSUM();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -355,6 +356,7 @@ nativeCommand nativeCommands[] = {
   { handleCELLLROT, "<ROT"},
   { handleCELLRROT, "ROT>"},
   { handleCELLLIST, "ALIST"},
+  { handleARRAYSUM, "ASUM"},
 
 #include "lowercase.hpp"
 
