@@ -1,6 +1,6 @@
 100 var startCol
 255 255 255 CLS
-0 0 0 DRAWCOLOR
+BLACK DRAWCOLOR
 0 150 WIDTH 150 DRAWLINE
 0 151 WIDTH 151 DRAWLINE
 startCol @ 2 - 0 startCol @ 2 - 210 DRAWLINE
@@ -53,8 +53,8 @@ startCol @ 20 + 160 48 16 FILLRECT
 0 0 255 DRAWCOLOR
 startCol @ 20 + 190 48 16 FILLRECT
 
-startCol @ 75 + 160 255 0 0 .DT" Temperature"
-startCol @ 75 + 190 0 0 255 .DT" RH%"
+startCol @ 75 + 160 RED .DT" Temperature"
+startCol @ 75 + 190 BLUE .DT" RH%"
 
-WIDTH 2 / 210 0 0 0 s" THE END" .DST
+WIDTH 2 / 210 BLACK s" THE END" .DST
 
