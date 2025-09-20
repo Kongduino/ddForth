@@ -277,3 +277,66 @@ bool handleINTSTR() {
   return true;
 }
 
+bool handleCSPLIT() {
+  // s" this is a string!" 32 CSPLIT
+  // this/is/a/string!/4 on the stack
+  int i0;
+  unsigned char x;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleCSPLIT/1");
+    return false;
+  }
+  x = (i0 & 0xFF);
+  string s, T;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleCSPLIT/0");
+    return false;
+  }
+  int ln, ix, lastIX = 0, count = 0;
+  ln = s.size();
+  for(ix = 0; ix < ln; ix++) {
+    char c = s.at(ix);
+    if (c == x) {
+      T = s.substr (lastIX, ix - lastIX);
+      putStringOnStack(T);
+      // cout << "Push `" << T << "`." << endl;
+      lastIX = ix + 1;
+      count += 1;
+    }
+  }
+  if(lastIX < ix) {
+    T = s.substr (lastIX, ix - lastIX);
+    putStringOnStack(T);
+    // cout << "Push `" << T << "`." << endl;
+    count += 1;
+  }
+  putIntegerOnStack(count);
+  return true;
+}
+
+bool handleSPLITDELIM() {
+  string sentence;
+  string word;
+  string delim;
+  int delimLen, count = 0;
+  size_t start = 0, end;
+  if (popStringFromStack(&delim) == false) {
+    logStackOverflow((char *)"handleSPLITDELIM/0");
+    return false;
+  }
+  delimLen = delim.size();
+  if (popStringFromStack(&sentence) == false) {
+    logStackOverflow((char *)"handleSPLITDELIM/1");
+    return false;
+  }
+
+  while ((end = sentence.find(delim.c_str(), start)) != string::npos) {
+    putStringOnStack(sentence.substr(start, end - start));
+    start = end + delimLen;
+    count += 1;
+  }
+  putStringOnStack(sentence.substr(start));
+  count += 1;
+  putIntegerOnStack(count);
+  return true;
+}

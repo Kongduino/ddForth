@@ -29,6 +29,7 @@ vector<userCommand> userCommands {
   {"false", "0 ="},
   {"nROT>", "0 DO DUP ROT> LOOP CLEAR"},
   {"n<ROT", "0 DO DUP <ROT LOOP CLEAR"},
-
+  {"ssplit", "32 csplit"},
+  {"SSPLIT", "32 CSPLIT"},
 };
 int userCmdCount = 0;

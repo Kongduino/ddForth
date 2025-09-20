@@ -395,12 +395,18 @@ bool popFromLoopStack(int *value) {
 }
 
 bool popIntegerFromJumpStack(int *value) {
+  if (jumpStack.size() < 1) {
+    return false;
+  }
   *value = jumpStack.at(jumpStack.size() - 1);
   jumpStack.pop_back();
   return true;
 }
 
 bool popIntegerFromStack(int *value) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
   if (dataStack.at(dataStack.size() - 1) != xINTEGER) {
     return false;
   }
@@ -411,6 +417,9 @@ bool popIntegerFromStack(int *value) {
 }
 
 bool popFloatFromStack(float *value) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
   if (dataStack.at(dataStack.size() - 1) != xFLOAT) {
     return false;
   }
@@ -421,6 +430,9 @@ bool popFloatFromStack(float *value) {
 }
 
 bool popStringFromStack(string* s) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
   if (dataStack.at(dataStack.size() - 1) != xSTRING) {
     return false;
   }

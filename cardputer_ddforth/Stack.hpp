@@ -229,17 +229,15 @@ bool handleSWAP() {
   }
   unsigned char type0 = dataStack.at(dataStack.size() - 1);
   unsigned char type1 = dataStack.at(dataStack.size() - 2);
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    logInconsistent((char *)"handleSWAP");
-    return false;
-  }
+  int i0, i1;
+  float f0, f1;
+  string s0, s1;
   if (type0 == type1) {
     if (type0 == xINTEGER) {
       if (userIntegers.size() < 2) {
         logStackOverflow((char *)"handleSWAP1");
         return false;
       }
-      int i0, i1;
       if (popIntegerFromStack(&i0) == false) {
         logStackOverflow((char *)"handleSWAP2");
         return false;
@@ -251,12 +249,11 @@ bool handleSWAP() {
       putIntegerOnStack(i0);
       putIntegerOnStack(i1);
       return true;
-    } else {
+    } else if (type0 == xFLOAT) {
       if (userFloats.size() < 2) {
         logStackOverflow((char *)"handleSWAP4");
         return false;
       }
-      float f0, f1;
       if (popFloatFromStack(&f0) == false) {
         logStackOverflow((char *)"handleSWAP5");
         return false;
@@ -267,6 +264,101 @@ bool handleSWAP() {
       }
       putFloatOnStack(f0);
       putFloatOnStack(f1);
+      return true;
+    } else if (type0 == xSTRING) {
+      if (userStrings.size() < 2) {
+        logStackOverflow((char *)"handleSWAP7");
+        return false;
+      }
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleSWAP8");
+        return false;
+      }
+      if (popStringFromStack(&s1) == false) {
+        logStackOverflow((char *)"handleSWAP9");
+        return false;
+      }
+      putStringOnStack(s0);
+      putStringOnStack(s1);
+      return true;
+    }
+  } else {
+    if (type0 == xINTEGER && type1 == xFLOAT) {
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char *)"handleSWAP10");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handleSWAP11");
+        return false;
+      }
+      putIntegerOnStack(i0);
+      putFloatOnStack(f0);
+      return true;
+    }
+    if (type0 == xINTEGER && type1 == xSTRING) {
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char *)"handleSWAP12");
+        return false;
+      }
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleSWAP13");
+        return false;
+      }
+      putIntegerOnStack(i0);
+      putStringOnStack(s0);
+      return true;
+    }
+    if (type1 == xINTEGER && type0 == xFLOAT) {
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handleSWAP11");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char *)"handleSWAP10");
+        return false;
+      }
+      putFloatOnStack(f0);
+      putIntegerOnStack(i0);
+      return true;
+    }
+    if (type1 == xINTEGER && type0 == xSTRING) {
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleSWAP13");
+        return false;
+      }
+      if (popIntegerFromStack(&i0) == false) {
+        logStackOverflow((char *)"handleSWAP12");
+        return false;
+      }
+      putStringOnStack(s0);
+      putIntegerOnStack(i0);
+      return true;
+    }
+    if (type0 == xSTRING && type1 == xFLOAT) {
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleSWAP10");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handleSWAP11");
+        return false;
+      }
+      putFloatOnStack(f0);
+      putStringOnStack(s0);
+      return true;
+    }
+    if (type0 == xFLOAT && type1 == xSTRING) {
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handleSWAP12");
+        return false;
+      }
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleSWAP13");
+        return false;
+      }
+      putStringOnStack(s0);
+      putFloatOnStack(f0);
       return true;
     }
   }
@@ -303,13 +395,19 @@ bool popFromLoopStack(int *value) {
 }
 
 bool popIntegerFromJumpStack(int *value) {
+  if (jumpStack.size() < 1) {
+    return false;
+  }
   *value = jumpStack.at(jumpStack.size() - 1);
   jumpStack.pop_back();
   return true;
 }
 
 bool popIntegerFromStack(int *value) {
-  if (userIntegers.size() == 0) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
+  if (dataStack.at(dataStack.size() - 1) != xINTEGER) {
     return false;
   }
   *value = userIntegers.at(userIntegers.size() - 1);
@@ -319,7 +417,10 @@ bool popIntegerFromStack(int *value) {
 }
 
 bool popFloatFromStack(float *value) {
-  if (userFloats.size() == 0) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
+  if (dataStack.at(dataStack.size() - 1) != xFLOAT) {
     return false;
   }
   *value = userFloats.at(userFloats.size() - 1);
@@ -329,7 +430,10 @@ bool popFloatFromStack(float *value) {
 }
 
 bool popStringFromStack(string* s) {
-  if (userStrings.size() == 0) {
+  if (dataStack.size() < 1) {
+    return false;
+  }
+  if (dataStack.at(dataStack.size() - 1) != xSTRING) {
     return false;
   }
   *s = userStrings.at(userStrings.size() - 1);

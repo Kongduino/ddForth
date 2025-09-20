@@ -1,4 +1,4 @@
-#include <cmath>  // For std::sqrt
+#include <cmath> // For std::sqrt
 #include <fcntl.h>
 #include <iostream>
 #include <map>
@@ -8,7 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
-#include <algorithm>  // std::transform
+#include <algorithm> // std::transform
 #include "random.hpp"
 #include "display.hpp"
 
@@ -114,6 +114,7 @@ bool handleWORDS();
 bool handleLOAD();
 bool handleParens();
 bool handleCELLS();
+bool handleARRAYLIST();
 bool handleCELLSTORE();
 bool handleCELLRETRIEVE();
 bool handleCELLLENGTH();
@@ -122,6 +123,7 @@ bool handleCELLPREPEND();
 bool handleCELLLIST();
 bool handleCELLLROT();
 bool handleCELLRROT();
+bool handleARRAYSUM();
 
 bool handleLEFT();
 bool handleRIGHT();
@@ -136,6 +138,9 @@ bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
 bool handleINTSTR();
 bool handleSTRINT();
+bool handleCSPLIT();
+bool handleSPLITDELIM();
+bool handleVARRAY();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -237,7 +242,7 @@ nativeCommand nativeCommands[] = {
   { handleMinus, "-" },
   { handleMult, "*" },
   { handleDiv, "/" },
-  { handleABS, "ABS" },
+  { handleABS, "ABS" },  
   { handleMIN, "MIN" },
   { handleMAX, "MAX" },
   { handleFact, "FACT" },
@@ -245,7 +250,7 @@ nativeCommand nativeCommands[] = {
   { handleAND, "AND" },
   { handleOR, "OR" },
   { handleXOR, "XOR" },
-  { handleNOT, "NOT" },
+  { handleNOT, "NOT" },  
   { handleNEGATE, "NEGATE" },
   { handleINVERT, "INVERT" },
   { handleSQR, "SQR" },
@@ -265,7 +270,7 @@ nativeCommand nativeCommands[] = {
   { handleFLOOR, "FLOOR" },
   { handleCEIL, "CEIL" },
   { handleEXP, "EXP" },
-  { handleSETINT, "INT" },
+  { handleSETINT, "INT"},
   { handleEMIT, "EMIT" },
   { handleKEY, "KEY" },
   { handleLINE, "LINE" },
@@ -280,14 +285,18 @@ nativeCommand nativeCommands[] = {
   { handleRIGHT, "RIGHTSTR" },
   { handleLEN, "LENSTR" },
   { handleSUBSTR, "SUBSTR" },
-  { handleLowercase, "LOWERSTR" },
-  { handleUppercase, "UPPERSTR" },
-  { handleMULTSTR, "MULTSTR" },
+  { handleLowercase, "LOWERSTR"},
+  { handleUppercase, "UPPERSTR"},
+  { handleMULTSTR, "MULTSTR"},
   { handleSTRIPSTR, "STRIPSTR" },
   { handleLSTRIPSTR, "LSTRIPSTR" },
   { handleRSTRIPSTR, "RSTRIPSTR" },
-  { handleINTSTR, "INTSTR" },
-  { handleSTRINT, "STRINT" },
+  { handleINTSTR, "INTSTR"},
+  { handleSTRINT, "STRINT"},
+  { handleCSPLIT, "CSPLIT"},
+  { handleSPLITDELIM, "SPLITD"},
+  { handleVARRAY, "VARRAY"},
+
   { handleUPRINT, "U." },
   { handleDUP, "DUP" },
   { handleDROP, "DROP" },
@@ -337,17 +346,20 @@ nativeCommand nativeCommands[] = {
   { handleTHEN, "THEN" },
   { handleELSE, "ELSE" },
   { handleEXIT, "EXIT" },
-  { handleParens, "(" },
-  { handleCELLS, "ARRAY" },
-  { handleCELLSTORE, ">IX" },
-  { handleCELLRETRIEVE, "IX>" },
-  { handleCELLLENGTH, "LEN>" },
-  { handleCELLAPPEND, "IX+" },
-  { handleCELLPREPEND, "+IX" },
-  { handleCELLLROT, "<ROT" },
-  { handleCELLRROT, "ROT>" },
-  { handleCELLLIST, "ALIST" },
+  { handleParens, "("},
+  { handleCELLS, "ARRAY"},
+  { handleARRAYLIST, "ARRAYS"},
+  { handleCELLSTORE, ">IX"},
+  { handleCELLRETRIEVE, "IX>"},
+  { handleCELLLENGTH, "LEN>"},
+  { handleCELLAPPEND, "IX+"},
+  { handleCELLPREPEND, "+IX"},
+  { handleCELLLROT, "<ROT"},
+  { handleCELLRROT, "ROT>"},
+  { handleCELLLIST, "ALIST"},
+  { handleARRAYSUM, "ASUM"},
 
+#include "displayHandles.hpp"
 #include "lowercase.hpp"
 
 #if defined(NEED_SDL)
@@ -375,7 +387,7 @@ void initForth() {
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
   StoreCONSTFLOAT("PI", 3.141592653f);
-  StoreCONSTFLOAT("E", 2.718281828459045f);
+  StoreCONSTFLOAT("E",  2.718281828459045f);
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
@@ -429,10 +441,10 @@ void logInconsistent(char *who) {
 }
 
 void logStackOverflow(char *who) {
-  //#if defined(DEBUG)
+//#if defined(DEBUG)
   xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
-  //#endif
+//#endif
 }
 
 void logJumpStackOverflow(char *who) {

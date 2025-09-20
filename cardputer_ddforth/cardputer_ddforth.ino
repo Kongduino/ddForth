@@ -4,15 +4,24 @@ bool insideString;
 using namespace std;
 
 
-// Need to add the same for STRING
+/*
+myVARs + 0
+myFVARs + 128
+myCONSTs +256
+myFCONSTs + 384
+mySTRVARs + 512
+mySTRCONSTs + 640
+*/
 
 void StoreCONSTFLOAT(string name, float value) {
   std::map<string, int>::iterator it;
+  int ad;
   it = fconstAddresses.find(name);
   if (it == fconstAddresses.end()) {
     myFCONSTs.push_back(value);
-    fconstAddresses[name] = myFCONSTs.size() - 1 + 384;
-    xxxxxx = snprintf((char *)msg, 255, "FCONST %s created as %f\n", name.c_str(), value);
+    ad = myFCONSTs.size() - 1 + 384;
+    fconstAddresses[name] = ad;
+    xxxxxx = snprintf((char *)msg, 255, "FCONST name: %s initialized with %f\n", name.c_str(), value);
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "FCONST %s already exists!\n", name.c_str());
@@ -26,7 +35,7 @@ void StoreCONSTINT(string name, int value) {
   if (it == constAddresses.end()) {
     myCONSTs.push_back(value);
     constAddresses[name] = myCONSTs.size() - 1 + 256;
-    xxxxxx = snprintf((char *)msg, 255, "CONST %s created as %d\n", name.c_str(), value);
+    xxxxxx = snprintf((char *)msg, 255, "INT CONST name: %s initialized with %d\n", name.c_str(), value);
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "CONST %s already exists!\n", name.c_str());
@@ -40,7 +49,7 @@ void StoreCONSTSTR(string name, string value) {
   if (it == strconstAddresses.end()) {
     mySTRCONSTs.push_back(value);
     strconstAddresses[name] = mySTRCONSTs.size() - 1 + 640;
-    xxxxxx = snprintf((char *)msg, 255, "STRCONST %s created as %s, address %d\n", name.c_str(), value.c_str(), strconstAddresses[name]);
+    xxxxxx = snprintf((char *)msg, 255, "STR CONST name: %s initialized with %s\n", name.c_str(), value.c_str());
     logThis();
   } else {
     xxxxxx = snprintf((char *)msg, 255, "STRCONST %s already exists!\n", name.c_str());
@@ -52,16 +61,18 @@ void StoreSTRING(string name, string value) {
   std::map<string, int>::iterator it;
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "STRVAR %s found at %d\n", name.c_str(), (it->second));
+    xxxxxx = snprintf(
+      (char *)msg, 255,
+      "Updating STR VAR name: %s at position %d to %s\n",
+      name.c_str(), (it->second - 512), value.c_str());
     logThis();
-    mySTRVARs.at(it->second) = value;
+    mySTRVARs.at(it->second - 512) = value;
+    xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s updated to %s\n", name.c_str(), value.c_str());
+    logThis();
   } else {
     mySTRVARs.push_back(value);
     strvarAddresses[name] = mySTRVARs.size() - 1 + 512;
-    xxxxxx = snprintf(
-      (char *)msg, 255,
-      "STRVAR %s created at %d. strvarAddresses.size: %zu. mySTRVARs.size: %zu\n",
-      name.c_str(), strvarAddresses[name], strvarAddresses.size(), mySTRVARs.size());
+    xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s initialized with %s\n", name.c_str(), value.c_str());
     logThis();
   }
 }
@@ -70,16 +81,13 @@ void StoreFLOAT(string name, float value) {
   std::map<string, int>::iterator it;
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "FVAR %s found at %d\n", name.c_str(), (it->second));
+    xxxxxx = snprintf((char *)msg, 255, "FVAR name: %s updated to %f\n", name.c_str(), value);
     logThis();
-    myFVARs.at(it->second) = value;
+    myFVARs.at(it->second - 128) = value;
   } else {
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
-    xxxxxx = snprintf(
-      (char *)msg, 255,
-      "FVAR %s created at %d. fvarAddresses.size: %zu. myFVARs.size: %zu\n",
-      name.c_str(), fvarAddresses[name], fvarAddresses.size(), myFVARs.size());
+    xxxxxx = snprintf((char *)msg, 255, "FVAR name: %s initialized with %f\n", name.c_str(), value);
     logThis();
   }
 }
@@ -89,7 +97,11 @@ void StoreINT(string name, int value) {
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     myVARs.at(it->second) = value;
+    xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s updated to %d\n", name.c_str(), value);
+    logThis();
   } else {
+    xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", name.c_str(), value);
+    logThis();
     myVARs.push_back(value);
     varAddresses[name] = myVARs.size() - 1;
   }
@@ -117,6 +129,114 @@ int GetINTaddress(string name) {
   } else {
     return -1;
   }
+}
+
+bool handleVARRAY() {
+  // [data] num "name" VARRAY
+  // s" Riri Fifi Loulou" SSPLIT s" PLAYERS" VARRAY
+  // 1 2 3 4 4 s" dataNum" VARRAY
+  // etc
+  // it must be a new array
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"handleVARRAY/0");
+    return false;
+  }
+  int number;
+  if (popIntegerFromStack(&number) == false) {
+    logStackOverflow((char *)"handleVARRAY/1");
+    return false;
+  }
+  int type0 = dataStack.at(dataStack.size() - 1);
+  int type1, ix;
+  for (ix = 1; ix < number; ix++) {
+    type1 = dataStack.at(dataStack.size() - ix - 1);
+    if (type0 != type1) {
+      xxxxxx = snprintf((char *)msg, 255, "handleVARRAY/2/%d", ix);
+      logInconsistent(msg);
+      return false;
+    }
+  }
+  // now let's check that the array doesn't exist...
+  switch (type0) {
+    case xINTEGER:
+      {
+        // cout << " INTEGER VARRAY ";
+        std::map<string, vector<int>>::iterator it;
+        it = myIntArrays.find(name);
+        if (it != myIntArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/INT exists!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        if (userIntegers.size() < number) {
+          logStackOverflow((char *)"handleVARRAY/INT");
+          return false;
+        }
+        vector<int> tmp;
+        int i0;
+        for (ix = 0; ix < number; ix++) {
+          if (popIntegerFromStack(&i0) == false) {
+            xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/INT pop fail!\n", name.c_str());
+            logThis();
+            return false;
+          }
+          tmp.push_back(i0);
+        }
+        myIntArrays[name] = tmp;
+        return true;
+        break;
+      }
+    case xFLOAT:
+      {
+        // cout << " FLOAT VARRAY ";
+        std::map<string, vector<float>>::iterator itF;
+        itF = myFloatArrays.find(name);
+        if (itF != myFloatArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/Float exists!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        vector<float> tmpF;
+        float f0;
+        for (ix = 0; ix < number; ix++) {
+          if (popFloatFromStack(&f0) == false) {
+            xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/FLOAT pop fail!\n", name.c_str());
+            logThis();
+            return false;
+          }
+          tmpF.push_back(f0);
+        }
+        myFloatArrays[name] = tmpF;
+        return true;
+        break;
+      }
+    case xSTRING:
+      {
+        // cout << " STRING VARRAY ";
+        std::map<string, vector<string>>::iterator itS;
+        itS = myStringArrays.find(name);
+        if (itS != myStringArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/String exists!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        vector<string> tmpS;
+        string s0;
+        for (ix = 0; ix < number; ix++) {
+          if (popStringFromStack(&s0) == false) {
+            xxxxxx = snprintf((char *)msg, 255, "handleVARRAY %s/STR pop fail!\n", name.c_str());
+            logThis();
+            return false;
+          }
+          tmpS.push_back(s0);
+        }
+        myStringArrays[name] = tmpS;
+        return true;
+        break;
+      }
+  }
+  return false;
 }
 
 bool handleRput() {
@@ -548,16 +668,24 @@ bool handleRetrieve() {
     logStackOverflow((char *)"handleRetrieve1");
     return false;
   }
-  xxxxxx = snprintf((char *)msg, 255, "handleRetrieve end %d ", ad);
+  xxxxxx = snprintf((char *)msg, 255, "handleRetrieve var %d ", ad);
   logThis();
+  /*
+myVARs + 0
+myFVARs + 128
+myCONSTs + 256
+myFCONSTs + 384
+mySTRVARs + 512
+mySTRCONSTs + 640
+*/
   if (ad < 128) return putIntegerOnStack(myVARs.at(ad));
   else if (ad < 256) return putFloatOnStack(myFVARs.at(ad - 128));
   else if (ad < 384) putIntegerOnStack(myCONSTs.at(ad - 256));
-  else if (ad < 512) return putStringOnStack(mySTRVARs.at(ad - 512));
+  else if (ad < 512) return putFloatOnStack(myFCONSTs.at(ad - 384));
+  else if (ad < 640) return putStringOnStack(mySTRVARs.at(ad - 512));
   else return putStringOnStack(mySTRCONSTs.at(ad - 640));
   return true;
 }
-
 bool printOtherBases(int number, unsigned int base) {
   if (base > 16) {
     StoreINT("BASE", 16);
@@ -581,8 +709,7 @@ bool printOtherBases(int number, unsigned int base) {
     buffer[ix - n] = b;
     n += 1;
   }
-  sprintf(msg, "%s ", buffer);
-  commonPrint(msg);
+  printf("%s ", buffer);
   return true;
 }
 
@@ -624,10 +751,8 @@ bool handlePRINT() {
           return false;
         }
         int base = GetINT("BASE");
-        if (base == 10) {
-          sprintf(msg, "%d ", i0);
-          commonPrint(msg);
-        } else printOtherBases(i0, base);
+        if (base == 10) cout << i0 << " ";
+        else printOtherBases(i0, base);
         break;
       }
     case xFLOAT:
@@ -637,8 +762,7 @@ bool handlePRINT() {
           logStackOverflow((char *)"handlePRINT2");
           return false;
         }
-        sprintf(msg, "%.6f ", f0);
-        commonPrint(msg);
+        printf("%f ", f0);
         break;
       }
   }
@@ -665,8 +789,7 @@ bool handleUPRINT() {
           logStackOverflow((char *)"handleUPRINT1");
           return false;
         }
-        sprintf(msg, "%d ", i0);
-        commonPrint(msg);
+        cout << i0 << " ";
         break;
       }
     case xFLOAT:
@@ -916,6 +1039,11 @@ bool handleCELLS() {
   int number;   // number of cells
   string name;  // array name
   // originalValue number name ARRAY
+  if (dataStack.size() < 3) {
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLS: not enough data on the stack!\n");
+    logThis();
+    return false;
+  }
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLS: No NAME on the stack!\n");
     logThis();
@@ -994,6 +1122,86 @@ bool handleCELLS() {
   return false;
 }
 
+bool handleARRAYLIST() {
+  cout << "Integer arrays: ";
+  if (myIntArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myIntArrays.size() << endl;
+    std::map<string, vector<int>>::iterator it;
+    for (
+      std::map<string, vector<int>>::iterator it = myIntArrays.begin();
+      it != myIntArrays.end();
+      ++it)
+      std::cout << "* " << it->first << endl;
+  }
+  cout << "Float arrays: ";
+  if (myFloatArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myFloatArrays.size() << endl;
+    std::map<string, vector<int>>::iterator itF;
+    for (
+      std::map<string, vector<float>>::iterator itF = myFloatArrays.begin();
+      itF != myFloatArrays.end();
+      ++itF)
+      std::cout << "* " << itF->first << endl;
+  }
+  cout << "String arrays: ";
+  if (myStringArrays.size() == 0) {
+    cout << 0 << endl;
+  } else {
+    cout << myStringArrays.size() << endl;
+    std::map<string, vector<string>>::iterator it;
+    for (
+      std::map<string, vector<string>>::iterator itS = myStringArrays.begin();
+      itS != myStringArrays.end();
+      ++itS)
+      std::cout << "* " << itS->first << endl;
+  }
+  return true;
+}
+
+bool handleARRAYSUM() {
+  string name;  // array name
+  int ix;
+  float f0;
+  if (popStringFromStack(&name) == false) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM: No NAME on the stack!\n");
+    logThis();
+    return false;
+  }
+  std::map<string, vector<int>>::iterator it;
+  it = myIntArrays.find(name);
+  if (it == myIntArrays.end()) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM %s/INT does not exist!\n", name.c_str());
+    logThis();
+  } else {
+    vector<int> tmp = it->second;
+    ix = 0;
+    for (std::vector<int>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
+      ix += *it;
+    }
+    putIntegerOnStack(ix);
+    return true;
+  }
+  std::map<string, vector<float>>::iterator itF;
+  itF = myFloatArrays.find(name);
+  if (itF == myFloatArrays.end()) {
+    xxxxxx = snprintf((char *)msg, 255, "handleARRAYSUM %s/float does not exist!\n", name.c_str());
+    logThis();
+  } else {
+    vector<float> tmpF = itF->second;
+    f0 = 0.0;
+    for (std::vector<float>::iterator itF = tmpF.begin(); itF != tmpF.end(); ++itF) {
+      f0 += *itF;
+    }
+    putFloatOnStack(ix);
+    return true;
+  }
+  return false;
+}
+
 bool handleCELLLIST() {
   string name;  // array name
   int ix;
@@ -1025,7 +1233,7 @@ bool handleCELLLIST() {
     vector<float> tmpF = itF->second;
     ix = 0;
     for (std::vector<float>::iterator itF = tmpF.begin(); itF != tmpF.end(); ++itF) {
-      xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %f\n", ix, *itF);
+      xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %f\n", ix++, *itF);
       cout << msg;
     }
     return true;
@@ -1040,8 +1248,8 @@ bool handleCELLLIST() {
   vector<string> tmpS = itS->second;
   ix = 0;
   for (std::vector<string>::iterator itS = tmpS.begin(); itS != tmpS.end(); ++itS) {
-    xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %hhd\n", ix, *itS->c_str());
-    cout << msg;
+    //xxxxxx = snprintf((char *)msg, 255, "Cell #%d: %s\n", ix++, *itS->c_str());
+    cout << "Cell #" << ix++ << ": " << *itS << endl;
   }
   return true;
 }
@@ -1149,6 +1357,7 @@ bool handleCELLRETRIEVE() {
     if (number >= tmp.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/%zu INT out of range!\n", number, tmp.size());
       logThis();
+      return false;
     }
     putIntegerOnStack(tmp.at(number));
     return true;
@@ -1163,6 +1372,7 @@ bool handleCELLRETRIEVE() {
     if (number >= tmpF.size() || number < 0) {
       xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
       logThis();
+      return false;
     }
     putFloatOnStack(tmpF.at(number));
     return true;
@@ -1171,14 +1381,18 @@ bool handleCELLRETRIEVE() {
   std::map<string, vector<string>>::iterator itS;
   itS = myStringArrays.find(name);
   if (itS == myStringArrays.end()) {
-    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/String does not exist!\n", name.c_str());
+    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %s/STRING does not exist!\n", name.c_str());
     logThis();
     return false;
   }
   vector<string> tmpS = itS->second;
   if (number >= tmpS.size() || number < 0) {
-    xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE %d/FLOAT out of range!\n", number);
+    xxxxxx = snprintf(
+      (char *)msg, 255,
+      "handleCELLRETRIEVE %d/STRING/%zu out of range!\n",
+      number, tmpS.size());
     logThis();
+    return false;
   }
   putStringOnStack(tmpS.at(number));
   return true;
@@ -1402,6 +1616,10 @@ bool handleCELLRROT() {
   return true;
 }
 
+void cleanup() {
+  handleCLEAR();
+}
+
 void evaluate(vector<string> chunks) {
   bool r;
   int i0;
@@ -1417,6 +1635,9 @@ void evaluate(vector<string> chunks) {
   while (executionPointer < chunks.size()) {
     // executionPointer is global so that BEGIN – and later others – can change it.
     string c = chunks.at(executionPointer);
+    string cl = c;
+    std::transform(cl.begin(), cl.end(), cl.begin(), ::tolower);
+    // lowercase version
     xxxxxx = snprintf((char *)msg, 255, "\nEvaluating '%s' executionPointer: %d \n", c.c_str(), executionPointer);
     logThis();
 #if defined(DEBUG)
@@ -1447,77 +1668,72 @@ void evaluate(vector<string> chunks) {
       while (chunks.at(executionPointer) != ")")
         executionPointer += 1;
       executionPointer += 1;
+    } else if (cl == "var" || cl == "const") {
+      // creation of a variable
+      executionPointer += 1;
+      string d = chunks.at(executionPointer++);
+      int i0, x = dataStack.at(dataStack.size() - 1);
+      float f0;
+      string s0;
+      bool thisIsInt = (x) == xINTEGER;
+      bool thisIsFloat = (x) == xFLOAT;
+      bool thisIsString = (x) == xSTRING;
+      // we need something
+      if (!thisIsFloat && !thisIsInt && !thisIsString) {
+        xxxxxx = snprintf((char *)msg, 255, "No INT / FLOAT / STRING on the stack!\n");
+        logThis();
+        cleanup();
+        return;
+      }
+      switch (x) {
+        case xINTEGER:
+          {
+            if (popIntegerFromStack(&i0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+        case xFLOAT:
+          {
+            if (popFloatFromStack(&f0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+        case xSTRING:
+          {
+            if (popStringFromStack(&s0) == false) {
+              xxxxxx = snprintf((char *)msg, 255, "No STR on the stack!\n");
+              logThis();
+              cleanup();
+              return;
+            }
+            break;
+          }
+      }
+      if (cl == "var" && thisIsInt) {
+        StoreINT(d, i0);
+      } else if (cl == "var" && thisIsFloat) {
+        StoreFLOAT(d, f0);
+      } else if (cl == "const" && thisIsInt) {
+        StoreCONSTINT(d, i0);
+      } else if (cl == "const" && thisIsFloat) {
+        StoreCONSTFLOAT(d, f0);
+      } else if (cl == "var" && thisIsString) {
+        StoreSTRING(d, s0);
+      } else if (cl == "const" && thisIsString) {
+        StoreCONSTSTR(d, s0);
+      }
     } else if (lookupVAR(c)) {
       xxxxxx = snprintf((char *)msg, 255, "Put address of %s on stack. ", c.c_str());
       logThis();
       executionPointer += 1;
-    } else if (c == "VAR" || c == "CONST") {
-      // creation of a variable
-      executionPointer += 1;
-      string d = chunks.at(executionPointer++);
-      int i0;
-      float f0;
-      string s0;
-      bool valid = true;
-      if (isInteger(d, &i0)) valid = false;
-      else if (isFloat(d, &f0)) valid = false;
-      if (!valid) {
-        cout << endl
-             << ((c == "VARINT") ? "VAR" : "CONST") << " name: `" << c << "` is not valid!" << endl;
-        return;
-      }
-      bool thisIsInt = false;
-      bool thisIsFloat = false;
-      bool thisIsString = false;
-      // we need something
-      if (popIntegerFromStack(&i0) == false) {
-        xxxxxx = snprintf((char *)msg, 255, "No INT on the stack!\n");
-        logThis();
-        if (popFloatFromStack(&f0) == false) {
-          xxxxxx = snprintf((char *)msg, 255, "No FLOAT on the stack either!\n");
-          logThis();
-          if (popStringFromStack(&s0) == false) {
-            xxxxxx = snprintf((char *)msg, 255, "No STRING on the stack either!\n");
-            logThis();
-          } else {
-            thisIsString = true;
-            xxxxxx = snprintf((char *)msg, 255, "STRING on the stack!\n");
-            logThis();
-          }
-        } else {
-          thisIsFloat = true;
-        }
-      } else thisIsInt = true;
-      if (!thisIsFloat && !thisIsInt && !thisIsString) {
-        xxxxxx = snprintf((char *)msg, 255, "No INT / FLOAT / STRING on the stack!\n");
-        logThis();
-        return;
-      }
-      if (c == "VAR" && thisIsInt) {
-        xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", d.c_str(), i0);
-        logThis();
-        StoreINT(d, i0);
-      } else if (c == "VAR" && thisIsFloat) {
-        xxxxxx = snprintf((char *)msg, 255, "FLOAT VAR name: %s initialized with %f\n", d.c_str(), f0);
-        logThis();
-        StoreFLOAT(d, f0);
-      } else if (c == "CONST" && thisIsInt) {
-        xxxxxx = snprintf((char *)msg, 255, "INT CONST name: %s initialized with %d\n", d.c_str(), i0);
-        logThis();
-        StoreCONSTINT(d, i0);
-      } else if (c == "CONST" && thisIsFloat) {
-        xxxxxx = snprintf((char *)msg, 255, "FLOAT CONST name: %s initialized with %f\n", d.c_str(), f0);
-        logThis();
-        StoreCONSTFLOAT(d, f0);
-      } else if (c == "VAR" && thisIsString) {
-        xxxxxx = snprintf((char *)msg, 255, "STRING VAR name: %s initialized with %s\n", d.c_str(), s0.c_str());
-        logThis();
-        StoreSTRING(d, s0);
-      } else if (c == "CONST" && thisIsString) {
-        xxxxxx = snprintf((char *)msg, 255, "STRING CONST name: %s initialized with %s\n", d.c_str(), s0.c_str());
-        logThis();
-        StoreCONSTSTR(d, s0);
-      }
     } else if (insideString && c.back() == '"') {
       c.pop_back();
       insideString = false;
@@ -1570,6 +1786,7 @@ void evaluate(vector<string> chunks) {
       if (lookup(c, &r)) {
         if (r == false) {
           cout << c << " returned false. Aborting!" << endl;
+          cleanup();
           return;
         }
         executionPointer += 1;
@@ -1589,7 +1806,7 @@ void evaluate(vector<string> chunks) {
         logThis();
       } else {
         xxxxxx = snprintf((char *)msg, 255, "\nERROR! Unknown: %s at executionPointer %d\n", c.c_str(), executionPointer);
-        logThis();
+        cout << msg;
         return;
       }
     }
@@ -1600,6 +1817,8 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   // adds to the string vector chunks.
   // enables multi-line code
   unsigned int ln = strlen(cc), ix = 0;
+  cc[ln++] = 10;
+  cc[ln] = 0;
   char buffer[256] = { 0 };
   unsigned int buffIndex = 0;
   insideString = false;
@@ -1658,7 +1877,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
     }
   }
   if (buffIndex > 0) {
-    buffer[buffIndex + 1] = 0;
+    buffer[buffIndex] = 0;
     xxxxxx = snprintf((char *)msg, 255, "\n** Adding `%s`\n", buffer);
     logThis();
     chunks.push_back(buffer);
@@ -1684,10 +1903,18 @@ bool handleLOAD() {
   // Later on add a buffer editor.
 }
 
+
 LGFX_Sprite kbdSprite(&display);
 void setup() {
   Serial.begin(115200);
   initForth();
+  vector<string> chunks;
+  strcpy(code, "255 0 0 setcolor cls 240 0 do I 0 240 I - 128 drawline I 1 + >R loop display 10 delay");
+  chunks = tokenize(code, chunks);
+  evaluate(chunks);
+  memset(code, 0, 256);
+  chunks.clear();
+
   commonPrint("OK ");
   kbdSprite.createSprite(240, 104);
   kbdSprite.setTextFont(&fonts::FreeMono12pt7b);

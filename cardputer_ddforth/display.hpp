@@ -6,8 +6,25 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
+bool popFloatFromStack(float *);
+bool popFromLoopStack(int *);
+bool popIntegerFromJumpStack(int *);
+bool popIntegerFromStack(int *);
+bool popStringFromStack(string *);
+bool putFloatOnStack(float);
+bool putIntegerOnJumpStack(int);
+bool putIntegerOnStack(int);
+bool putStringOnStack(string);
+bool showStack();
+bool showVars();
+void logStack(char *);
+void logInconsistent(char *who);
+void logStackOverflow(char *who);
+void logThis();
+
 #define display M5Cardputer.Display
 extern char msg[256];
+LGFX_Sprite gfxSprite(&display);
 
 void commonPrint(char *);
 
@@ -88,3 +105,87 @@ void commonPrint(char *text) {
   cout << text;
   display.print(text);
 }
+
+bool handleCLS() {
+  display.clear();
+  display.setTextFont(&fonts::FreeMonoBold12pt7b);
+  display.setTextColor(TFT_WHITE);
+  gfxSprite.createSprite(240, 128);
+  gfxSprite.setTextSize(1.0);
+  gfxSprite.setTextFont(&fonts::FreeMonoBold12pt7b);
+  gfxSprite.setTextColor(TFT_WHITE);
+  gfxSprite.pushSprite(0, 0);
+  return true;
+}
+
+bool handleGetWidth() {
+  putIntegerOnStack(240);
+  return true;
+}
+
+bool handleGetHeight() {
+  putIntegerOnStack(128);
+  return true;
+}
+
+bool handleSetColor() {
+  // void setColor(uint8_t r, uint8_t g, uint8_t b)
+  int r, g, b;
+  if (popIntegerFromStack(&b) == false) {
+    logStackOverflow((char *)"handleSetColor/B");
+    return false;
+  }
+  if (popIntegerFromStack(&g) == false) {
+    logStackOverflow((char *)"handleSetColor/G");
+    return false;
+  }
+  if (popIntegerFromStack(&r) == false) {
+    logStackOverflow((char *)"handleSetColor/R");
+    return false;
+  }
+  gfxSprite.setColor((uint8_t)r, (uint8_t)g, (uint8_t)b);
+  return true;
+}
+
+bool handleDrawline() {
+  // void drawLine( int32_t x0, int32_t y0, int32_t x1, int32_t y1)
+  int x0, y0, x1, y1;
+  if (popIntegerFromStack(&y1) == false) {
+    logStackOverflow((char *)"handleDrawline/y1");
+    return false;
+  }
+  if (popIntegerFromStack(&x1) == false) {
+    logStackOverflow((char *)"handleDrawline/x1");
+    return false;
+  }
+  if (popIntegerFromStack(&y0) == false) {
+    logStackOverflow((char *)"handleDrawline/y0");
+    return false;
+  }
+  if (popIntegerFromStack(&x0) == false) {
+    logStackOverflow((char *)"handleDrawline/x0");
+    return false;
+  }
+  gfxSprite.drawLine((int32_t)x0, (int32_t)y0, (int32_t)x1, (int32_t)y1);
+  return true;
+}
+
+bool handleDisplay() {
+  gfxSprite.pushSprite(0, 0);
+  return true;
+}
+
+bool handleDelay() {
+  int seconds;
+  if (popIntegerFromStack(&seconds) == false) {
+    logStackOverflow((char *)"handleDelay/1");
+    return false;
+  }
+  delay(seconds * 1000);
+  return true;
+}
+
+
+
+
+// end
