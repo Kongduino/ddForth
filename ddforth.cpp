@@ -162,7 +162,7 @@ bool handleVARRAY() {
   switch(type0) {
     case xINTEGER:
     {
-      cout << " INTEGER VARRAY ";
+      // cout << " INTEGER VARRAY ";
       std::map<string, vector<int>>::iterator it;
       it = myIntArrays.find(name);
       if (it != myIntArrays.end()) {
@@ -190,7 +190,7 @@ bool handleVARRAY() {
     }
     case xFLOAT:
     {
-      cout << " FLOAT VARRAY ";
+      // cout << " FLOAT VARRAY ";
       std::map<string, vector<float>>::iterator itF;
       itF = myFloatArrays.find(name);
       if (itF != myFloatArrays.end()) {
