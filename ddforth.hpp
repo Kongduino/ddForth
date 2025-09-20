@@ -79,6 +79,7 @@ bool handleCR();
 bool handleDEPTH();
 bool handleCLEAR();
 bool handleDO();
+bool handlePlusLoop();
 bool handleDROP();
 bool handleDUP();
 bool handleEMIT();
@@ -331,6 +332,7 @@ nativeCommand nativeCommands[] = {
   { handleUNTIL, "UNTIL" },
   { handleWHILE, "WHILE" },
   { handleDO, "DO" },
+  { handlePlusLoop, "+LOOP" },
   { handleLOOP, "LOOP" },
   { handleI, "I" },
   { handleIprime, "I'" },

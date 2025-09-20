@@ -301,15 +301,15 @@ bool handleDO() {
   logThis();
   if (dataStack.size() < 2) {
     cout << "Stack empty! ";
-    return true;
+    return false;
   }
   int max, min;
   if (popIntegerFromStack(&min) == false) {
-    logStackOverflow((char *)"handleLOOP");
+    logStackOverflow((char *)"handleDO");
     return false;
   }
   if (popIntegerFromStack(&max) == false) {
-    logStackOverflow((char *)"handleLOOP");
+    logStackOverflow((char *)"handleDO");
     return false;
   }
   loopStack.push_back(max);
@@ -384,6 +384,23 @@ bool handleLOOP() {
 #endif
   return true;
 }
+
+bool handlePlusLoop() {
+  // val +LOOP ---> I = I + val
+  if (loopStack.size() == 0) {
+    cout << "Loop Stack empty! ";
+    return false;
+  }
+  int value;
+  if (popIntegerFromStack(&value) == false) {
+    logStackOverflow((char *)"handlePlusLoop");
+    return false;
+  }
+  loopStack.at(loopStack.size() - 1) += (value - 1);
+  // -1 because handleLOOP() is going to add 1
+  return handleLOOP();
+}
+
 
 bool handleI() {
   if (!checkDOLOOPconditions((char *)"handleI")) return false;
