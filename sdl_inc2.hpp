@@ -31,7 +31,7 @@
   evaluate(chunks);
   memset(code, 0, 256);
   chunks.clear();
-  vector<string> thisBlock = loadFile((char *)"tests/t.fs");
+  vector<string> thisBlock = loadFile((char *)"tests/t0.fs");
   if (thisBlock.size() == 0) {
     cerr << "Unable to open file!" << endl;
     return -1;
