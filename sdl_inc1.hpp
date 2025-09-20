@@ -6,3 +6,6 @@
   { handleCLS, "CLS" },
   { handleDRAWSTRING, ".DT\"" },
   { handleFONT, "FONT" },
+  { handleRefresh, "REFRESH" },
+  { handleWIDTH, "WIDTH" },
+  { handleHEIGHT, "HEIGHT" },

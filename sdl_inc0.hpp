@@ -17,5 +17,8 @@ bool handleDrawRect();
 bool handleCLS();
 bool handleDRAWSTRING();
 bool handleFONT();
+bool handleRefresh();
+bool handleWIDTH();
+bool handleHEIGHT();
 
 bool isDrawing = false;

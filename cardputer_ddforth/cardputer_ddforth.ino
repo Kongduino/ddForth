@@ -1909,7 +1909,9 @@ void setup() {
   Serial.begin(115200);
   initForth();
   vector<string> chunks;
-  strcpy(code, "255 0 0 setcolor cls 240 0 do I 0 240 I - 128 drawline I 1 + >R loop display 10 delay");
+  strcpy(code,
+  "255 0 0 setcolor cls 240 0 do I 0 i 128 + DUP drawline I 1 + >R loop display 10 delay"
+  );
   chunks = tokenize(code, chunks);
   evaluate(chunks);
   memset(code, 0, 256);

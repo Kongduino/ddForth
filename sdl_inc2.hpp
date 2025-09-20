@@ -4,7 +4,7 @@
     return 1;
   }
   // Create a window
-  SDL_Window* window = SDL_CreateWindow("ddForth SDL", 800, 600, SDL_WINDOW_RESIZABLE);
+  window = SDL_CreateWindow("ddForth SDL", 800, 600, SDL_WINDOW_RESIZABLE);
   if (window == NULL) {
     SDL_Log("Window could not be created! SDL_Error: %s\n", SDL_GetError());
     SDL_Quit();

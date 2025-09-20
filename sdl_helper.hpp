@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void drawText(char*, float, float);
+void drawText(char*);
 bool handleDrawPixel();
 bool handleDrawLine();
 bool handleDrawColor();
@@ -18,6 +18,7 @@ bool handleDrawRect();
 bool handleCLS();
 bool handleDRAWSTRING();
 
+SDL_Window* window;
 SDL_Renderer* renderer;
 static TTF_Font* font = NULL;
 
@@ -345,3 +346,24 @@ bool handleFONT() {
   }
   return true;
 }
+
+bool handleRefresh() {
+  SDL_RenderPresent(renderer);
+  return true;
+}
+
+bool handleWIDTH() {
+  int h, w;
+  SDL_GetWindowSize(window, &w, &h);
+  putIntegerOnStack(w);
+  return true;
+}
+
+bool handleHEIGHT() {
+  int h, w;
+  SDL_GetWindowSize(window, &w, &h);
+  putIntegerOnStack(h);
+  return true;
+}
+
+
