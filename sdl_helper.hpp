@@ -17,6 +17,7 @@ void drawRect(int, int, int, int);
 bool handleDrawRect();
 bool handleCLS();
 bool handleDRAWSTRING();
+bool handleDRAWSTACKSTRING();
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -317,6 +318,16 @@ bool handleDRAWSTRING() {
   isPrinting = false;
   isDrawing = true;
   insideString = true;
+  return true;
+}
+
+bool handleDRAWSTACKSTRING() {
+  string s;
+  if(popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleFONT");
+    return false;
+  }
+  drawText(s.c_str());
   return true;
 }
 

@@ -9,3 +9,4 @@
   { handleRefresh, "REFRESH" },
   { handleWIDTH, "WIDTH" },
   { handleHEIGHT, "HEIGHT" },
+  { handleDRAWSTACKSTRING, ".DST" },

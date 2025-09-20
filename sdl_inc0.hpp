@@ -20,5 +20,6 @@ bool handleFONT();
 bool handleRefresh();
 bool handleWIDTH();
 bool handleHEIGHT();
+bool handleDRAWSTACKSTRING();
 
 bool isDrawing = false;
