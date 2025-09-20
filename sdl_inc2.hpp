@@ -18,7 +18,7 @@
     SDL_Quit();
     return 1;
   }
-  font = TTF_OpenFont("./Fonts/RobotoMono-Medium.ttf", 18.0f);
+  font = TTF_OpenFont("./Fonts/RobotoMono-Medium.ttf", 12.0f);
   if (!font) {
     SDL_Log("Couldn't open font: %s\n", SDL_GetError());
     return -1;

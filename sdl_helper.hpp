@@ -49,16 +49,6 @@ void drawText(string mytext) {
     logThis();
     return;
   }
-  if (popIntegerFromStack(&h) == false) {
-    xxxxxx = snprintf((char *)msg, 255, "drawText h Missing Integer on stack!\n");
-    logThis();
-    return;
-  }
-  if (popIntegerFromStack(&w) == false) {
-    xxxxxx = snprintf((char *)msg, 255, "drawText w Missing Integer on stack!\n");
-    logThis();
-    return;
-  }
   if (popIntegerFromStack(&y) == false) {
     xxxxxx = snprintf((char *)msg, 255, "drawText y Missing Integer on stack!\n");
     logThis();
@@ -69,6 +59,9 @@ void drawText(string mytext) {
     logThis();
     return;
   }
+  size_t measured_length;
+  h = 16;
+  TTF_MeasureString(font, (const char *)mytext.c_str(), 0, 0, &w, &measured_length);
   SDL_Color color = { (Uint8)r, (Uint8)g, (Uint8)b, SDL_ALPHA_OPAQUE };
   SDL_Surface* text;
   SDL_Texture* texture = NULL;
