@@ -77,6 +77,7 @@
   { handleRget, "r>" },
   { handleEXEC, "exec" },
   { handleLOAD, "load" },
+  { handleFLOAD, "fload" },
   { putRandomByteOnStack, "random" },
   { putRandomUIntOnStack, "randomi" },
   { handleIF, "if" },

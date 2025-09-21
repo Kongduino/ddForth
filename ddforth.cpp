@@ -1920,23 +1920,7 @@ int main(int argc, char **argv) {
 #endif
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
-      vector<string> thisBlock = loadFile(argv[2]);
-      if (thisBlock.size() == 0) {
-        cerr << "Unable to open file!" << endl;
-        return -1;
-      }
-      int lineCount = 0;
-      string line;
-      for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
-        line = *it;
-        while (!line.empty() && line.back() == '\n')
-          line.pop_back();
-        lineCount += 1;
-        strcpy(code, line.c_str());
-        chunks = tokenize(code, chunks);
-        cout << " • Read: " << line << endl;
-      }
-      cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
+      chunks = loadAndTokenize(argv[2]);
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;

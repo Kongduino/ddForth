@@ -112,6 +112,7 @@ bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
 bool handleLOAD();
+bool handleFLOAD();
 bool handleParens();
 bool handleCELLS();
 bool handleARRAYLIST();
@@ -341,6 +342,7 @@ nativeCommand nativeCommands[] = {
   { handleRget, "R>" },
   { handleEXEC, "EXEC" },
   { handleLOAD, "LOAD" },
+  { handleFLOAD, "FLOAD" },
   { putRandomByteOnStack, "RANDOM" },
   { putRandomUIntOnStack, "RANDOMI" },
   { handleIF, "IF" },
