@@ -494,4 +494,5 @@ for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;do
 
 ![ArduinoIDE01](assets/ArduinoIDE01.png)
 
+![CardPuter_Demo](assets/CardPuter_Demo.gif)
 
