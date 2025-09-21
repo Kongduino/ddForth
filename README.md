@@ -496,3 +496,4 @@ for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;do
 
 ![CardPuter_Demo](assets/CardPuter_Demo.gif)
 
+File `/data/t0.fs` loaded from SPIFFS.
