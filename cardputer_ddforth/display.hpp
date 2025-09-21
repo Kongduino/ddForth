@@ -21,6 +21,7 @@ void logStack(char *);
 void logInconsistent(char *who);
 void logStackOverflow(char *who);
 void logThis();
+bool handleDrawPixel();
 
 #define display M5Cardputer.Display
 extern char msg[256];
@@ -131,6 +132,7 @@ bool handleGetHeight() {
   return true;
 }
 
+uint16_t cl16;
 bool handleSetColor() {
   // void setColor(uint8_t r, uint8_t g, uint8_t b)
   int r, g, b;
@@ -147,6 +149,7 @@ bool handleSetColor() {
     return false;
   }
   gfxSprite.setColor((uint8_t)r, (uint8_t)g, (uint8_t)b);
+  cl16 = (((uint8_t)r << 11) | ((uint8_t)g << 5) | (uint8_t)b);
   return true;
 }
 
@@ -170,6 +173,21 @@ bool handleDrawline() {
     return false;
   }
   gfxSprite.drawLine((int32_t)x0, (int32_t)y0, (int32_t)x1, (int32_t)y1);
+  return true;
+}
+
+bool handleDrawPixel() {
+  // void drawLine( int32_t x0, int32_t y0, int32_t x1, int32_t y1)
+  int x0, y0;
+  if (popIntegerFromStack(&y0) == false) {
+    logStackOverflow((char *)"handleDrawPixel/y0");
+    return false;
+  }
+  if (popIntegerFromStack(&x0) == false) {
+    logStackOverflow((char *)"handleDrawPixel/x0");
+    return false;
+  }
+  gfxSprite.drawPixel(x0, y0, cl16);
   return true;
 }
 

@@ -12,3 +12,5 @@
   { handleDisplay, "display" },
   { handleDelay, "delay" },
   { handleDelay, "DELAY" },
+  { handleDrawPixel, "DRAWPIXEL" },
+  { handleDrawPixel, "drawpixel" },
