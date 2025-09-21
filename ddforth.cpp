@@ -3,7 +3,6 @@ bool insideString;
 
 using namespace std;
 
-
 /*
 myVARs + 0
 myFVARs + 128

@@ -22,10 +22,6 @@ unsigned char getRandomByte();
 bool putRandomByteOnStack();
 bool getRandomUInt();
 
-#if defined(NEED_SDL)
-#include "sdl_inc0.hpp"
-#endif
-
 bool handle2Nums(unsigned char);
 bool handleABS();
 bool handleAND();
@@ -80,6 +76,7 @@ bool handleCR();
 bool handleDEPTH();
 bool handleCLEAR();
 bool handleDO();
+bool handlePlusLoop();
 bool handleDROP();
 bool handleDUP();
 bool handleEMIT();
@@ -332,6 +329,7 @@ nativeCommand nativeCommands[] = {
   { handleUNTIL, "UNTIL" },
   { handleWHILE, "WHILE" },
   { handleDO, "DO" },
+  { handlePlusLoop, "+LOOP" },
   { handleLOOP, "LOOP" },
   { handleI, "I" },
   { handleIprime, "I'" },
@@ -359,12 +357,8 @@ nativeCommand nativeCommands[] = {
   { handleCELLLIST, "ALIST"},
   { handleARRAYSUM, "ASUM"},
 
-#include "displayHandles.hpp"
 #include "lowercase.hpp"
-
-#if defined(NEED_SDL)
-#include "sdl_inc1.hpp"
-#endif
+#include "displayHandles.hpp"
 };
 
 int nativeCmdCount = 0;
@@ -376,9 +370,6 @@ char numerics[] = "0123456789abcdef";
 #include "Numbers.hpp"
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
-#if defined(NEED_SDL)
-#include "sdl_helper.hpp"
-#endif
 
 void initForth() {
   xxxxxx = snprintf((char *)msg, 255, "init ");

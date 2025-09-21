@@ -1,6 +1,11 @@
-#include "ddforth.hpp"
 // Add #include "initForth2.hpp"
-// As the last line.
+// As the last line of initForth()
+// #include "display.hpp"
+// in ddforth.hpp
+// #include "displayHandles.hpp"
+// after #include "lowercase.hpp"
+
+#include "ddforth.hpp"
 bool insideString;
 
 using namespace std;
@@ -306,15 +311,15 @@ bool handleDO() {
   logThis();
   if (dataStack.size() < 2) {
     cout << "Stack empty! ";
-    return true;
+    return false;
   }
   int max, min;
   if (popIntegerFromStack(&min) == false) {
-    logStackOverflow((char *)"handleLOOP");
+    logStackOverflow((char *)"handleDO");
     return false;
   }
   if (popIntegerFromStack(&max) == false) {
-    logStackOverflow((char *)"handleLOOP");
+    logStackOverflow((char *)"handleDO");
     return false;
   }
   loopStack.push_back(max);
@@ -389,6 +394,23 @@ bool handleLOOP() {
 #endif
   return true;
 }
+
+bool handlePlusLoop() {
+  // val +LOOP ---> I = I + val
+  if (loopStack.size() == 0) {
+    cout << "Loop Stack empty! ";
+    return false;
+  }
+  int value;
+  if (popIntegerFromStack(&value) == false) {
+    logStackOverflow((char *)"handlePlusLoop");
+    return false;
+  }
+  loopStack.at(loopStack.size() - 1) += (value - 1);
+  // -1 because handleLOOP() is going to add 1
+  return handleLOOP();
+}
+
 
 bool handleI() {
   if (!checkDOLOOPconditions((char *)"handleI")) return false;
@@ -1741,10 +1763,6 @@ void evaluate(vector<string> chunks) {
       if (isStackingString) {
         isStackingString = false;
         putStringOnStack(c);
-#if defined(NEED_SDL)
-      } else if (isDrawing) {
-        drawText(c);
-#endif
       } else {
         cout << c;
         isPrinting = false;
@@ -1904,15 +1922,35 @@ bool handleLOAD() {
   // Later on add a buffer editor.
 }
 
-
 void setup() {
   Serial.begin(115200);
   initForth();
   vector<string> chunks;
-  strcpy(code,
-  "255 0 0 setcolor cls 240 0 do I 0 i 128 + DUP drawline I 1 + >R loop display 10 delay"
-  );
-  chunks = tokenize(code, chunks);
+  // strcpy(code,
+  // "255 0 0 setcolor cls 240 0 do I 0 i 128 + DUP drawline I 1 + >R loop display 10 delay"
+  // );
+  M5Cardputer.update();
+  bool BtnG0 = M5Cardputer.BtnA.wasPressed();
+  if (BtnG0) {
+    Serial.println("Button A Pressed");
+  }
+
+  int fc = listAllFiles();
+  if (fc == 0 || BtnG0) {
+    SPIFFS.remove("/t0.fs");
+    File file = SPIFFS.open("/t0.fs", FILE_WRITE);
+    file.print("255 0 0 setcolor cls 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display 10 delay");
+    file.close();
+    int fc = listAllFiles();
+  }
+  vector<string> thisBlock = loadFile("/t0.fs");
+  cout << "loadFile " << thisBlock.size() << endl;
+  for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+    strcpy(code, it->c_str());
+    cout << "Tokenizing " << *it << endl;
+    chunks = tokenize(code, chunks);
+  }
+
   evaluate(chunks);
   memset(code, 0, 256);
   chunks.clear();
@@ -1982,14 +2020,6 @@ void loop() {
             c = msg[nx];
             msg[nx] = 0;
             kbdSprite.drawString(msg + n, 4, py);
-            // Serial.print("From ");
-            // Serial.print(n);
-            // Serial.print(" to ");
-            // Serial.print(nx);
-            // Serial.print(": '");
-            // Serial.print(msg + n);
-            // Serial.print("' at py ");
-            // Serial.println(py);
             msg[nx] = c;
             py += fh;
             n += 15;

@@ -69,6 +69,7 @@
   { handleWHILE, "while" },
   { handleDO, "do" },
   { handleLOOP, "loop" },
+  { handlePlusLoop, "+loop" },
   { handleI, "i" },
   { handleIprime, "i'" },
   { handleJ, "j" },

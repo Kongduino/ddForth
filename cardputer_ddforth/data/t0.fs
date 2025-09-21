@@ -1,0 +1,1 @@
+255 0 0 setcolor cls 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display 10 delay
