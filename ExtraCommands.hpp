@@ -33,7 +33,7 @@ vector<userCommand> userCommands {
   {"SSPLIT", "32 CSPLIT"},
 
 #if defined(NEED_SDL)
-#include "sdl_inc3.hpp"
+#include "sdl_helpers/sdl_inc3.hpp"
 #endif
 
 };

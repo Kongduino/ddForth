@@ -22,7 +22,7 @@ bool putRandomByteOnStack();
 bool getRandomUInt();
 
 #if defined(NEED_SDL)
-#include "sdl_inc0.hpp"
+#include "sdl_helpers/sdl_inc0.hpp"
 #endif
 
 bool handle2Nums(unsigned char);
@@ -363,7 +363,7 @@ nativeCommand nativeCommands[] = {
 #include "lowercase.hpp"
 
 #if defined(NEED_SDL)
-#include "sdl_inc1.hpp"
+#include "sdl_helpers/sdl_inc1.hpp"
 #endif
 };
 
@@ -377,7 +377,7 @@ char numerics[] = "0123456789abcdef";
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
 #if defined(NEED_SDL)
-#include "sdl_helper.hpp"
+#include "sdl_helpers/sdl_helper.hpp"
 #endif
 
 void initForth() {

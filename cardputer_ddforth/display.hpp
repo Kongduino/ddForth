@@ -25,6 +25,9 @@ void logThis();
 #define display M5Cardputer.Display
 extern char msg[256];
 LGFX_Sprite gfxSprite(&display);
+LGFX_Sprite kbdSprite(&display);
+char kbdData[256];
+uint8_t kbdIdx;
 
 void commonPrint(char *);
 

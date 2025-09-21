@@ -1,8 +1,9 @@
 #include "ddforth.hpp"
+// Add #include "initForth2.hpp"
+// As the last line.
 bool insideString;
 
 using namespace std;
-
 
 /*
 myVARs + 0
@@ -1904,7 +1905,6 @@ bool handleLOAD() {
 }
 
 
-LGFX_Sprite kbdSprite(&display);
 void setup() {
   Serial.begin(115200);
   initForth();
@@ -1924,8 +1924,6 @@ void setup() {
   kbdSprite.drawString(msg, 4, 4);
 }
 
-char kbdData[256];
-uint8_t kbdIdx;
 void loop() {
   char kbdData[256];
   uint8_t kbdIdx;

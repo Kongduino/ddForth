@@ -1918,7 +1918,7 @@ int main(int argc, char **argv) {
   vector<string> chunks;
   initForth();
 #if defined(NEED_SDL)
-#include "sdl_inc2.hpp"
+#include "sdl_helpers/sdl_inc2.hpp"
 #else
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
