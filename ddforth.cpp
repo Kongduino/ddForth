@@ -274,8 +274,7 @@ bool handleWORDS() {
     // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
     cout << nativeCommands[ix].name << " ";
   }
-  cout << endl << endl
-       << "User Commands:" << endl << "--------------" << endl;
+  cout << endl << endl << "User Commands:" << endl << "--------------" << endl;
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
@@ -1918,7 +1917,7 @@ int main(int argc, char **argv) {
   initForth();
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc2.hpp"
-#else
+#endif
   if (argc == 3) {
     if (strcmp(argv[1], "-f") == 0) {
       vector<string> thisBlock = loadFile(argv[2]);
@@ -1946,20 +1945,33 @@ int main(int argc, char **argv) {
     strcpy(code, argv[1]);
     chunks = tokenize(code, chunks);
   } else {
-    strcpy(code, "-10 BEGIN DUP . DUP -1 * BEGIN 46 EMIT 1 - DUP 0= UNTIL DROP 1 + DUP 0= UNTIL . .S CR");
-    chunks = tokenize(code, chunks);
+    vector<string> thisBlock = loadFile((char *)"tests/test22.fs");
+    if (thisBlock.size() == 0) {
+      cerr << "Unable to open file!" << endl;
+      return -1;
+    }
+    int lineCount = 0;
+    string line;
+    for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+      line = *it;
+      while (!line.empty() && line.back() == '\n')
+        line.pop_back();
+      lineCount += 1;
+      strcpy(code, line.c_str());
+      chunks = tokenize(code, chunks);
+      cout << " • Read: " << line << endl;
+    }
+    cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
   }
   evaluate(chunks);
   memset(code, 0, 256);
   chunks.clear();
-  cout << endl << endl
-       << "OK ";
-#endif
+  cout << endl << endl << "OK ";
 
   while (true) {
     std::cin.getline(code, 256);
     if (std::cin.eof()) {
-      std::cin.clear(); // Clear error flags (eofbit, failbit, badbit)
+      std::cin.clear();  // Clear error flags (eofbit, failbit, badbit)
       cout << " the end\n\n\n";
       return 0;
     }

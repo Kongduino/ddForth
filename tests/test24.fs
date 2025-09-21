@@ -12,9 +12,9 @@ s" Players" len> DUP . ." players" CR 0 DO 0 4 I s" Players" IX> array LOOP
   DUP DUP s" Players" IX> ASUM ." Total score: " DUP DUP . CR
   rot swap s" Scores" >IX .S
   DUP scoreGagnant @ > IF
-    ." yes " scoreGagnant swap .S !
+    ." yes\ " scoreGagnant swap .S !
     DUP gagnant swap !
-  then ." no " else
+  then ." no\ " else
   1 + DUP 3 =
 UNTIL
 s" Scores" alist
