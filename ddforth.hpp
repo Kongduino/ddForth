@@ -1,4 +1,4 @@
-#include <cmath> // For std::sqrt
+#include <cmath>  // For std::sqrt
 #include <fcntl.h>
 #include <iostream>
 #include <map>
@@ -8,7 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
-#include <algorithm> // std::transform
+#include <algorithm>  // std::transform
 #include "random.hpp"
 
 using namespace std;
@@ -24,6 +24,8 @@ bool getRandomUInt();
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc0.hpp"
 #endif
+
+bool handleHELP();
 
 bool handle2Nums(unsigned char);
 bool handleABS();
@@ -229,6 +231,7 @@ enum JumpType {
 struct nativeCommand {
   bool (*ptr)(void);  // Function pointer
   string name;
+  string help;
 };
 
 void logThis() {
@@ -238,129 +241,130 @@ void logThis() {
 }
 
 nativeCommand nativeCommands[] = {
-  { handleWORDS, "WORDS" },
-  { handlePlus, "+" },
-  { handleMinus, "-" },
-  { handleMult, "*" },
-  { handleDiv, "/" },
-  { handleABS, "ABS" },  
-  { handleMIN, "MIN" },
-  { handleMAX, "MAX" },
-  { handleFact, "FACT" },
-  { handleMOD, "MOD" },
-  { handleAND, "AND" },
-  { handleOR, "OR" },
-  { handleXOR, "XOR" },
-  { handleNOT, "NOT" },  
-  { handleNEGATE, "NEGATE" },
-  { handleINVERT, "INVERT" },
-  { handleSQR, "SQR" },
-  { handleSQRT, "SQRT" },
-  { handleSIN, "SIN" },
-  { handleCOS, "COS" },
-  { handleTAN, "TAN" },
-  { handleASIN, "ASIN" },
-  { handleACOS, "ACOS" },
-  { handleATAN, "ATAN" },
-  { handleSINH, "SINH" },
-  { handleCOSH, "COSH" },
-  { handleTANH, "TANH" },
-  { handleLOG, "LOG" },
-  { handleLOG10, "LOG10" },
-  { handleROUND, "ROUND" },
-  { handleFLOOR, "FLOOR" },
-  { handleCEIL, "CEIL" },
-  { handleEXP, "EXP" },
-  { handleSETINT, "INT"},
-  { handleEMIT, "EMIT" },
-  { handleKEY, "KEY" },
-  { handleLINE, "LINE" },
-  { handlePRINT, "." },
-  { handlePRINTSTRING, ".\"" },
-  { handleSTACKSTRING, "s\"" },
-  { handlePRINTSTACKSTRING, ".s" },
-  { handlePREPENDSTACKSTRING, "+STR" },
-  { handleAPPENDSTACKSTRING, "STR+" },
-  { handleLEFT, "LEFTSTR" },
-  { handleMID, "MIDSTR" },
-  { handleRIGHT, "RIGHTSTR" },
-  { handleLEN, "LENSTR" },
-  { handleSUBSTR, "SUBSTR" },
-  { handleLowercase, "LOWERSTR"},
-  { handleUppercase, "UPPERSTR"},
-  { handleMULTSTR, "MULTSTR"},
-  { handleSTRIPSTR, "STRIPSTR" },
-  { handleLSTRIPSTR, "LSTRIPSTR" },
-  { handleRSTRIPSTR, "RSTRIPSTR" },
-  { handleINTSTR, "INTSTR"},
-  { handleSTRINT, "STRINT"},
-  { handleCSPLIT, "CSPLIT"},
-  { handleSPLITDELIM, "SPLITD"},
-  { handleVARRAY, "VARRAY"},
+  { handleWORDS, "WORDS", "( -- Displays vocabulary )" },
+  { handleHELP, "HELP", "( -- Displays this help )" },
+  { handlePlus, "+", "( a b -- x ) Puts a+b on top of the stack" },
+  { handleMinus, "-", "( a b -- x ) Puts a-b on top of the stack" },
+  { handleMult, "*", "( a b -- x ) Puts a*b on top of the stack" },
+  { handleDiv, "/", "( a b -- x ) Puts a/b on top of the stack" },
+  { handleABS, "ABS", "( a -- x ) Puts absolute value of A on top of the stack" },
+  { handleMIN, "MIN", "( a b -- x ) Puts min(a,b) on top of the stack" },
+  { handleMAX, "MAX", "( a b -- x ) Puts max(a,b) on top of the stack" },
+  { handleFact, "FACT", "( a -- x ) Puts a! on top of the stack" },
+  { handleMOD, "MOD", "( a b -- x ) Puts a%b on top of the stack" },
+  { handleAND, "AND", "( a b -- x ) Puts a&b on top of the stack" },
+  { handleOR, "OR", "( a b -- x ) Puts a|b on top of the stack" },
+  { handleXOR, "XOR", "( a b -- x ) Puts a^b on top of the stack" },
+  { handleNOT, "NOT", "( a -- x ) Puts (1 - (a&1)) on top of the stack" },
+  { handleNEGATE, "NEGATE", "( a -- x ) Puts ((~a) + 1) on top of the stack" },
+  { handleINVERT, "INVERT", "( a -- x ) Puts ~a on top of the stack" },
+  { handleSQR, "SQR", "( a -- x ) Puts (a*a) on top of the stack" },
+  { handleSQRT, "SQRT", "( a -- x ) Puts √a on top of the stack" },
+  { handleSIN, "SIN", "( a -- x ) Puts sin(a) on top of the stack" },
+  { handleCOS, "COS", "( a -- x ) Puts cos(a) on top of the stack" },
+  { handleTAN, "TAN", "( a -- x ) Puts tan(a) on top of the stack" },
+  { handleASIN, "ASIN", "( a -- x ) Puts asin(a) on top of the stack" },
+  { handleACOS, "ACOS", "( a -- x ) Puts acos(a) on top of the stack" },
+  { handleATAN, "ATAN", "( a -- x ) Puts atan(a) on top of the stack" },
+  { handleSINH, "SINH", "( a -- x ) Puts sinch(a) on top of the stack" },
+  { handleCOSH, "COSH", "( a -- x ) Puts cosch(a) on top of the stack" },
+  { handleTANH, "TANH", "( a -- x ) Puts tanch(a) on top of the stack" },
+  { handleLOG, "LOG", "( a -- x ) Puts log(a) on top of the stack" },
+  { handleLOG10, "LOG10", "( a -- x ) Puts log10(a) on top of the stack" },
+  { handleROUND, "ROUND", "( a -- x ) Puts round(a) on top of the stack" },
+  { handleFLOOR, "FLOOR", "( a -- x ) Puts floor(a) on top of the stack" },
+  { handleCEIL, "CEIL", "( a -- x ) Puts ceil(a) on top of the stack" },
+  { handleEXP, "EXP", "( a -- x ) Computes e raised to power a" },
+  { handleSETINT, "INT", "( a -- x ) Converts a to an integer" },
+  { handleEMIT, "EMIT", "( a -- ) printf(\"%c\", a);" },
+  { handleKEY, "KEY", "( -- x) Waits for a key and puts it on the stack" },
+  { handleLINE, "LINE", "( -- x ) Waits for a line, and puts it on the stack" },
+  { handlePRINT, ".", "( -- ) Prints a numerical value" },
+  { handlePRINTSTRING, ".\"", "( -- ) Print a string following that command. .\" print this.\"" },
+  { handleSTACKSTRING, "s\"", "( -- ) Puts a string following that command on the stack. s\" stack this.\"" },
+  { handlePRINTSTACKSTRING, ".s", "--" },
+  { handlePREPENDSTACKSTRING, "+STR", "--" },
+  { handleAPPENDSTACKSTRING, "STR+", "--" },
+  { handleLEFT, "LEFTSTR", "--" },
+  { handleMID, "MIDSTR", "--" },
+  { handleRIGHT, "RIGHTSTR", "--" },
+  { handleLEN, "LENSTR", "--" },
+  { handleSUBSTR, "SUBSTR", "--" },
+  { handleLowercase, "LOWERSTR", "--" },
+  { handleUppercase, "UPPERSTR", "--" },
+  { handleMULTSTR, "MULTSTR", "--" },
+  { handleSTRIPSTR, "STRIPSTR", "--" },
+  { handleLSTRIPSTR, "LSTRIPSTR", "--" },
+  { handleRSTRIPSTR, "RSTRIPSTR", "--" },
+  { handleINTSTR, "INTSTR", "--" },
+  { handleSTRINT, "STRINT", "--" },
+  { handleCSPLIT, "CSPLIT", "--" },
+  { handleSPLITDELIM, "SPLITD", "--" },
+  { handleVARRAY, "VARRAY", "--" },
 
-  { handleUPRINT, "U." },
-  { handleDUP, "DUP" },
-  { handleDROP, "DROP" },
-  { handleSWAP, "SWAP" },
-  { handleDEPTH, "DEPTH" },
-  { handleCLEAR, "CLEAR" },
-  { handleROT, "ROT" },
-  { handleROLL, "ROLL" },
-  { handleOVER, "OVER" },
-  { handleBASE, "BASE" },
-  { handleBASE2, "BIN" },
-  { handleBASE10, "DEC" },
-  { handleBASE16, "HEX" },
-  { handleStore, "!" },
-  { handleStorePlus, "!+" },
-  { handleRetrieve, "@" },
-  { handleCR, "CR" },
+  { handleUPRINT, "U.", "--" },
+  { handleDUP, "DUP", "--" },
+  { handleDROP, "DROP", "--" },
+  { handleSWAP, "SWAP", "--" },
+  { handleDEPTH, "DEPTH", "--" },
+  { handleCLEAR, "CLEAR", "--" },
+  { handleROT, "ROT", "--" },
+  { handleROLL, "ROLL", "--" },
+  { handleOVER, "OVER", "--" },
+  { handleBASE, "BASE", "--" },
+  { handleBASE2, "BIN", "--" },
+  { handleBASE10, "DEC", "--" },
+  { handleBASE16, "HEX", "--" },
+  { handleStore, "!", "--" },
+  { handleStorePlus, "!+", "--" },
+  { handleRetrieve, "@", "--" },
+  { handleCR, "CR", "--" },
   { showStack, ".S" },
   { showVars, ".V" },
-  { handleEqual, "=" },
-  { handleLower, "<" },
-  { handleLowerEqual, "<=" },
-  { handleGreater, ">" },
-  { handleGreaterEqual, ">=" },
-  { handleDifferent, "<>" },
-  { handleEqualQ, "=?" },
-  { handleGreaterQ, ">?" },
-  { handleLowerQ, "<?" },
-  { handleLowerEqualQ, "<=?" },
-  { handleGreaterEqualQ, ">=?" },
-  { handleDifferentQ, "<>?" },
-  { handleBEGIN, "BEGIN" },
-  { handleUNTIL, "UNTIL" },
-  { handleWHILE, "WHILE" },
-  { handleDO, "DO" },
-  { handlePlusLoop, "+LOOP" },
-  { handleLOOP, "LOOP" },
-  { handleI, "I" },
-  { handleIprime, "I'" },
-  { handleJ, "J" },
-  { handleRput, ">R" },
-  { handleRget, "R>" },
-  { handleEXEC, "EXEC" },
-  { handleLOAD, "LOAD" },
-  { handleFLOAD, "FLOAD" },
+  { handleEqual, "=", "--" },
+  { handleLower, "<", "--" },
+  { handleLowerEqual, "<=", "--" },
+  { handleGreater, ">", "--" },
+  { handleGreaterEqual, ">=", "--" },
+  { handleDifferent, "<>", "--" },
+  { handleEqualQ, "=?", "--" },
+  { handleGreaterQ, ">?", "--" },
+  { handleLowerQ, "<?", "--" },
+  { handleLowerEqualQ, "<=?", "--" },
+  { handleGreaterEqualQ, ">=?", "--" },
+  { handleDifferentQ, "<>?", "--" },
+  { handleBEGIN, "BEGIN", "--" },
+  { handleUNTIL, "UNTIL", "--" },
+  { handleWHILE, "WHILE", "--" },
+  { handleDO, "DO", "--" },
+  { handlePlusLoop, "+LOOP", "--" },
+  { handleLOOP, "LOOP", "--" },
+  { handleI, "I", "--" },
+  { handleIprime, "I'", "--" },
+  { handleJ, "J", "--" },
+  { handleRput, ">R", "--" },
+  { handleRget, "R>", "--" },
+  { handleEXEC, "EXEC", "--" },
+  { handleLOAD, "LOAD", "--" },
+  { handleFLOAD, "FLOAD", "--" },
   { putRandomByteOnStack, "RANDOM" },
   { putRandomUIntOnStack, "RANDOMI" },
-  { handleIF, "IF" },
-  { handleTHEN, "THEN" },
-  { handleELSE, "ELSE" },
-  { handleEXIT, "EXIT" },
-  { handleParens, "("},
-  { handleCELLS, "ARRAY"},
-  { handleARRAYLIST, "ARRAYS"},
-  { handleCELLSTORE, ">IX"},
-  { handleCELLRETRIEVE, "IX>"},
-  { handleCELLLENGTH, "LEN>"},
-  { handleCELLAPPEND, "IX+"},
-  { handleCELLPREPEND, "+IX"},
-  { handleCELLLROT, "<ROT"},
-  { handleCELLRROT, "ROT>"},
-  { handleCELLLIST, "ALIST"},
-  { handleARRAYSUM, "ASUM"},
+  { handleIF, "IF", "--" },
+  { handleTHEN, "THEN", "--" },
+  { handleELSE, "ELSE", "--" },
+  { handleEXIT, "EXIT", "--" },
+  { handleParens, "(", "--" },
+  { handleCELLS, "ARRAY", "--" },
+  { handleARRAYLIST, "ARRAYS", "--" },
+  { handleCELLSTORE, ">IX", "--" },
+  { handleCELLRETRIEVE, "IX>", "--" },
+  { handleCELLLENGTH, "LEN>", "--" },
+  { handleCELLAPPEND, "IX+", "--" },
+  { handleCELLPREPEND, "+IX", "--" },
+  { handleCELLLROT, "<ROT", "--" },
+  { handleCELLRROT, "ROT>", "--" },
+  { handleCELLLIST, "ALIST", "--" },
+  { handleARRAYSUM, "ASUM", "--" },
 
 #include "lowercase.hpp"
 
@@ -389,7 +393,7 @@ void initForth() {
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
   StoreCONSTFLOAT("PI", 3.141592653f);
-  StoreCONSTFLOAT("E",  2.718281828459045f);
+  StoreCONSTFLOAT("E", 2.718281828459045f);
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
@@ -426,10 +430,10 @@ void logInconsistent(char *who) {
 }
 
 void logStackOverflow(char *who) {
-//#if defined(DEBUG)
+  //#if defined(DEBUG)
   xxxxxx = snprintf((char *)msg, 255, "%s Stack overflow!\n", who);
   cout << msg;
-//#endif
+  //#endif
 }
 
 void logJumpStackOverflow(char *who) {
@@ -451,4 +455,31 @@ void logUnknownBlock(char *who) {
   xxxxxx = snprintf((char *)msg, 255, "%s Unknown Block!\n", who);
   cout << msg;
 #endif
+}
+
+bool handleWORDS() {
+  cout << "Handled in Code:" << endl << "----------------" << endl;
+  for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
+    string s = *it;
+    printf(" • %-11s (Handled in code)\n", s.c_str());
+  }
+  cout << endl << "Native Commands:" << endl << "----------------" << endl;
+  for (int ix = 0; ix < nativeCmdCount; ix++) {
+    // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    cout << nativeCommands[ix].name << " ";
+  }
+  cout << endl << endl << "User Commands:" << endl << "--------------" << endl;
+  for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+    printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
+  }
+  return true;
+}
+
+bool handleHELP() {
+  for (int ix = 0; ix < nativeCmdCount; ix++) {
+    // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
+    cout << nativeCommands[ix].name << endl;
+    cout << "\t* " << nativeCommands[ix].help << endl;
+  }
+  return true;
 }
