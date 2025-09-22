@@ -1943,7 +1943,7 @@ void setup() {
     file.close();
     int fc = listAllFiles();
   }
-  vector<string> thisBlock = loadFile("/t0.fs");
+  vector<string> thisBlock = loadFile("/t1.fs");
   cout << "loadFile " << thisBlock.size() << endl;
   for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
     strcpy(code, it->c_str());

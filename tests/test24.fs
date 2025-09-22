@@ -10,11 +10,11 @@ s" Players" len> DUP . ." players" CR 0 DO 0 4 I s" Players" IX> array LOOP
     RANDOM 6 MOD OVER I SWAP SCORE
   LOOP
   DUP DUP s" Players" IX> ASUM ." Total score: " DUP DUP . CR
-  rot swap s" Scores" >IX .S
+  rot swap s" Scores" >IX
   DUP scoreGagnant @ > IF
-    ." yes\ " scoreGagnant swap .S !
+    ( ." yes\ " ) scoreGagnant swap !
     DUP gagnant swap !
-  then ." no\ " else
+  then ( ." no\ " ) drop else
   1 + DUP 3 =
 UNTIL
-s" Scores" alist
+s" Player" gagnant @ 1 + INTSTR STR+ s" \ wins!" str+ .s CR CR

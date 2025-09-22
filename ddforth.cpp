@@ -1661,13 +1661,13 @@ void evaluate(vector<string> chunks) {
       executionPointer = chunks.size();
     } else if (isInsideIF && !isTrueIF) {
       // Skip to after then
-      while (chunks.at(executionPointer) != "THEN") {
+      while (chunks.at(executionPointer) != "THEN" && chunks.at(executionPointer) != "then") {
         executionPointer += 1;
       }
       executionPointer += 1;
       isInsideIF = false;
     } else if (isInsideIF && isTrueIF && skipElse) {
-      while (chunks.at(executionPointer) != "ELSE") {
+      while (chunks.at(executionPointer) != "ELSE" && chunks.at(executionPointer) != "else") {
         executionPointer += 1;
       }
       isInsideIF = false;

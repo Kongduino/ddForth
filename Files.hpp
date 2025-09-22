@@ -54,9 +54,9 @@ bool handleFLOAD() {
     logStackOverflow((char *)"handleFLOAD/0");
     return false;
   }
-  int savedExecutionPointer = executionPointer;
   vector<string> tempChunks = loadAndTokenize((char*)name.c_str());
   evaluate(tempChunks);
-  executionPointer = savedExecutionPointer;
+  tempChunks.clear();
+  executionPointer = 1e6;
   return true;
 }
