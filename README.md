@@ -80,75 +80,75 @@ rm -f ddforth ddforth_debug
 g++ -O3 ddforth.cpp -o ddforth
 > cd tests
 > ./tests.sh
-./ddforth -f test00.fs
+./tests.sh
+./ddforth -e test00.fs
+ddForth v1.1.49
+ • Read: ." \"中文也行\"" CR ." ¥Á¥!"
+Read: 1 line, chunks: 5
+"中文也行"
+¥Á¥!
 
+OK ./ddforth -e test01.fs
+ddForth v1.1.49
+ • Read: ( testing imbricated DO...LOOP with EMIT )
+ • Read: CR ." OUTSIDE LOOP" CR
+ • Read: -10 BEGIN
+ • Read:   DUP . DUP -1 * CR
+ • Read:   ." > INSIDE LOOP" CR
+ • Read:   BEGIN
+ • Read:     46 EMIT 1 - DUP 0=
+ • Read:   UNTIL
+ • Read:   DROP CR
+ • Read:   1 + DUP
+ • Read:   0=
+ • Read: UNTIL
+ • Read: . .S CR
+Read: 13 lines, chunks: 40
 
-Read: ." \"中文也行\"" CR ." ¥Á¥!" chunks: 5
-
-
-"中文也行" 
-¥Á¥! "中文也行" 
-¥Á¥! 
-
-./ddforth -f test01.fs
-
-Read: CR ." OUTSIDE LOOP" CR chunks: 4
-Read: -10 BEGIN chunks: 6
-Read:   DUP . DUP -1 * CR chunks: 12
-
-Read:   ." > INSIDE LOOP" CR chunks: 15
-Read:   BEGIN chunks: 16
-Read:     46 EMIT 1 - DUP 0= chunks: 22
-Read:   UNTIL chunks: 23
-Read:   DROP CR chunks: 25
-Read:   1 + DUP chunks: 28
-Read:   0= chunks: 29
-Read: UNTIL chunks: 30
-Read: . .S CR chunks: 33
-
-OUTSIDELOOP 
+OUTSIDE LOOP
 -10 
->INSIDELOOP 
+> INSIDE LOOP
 ..........
 -9 
->INSIDELOOP 
+> INSIDE LOOP
 .........
 -8 
->INSIDELOOP 
+> INSIDE LOOP
 ........
 -7 
->INSIDELOOP 
+> INSIDE LOOP
 .......
 -6 
->INSIDELOOP 
+> INSIDE LOOP
 ......
 -5 
->INSIDELOOP 
+> INSIDE LOOP
 .....
 -4 
->INSIDELOOP 
+> INSIDE LOOP
 ....
 -3 
->INSIDELOOP 
+> INSIDE LOOP
 ...
 -2 
->INSIDELOOP 
+> INSIDE LOOP
 ..
 -1 
->INSIDELOOP 
+> INSIDE LOOP
 .
 0 Stack empty! 
-. returned false. Aborting!
 
 
-./ddforth -f test02.fs
-Read: BASE 16 ! chunks: 3
-Read: A5 BASE A ! . CR chunks: 9
-Read: -13 DUP DUP .S chunks: 13
-Read: . U. chunks: 15
-Read: HEX . chunks: 17
-Read: DEC CR chunks: 19
-Read: BASE ? .V CR chunks: 23
+OK ./ddforth -e test02.fs
+ddForth v1.1.49
+ • Read: BASE 16 !
+ • Read: A5 BASE A ! . CR
+ • Read: -13 DUP DUP .S
+ • Read: . U.
+ • Read: HEX .
+ • Read: DEC CR
+ • Read: BASE ? .V CR
+Read: 7 lines, chunks: 23
 165 
 
 +-----------------------+
@@ -157,45 +157,32 @@ Read: BASE ? .V CR chunks: 23
 | 2	| INT.	| -13	|
 +-----------------------+
 -13 4294967283 fffffff3 
-10 myVARs.size: 2 myFVARs.size: 0 varAddresses.size: 2 fvarAddresses.size: 0
-myCONSTs.size: 0 myFCONSTs.size: 1 constAddresses.size: 0 fconstAddresses.size: 1
+10 
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
 |   0/2   | BASE        |    0 |       10 |
-|   1/2   | VER.        |    1 |     1098 |
+|   1/2   | VER.        |    1 |     1149 |
 +-----------------------------------------+
 +-----------------------------------------+
 | Num     | FCONST Name | Addr | Value    |
 +-----------------------------------------+
-|   0/1   | PI          |  384 |3.141593 |
-+-----------------------------------------+
-
-10 myVARs.size: 2 myFVARs.size: 0 varAddresses.size: 2 fvarAddresses.size: 0
-myCONSTs.size: 0 myFCONSTs.size: 1 constAddresses.size: 0 fconstAddresses.size: 1
-+-----------------------------------------+
-| Num     |  VAR Name   | Addr | Value    |
-+-----------------------------------------+
-|   0/2   | BASE        |    0 |       10 |
-|   1/2   | VER.        |    1 |     1098 |
-+-----------------------------------------+
-+-----------------------------------------+
-| Num     | FCONST Name | Addr | Value    |
-+-----------------------------------------+
-|   0/1   | PI          |  384 |3.141593 |
+|   0/2   | E           |  385 | 2.718282 |
+|   1/2   | PI          |  384 | 3.141593 |
 +-----------------------------------------+
 
 
 
-./ddforth -f test03.fs
-Read: 1 2 OVER 1.2 2.1 OVER .S chunks: 7
-
-Read: ." Loop and add" CR chunks: 10
-Read: BEGIN chunks: 11
-Read:   DUP . + chunks: 14
-Read:   DEPTH 1 = chunks: 17
-Read: UNTIL chunks: 18
-Read: . CR .S chunks: 21
+OK ./ddforth -e test03.fs
+ddForth v1.1.49
+ • Read: 1 2 OVER 1.2 2.1 OVER .S
+ • Read: ." Loop and add" CR
+ • Read: BEGIN
+ • Read:   DUP . +
+ • Read:   DEPTH 1 =
+ • Read: UNTIL
+ • Read: . CR .S
+Read: 7 lines, chunks: 21
 
 +-----------------------+
 | 0	| FLOAT	| 1.200	|
@@ -205,58 +192,53 @@ Read: . CR .S chunks: 21
 | 4	| INT.	| 2	|
 | 5	| INT.	| 1	|
 +-----------------------+
-Loopandadd 
-1.200000 3.300000 4.500000 5.500000 7.500000 8.500000 
-Stack empty! . returned false. Aborting!
+Loop and add
+1.200000 3.300000 4.500000 handle2Nums6 Stack overflow!
++ returned false. Aborting!
 
 
-./ddforth -f test04.fs
-
-Read: ." Fact\x7e\t\x7eTest" CR chunks: 3
-Read: 3 BEGIN chunks: 5
-Read:   DUP DUP . chunks: 8
-
-Read:   ." ! =" chunks: 10
-Read:   FACT U. CR chunks: 13
-Read:   1 + DUP 10 = chunks: 18
-Read: UNTIL CR chunks: 20
-Fact~	~Test 
-3 != 6 
-4 != 24 
-5 != 120 
-6 != 720 
-7 != 5040 
-8 != 40320 
-9 != 362880 
-
-UNTIL returned false. Aborting!
+OK ./ddforth -e test04.fs
+ddForth v1.1.49
+ • Read: ." Fact\x7e\t\x7eTest" CR
+ • Read: 3 BEGIN
+ • Read:   DUP DUP .
+ • Read:   ." ! ="
+ • Read:   FACT U. CR
+ • Read:   1 + DUP 10 =
+ • Read: UNTIL CR
+Read: 7 lines, chunks: 20
+Fact~	~Test
+3 ! =6 
+4 ! =24 
+5 ! =120 
+6 ! =720 
+7 ! =5040 
+8 ! =40320 
+9 ! =362880 
 
 
-./ddforth -f test05.fs
-Read: -10 BEGIN chunks: 2
-Read:   DUP . DUP -1 * chunks: 7
-Read:   BEGIN chunks: 8
-Read:     46 EMIT 1 - DUP chunks: 13
-Read:     0= chunks: 14
-Read:   UNTIL chunks: 15
-Read:   DROP chunks: 16
-Read:   1 + DUP chunks: 19
-Read:   0= chunks: 20
-Read: UNTIL chunks: 21
-Read: . .S CR chunks: 24
+
+OK ./ddforth -e test05.fs
+ddForth v1.1.49
+ • Read: -10 BEGIN
+ • Read:   DUP . DUP -1 *
+ • Read:   BEGIN
+ • Read:     46 EMIT 1 - DUP
+ • Read:     0=
+ • Read:   UNTIL
+ • Read:   DROP
+ • Read:   1 + DUP
+ • Read:   0=
+ • Read: UNTIL
+ • Read: . .S CR
+Read: 11 lines, chunks: 24
 -10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty! 
-. returned false. Aborting!
 
 
-./ddforth -f test06.fs
-Read: : ++ + + ; 1 1 1 .S ++ . CR chunks: 12
-
-+-----------------------+
-| 0	| INT.	| 1	|
-| 1	| INT.	| 1	|
-| 2	| INT.	| 1	|
-+-----------------------+
-3 
+OK ./ddforth -e test06.fs
+ddForth v1.1.49
+ • Read: : ++ + + ; 1 1 1 .S ++ . CR
+Read: 1 line, chunks: 12
 
 +-----------------------+
 | 0	| INT.	| 1	|
@@ -266,41 +248,43 @@ Read: : ++ + + ; 1 1 1 .S ++ . CR chunks: 12
 3 
 
 
-./ddforth -f test07.fs
-Read: 11 CONST TAGADA chunks: 3
-Read: 12 VAR TOGODO chunks: 6
-Read: TOGODO TAGADA .S @ 3 + ! chunks: 13
-Read: TOGODO ? CR chunks: 16
+OK ./ddforth -e test07.fs
+ddForth v1.1.49
+ • Read: 11 CONST TAGADA
+ • Read: 12 VAR TOGODO
+ • Read: TOGODO TAGADA .S @ 3 + !
+ • Read: TOGODO ? CR
+Read: 4 lines, chunks: 16
 
 +-----------------------+
 | 0	| INT.	| 256	|
 | 1	| INT.	| 2	|
 +-----------------------+
 14 
-14 
 
 
-./ddforth -f test08.fs
-Read: 12 CONST GEG chunks: 3
-Read: 31 VAR GUG chunks: 6
-Read: 21.21 VAR GOG chunks: 9
-Read: 12.12 CONST GAG chunks: 12
-Read: .V chunks: 13
-Read: GOG chunks: 14
-Read: GAG @ GOG @ + chunks: 19
-Read: .S chunks: 20
-Read: ! chunks: 21
-Read: .S chunks: 22
-Read: .V chunks: 23
-Read: GOG ? CR chunks: 26
-myVARs.size: 3 myFVARs.size: 1 varAddresses.size: 3 fvarAddresses.size: 1
-myCONSTs.size: 1 myFCONSTs.size: 2 constAddresses.size: 1 fconstAddresses.size: 2
+OK ./ddforth -e test08.fs
+ddForth v1.1.49
+ • Read: 12 CONST GEG
+ • Read: 31 VAR GUG
+ • Read: 21.21 VAR GOG
+ • Read: 12.12 CONST GAG
+ • Read: .V
+ • Read: GOG
+ • Read: GAG @ GOG @ +
+ • Read: .S
+ • Read: !
+ • Read: .S
+ • Read: .V
+ • Read: GOG ? CR
+Read: 12 lines, chunks: 26
+
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
 |   0/3   | BASE        |    0 |       10 |
 |   1/3   | GUG         |    2 |       31 |
-|   2/3   | VER.        |    1 |     1098 |
+|   2/3   | VER.        |    1 |     1149 |
 +-----------------------------------------+
 +-----------------------------------------+
 | Num     | FVAR Name   | Addr | Value    |
@@ -315,22 +299,22 @@ myCONSTs.size: 1 myFCONSTs.size: 2 constAddresses.size: 1 fconstAddresses.size: 
 +-----------------------------------------+
 | Num     | FCONST Name | Addr | Value    |
 +-----------------------------------------+
-|   0/2   | GAG         |  385 |12.120000 |
-|   1/2   | PI          |  384 |3.141593 |
+|   0/3   | E           |  385 | 2.718282 |
+|   1/3   | GAG         |  386 |12.120000 |
+|   2/3   | PI          |  384 | 3.141593 |
 +-----------------------------------------+
 
 +-----------------------+
 | 0	| FLOAT	| 33.330	|
 | 1	| INT.	| 128	|
 +-----------------------+
-Stack empty! myVARs.size: 3 myFVARs.size: 1 varAddresses.size: 3 fvarAddresses.size: 1
-myCONSTs.size: 1 myFCONSTs.size: 2 constAddresses.size: 1 fconstAddresses.size: 2
+Stack empty! 
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
 |   0/3   | BASE        |    0 |       10 |
 |   1/3   | GUG         |    2 |       31 |
-|   2/3   | VER.        |    1 |     1098 |
+|   2/3   | VER.        |    1 |     1149 |
 +-----------------------------------------+
 +-----------------------------------------+
 | Num     | FVAR Name   | Addr | Value    |
@@ -345,39 +329,41 @@ myCONSTs.size: 1 myFCONSTs.size: 2 constAddresses.size: 1 fconstAddresses.size: 
 +-----------------------------------------+
 | Num     | FCONST Name | Addr | Value    |
 +-----------------------------------------+
-|   0/2   | GAG         |  385 |12.120000 |
-|   1/2   | PI          |  384 |3.141593 |
+|   0/3   | E           |  385 | 2.718282 |
+|   1/3   | GAG         |  386 |12.120000 |
+|   2/3   | PI          |  384 | 3.141593 |
 +-----------------------------------------+
 33.329998 
-33.329998 
 
 
-./ddforth -f test09.fs
-Read: -10 BEGIN chunks: 2
-Read:   DUP . DUP -1 * chunks: 7
-Read:   BEGIN chunks: 8
-Read:     46 EMIT 1 - DUP chunks: 13
-Read:     0= chunks: 14
-Read:   UNTIL chunks: 15
-Read:   DROP 1 + DUP chunks: 19
-Read:   0= chunks: 20
-Read: UNTIL chunks: 21
-Read: . .S CR chunks: 24
+OK ./ddforth -e test09.fs
+ddForth v1.1.49
+ • Read: -10 BEGIN
+ • Read:   DUP . DUP -1 *
+ • Read:   BEGIN
+ • Read:     46 EMIT 1 - DUP
+ • Read:     0=
+ • Read:   UNTIL
+ • Read:   DROP 1 + DUP
+ • Read:   0=
+ • Read: UNTIL
+ • Read: . .S CR
+Read: 10 lines, chunks: 24
 -10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty! 
-. returned false. Aborting!
 
 
-./ddforth -f test10.fs
-Read: 0 10 0 DO chunks: 4
-Read:   DUP . chunks: 6
-
-Read:   ." ===> " chunks: 8
-Read:   1 + DUP DUP 10 SWAP chunks: 14
-Read:   DO chunks: 15
-Read:     DUP . 1 + chunks: 19
-Read:   LOOP chunks: 20
-Read:   DROP CR chunks: 22
-Read: LOOP chunks: 23
+OK ./ddforth -e test10.fs
+ddForth v1.1.49
+ • Read: 0 10 0 DO
+ • Read:   DUP .
+ • Read:   ." ===> "
+ • Read:   1 + DUP DUP 10 SWAP
+ • Read:   DO
+ • Read:     DUP . 1 +
+ • Read:   LOOP
+ • Read:   DROP CR
+ • Read: LOOP
+Read: 9 lines, chunks: 23
 0 ===> 1 2 3 4 5 6 7 8 9 
 1 ===> 2 3 4 5 6 7 8 9 
 2 ===> 3 4 5 6 7 8 9 
@@ -388,96 +374,431 @@ Read: LOOP chunks: 23
 7 ===> 8 9 
 8 ===> 9 
 9 ===> 10 
-LOOP returned false. Aborting!
 
 
-./ddforth -f test11.fs
-Read: CR 5 0 DO chunks: 4
-Read:   I . 5 0 chunks: 8
-Read:   DO chunks: 9
-Read:     I . chunks: 11
-Read:   LOOP chunks: 12
-Read:   CR chunks: 13
-Read: LOOP chunks: 14
+OK ./ddforth -e test11.fs
+ddForth v1.1.49
+ • Read: CR 5 0 DO
+ • Read:   I . 5 0
+ • Read:   DO
+ • Read:     I .
+ • Read:   LOOP
+ • Read:   CR
+ • Read: LOOP
+Read: 7 lines, chunks: 14
 
 0 0 1 2 3 4 
 1 0 1 2 3 4 
 2 0 1 2 3 4 
 3 0 1 2 3 4 
 4 0 1 2 3 4 
-LOOP returned false. Aborting!
 
 
-./ddforth -f test12.fs
-Read: : AVERAGE chunks: 2
-Read: CR DEPTH DUP >R chunks: 6
-Read: 1 DO + LOOP chunks: 10
-Read: R> / . chunks: 13
-Read: ; chunks: 14
-Read:  chunks: 14
-Read: 12.1 13 14 15 AVERAGE chunks: 19
+OK ./ddforth -e test12.fs
+ddForth v1.1.49
+ • Read: : AVERAGE
+ • Read: CR DEPTH DUP >R
+ • Read: 1 DO + LOOP
+ • Read: R> / .
+ • Read: ;
+ • Read: 
+ • Read: 12.1 13 14 15 AVERAGE
+Read: 7 lines, chunks: 19
 
-13.525000 
-13.525000 
+handle2Nums5 Stack overflow!
++ returned false. Aborting!
 
-./ddforth -f test13.fs
-Read: : AVERAGE chunks: 2
-Read: CR DEPTH DUP VAR COUNT chunks: 7
-Read: 1 DO + LOOP chunks: 11
-Read: COUNT @ / . chunks: 15
-Read: ; chunks: 16
-Read:  chunks: 16
 
-Read: LINE EXEC ." Average is: " AVERAGE chunks: 21
-```
-
-Here you have to enter a bunch of numbers.
-
-```
-10 11 12 13 14 15 16 17
-10 11 12 13 14 15 16 17
+OK ./ddforth -e test13.fs
+ddForth v1.1.49
+ • Read: ( Create a word called average )
+ • Read: : AVERAGE
+ • Read: CR DEPTH DUP VAR COUNT (assign depth as variable COUNT)
+ • Read: 1 DO + LOOP (sum up all numbers)
+ • Read: COUNT @ / . (calculate average and print)
+ • Read: ;
+ • Read: ." Please enter numbers, separated by spaces, to average out:" CR
+ • Read: LINE EXEC ." Average: " AVERAGE
+Read: 8 lines, chunks: 44
+Please enter numbers, separated by spaces, to average out:
+1 2 3 4 5 6 7 8
+1 2 3 4 5 6 7 8
 Average: 
-13 
-```
 
-Then you next to press ENTER.
+ERROR! Unknown: (assign at executionPointer 5
 
-```
-./ddforth -f test14.fs
- • Read: s" Hello!" LENSTR 0 DO 0 I 1 + SUBSTR .s CR LOOP CLEAR .S CR
- • Read: s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR CR .S CR
- • Read: s" Hello!" s" (123)" .S >s s" (456)" .S s< .S .s CLEAR .S CR
+
+OK ./ddforth -e test14.fs
+ddForth v1.1.49
+ • Read: s" Hello!" LENSTR 0 DO 0 I 1 + SUBSTR .s CR LOOP CLEAR CR
+ • Read: s" Hello!" LENSTR 0 DO LENSTR 1 - I - MIDSTR EMIT LOOP CLEAR CR
+ • Read: s" Hello!" s" (123)" +STR s" (456)" STR+ .s CLEAR CR
  • Read: s" HeLlO" DUP DUP ." Original string: " .s CR ." UPPERCASE: " UPPERSTR .s CR ." lowercase: " LOWERSTR .s CR
-Read: 4 lines, chunks: 66
-H 
-He 
-Hel 
-Hell 
-Hello 
-Hello! 
-Stack empty! 
+ • Read: s" +..." DUP ." Stack " .s RANDOM 10 MOD 1 + DUP . ." times as a string, add a + at the end and print:" CR MULTSTR s" +" STR+ .s CR
+ • Read: s" \tfff  " DUP .s 9 . CR LSTRIPSTR DUP .s 10 . CR RSTRIPSTR .s 11 . CR
+ • Read: s" \tfff  " DUP .s 0 . CR STRIPSTR DUP .s 0 . CR
+ • Read: 10 0 DO s" Ligne n° " I INTSTR STR+ .s CR LOOP
+ • Read: s" 10" STRINT 10 + . CR
+Read: 9 lines, chunks: 130
+H
+He
+Hel
+Hell
+Hello
+Hello!
+
 !olleH
-Stack empty! 
+(123)Hello!(456)
+Original string: HeLlO
+UPPERCASE: HELLO
+lowercase: hello
+Stack +...10 times as a string, add a + at the end and print:
++...+...+...+...+...+...+...+...+...+...+
+	fff  9 
+fff  10 
+fff11 
+	fff  0 
+fff0 
+Ligne n° 0
+Ligne n° 1
+Ligne n° 2
+Ligne n° 3
+Ligne n° 4
+Ligne n° 5
+Ligne n° 6
+Ligne n° 7
+Ligne n° 8
+Ligne n° 9
+20 
 
-+-----------------------+
-| 0	| STR.	| (123)	|
-| 1	| STR.	| Hello!	|
-+-----------------------+
 
-+-----------------------+
-| 0	| STR.	| (456)	|
-| 1	| STR.	| (123)Hello!	|
-+-----------------------+
+OK ./ddforth -e test15.fs
+ddForth v1.1.49
+ • Read: ." is 10 = 10? "
+ • Read: 10 10 = IF ." True" THEN ." False" ELSE CR
+ • Read: ." is 10 = 11? "
+ • Read: 10 11 = IF ." True" THEN ." False" ELSE CR
+Read: 4 lines, chunks: 26
+is 10 = 10? True
+is 10 = 11? False
 
-+-----------------------+
-| 0	| STR.	| (123)Hello!(456)	|
-+-----------------------+
-(123)Hello!(456) Stack empty! 
-Original string:  HeLlO 
-UPPERCASE:  HELLO 
-lowercase:  hello 
-Stack  +... 10 times as a string, add a + at the end and print: 
-+...+...+...+...+...+...+...+...+...+...+ 
+
+OK ./ddforth -e test16.fs
+ddForth v1.1.49
+ • Read: : fx DUP 1 >  IF DUP 1 - fx * THEN ELSE ;
+ • Read: 12 3 DO I fx . LOOP CR
+ • Read: 12 1 DO
+ • Read:   s" ." I' I 1 + - MULTSTR .s
+ • Read:   I DUP INTSTR .s ." ! = " fx . CR
+ • Read: LOOP CR
+Read: 6 lines, chunks: 45
+6 24 120 720 5040 40320 362880 3628800 39916800 
+..........1! = 1 
+.........2! = 2 
+........3! = 6 
+.......4! = 24 
+......5! = 120 
+.....6! = 720 
+....7! = 5040 
+...8! = 40320 
+..9! = 362880 
+.10! = 3628800 
+11! = 39916800 
+
+
+
+OK ./ddforth -e test17.fs
+ddForth v1.1.49
+ • Read: PI ? E ? 1 EXP . CR
+ • Read: .V
+ • Read: 
+Read: 3 lines, chunks: 9
+3.141593 2.718282 2.718282 
+
++-----------------------------------------+
+| Num     |  VAR Name   | Addr | Value    |
++-----------------------------------------+
+|   0/2   | BASE        |    0 |       10 |
+|   1/2   | VER.        |    1 |     1149 |
++-----------------------------------------+
++-----------------------------------------+
+| Num     | FCONST Name | Addr | Value    |
++-----------------------------------------+
+|   0/2   | E           |  385 | 2.718282 |
+|   1/2   | PI          |  384 | 3.141593 |
++-----------------------------------------+
+
+
+OK ./ddforth -e test18.fs
+ddForth v1.1.49
+ • Read: : xx 15 >? . S IF DROP 15 THEN 12 =? IF DROP 21 THEN ELSE ELSE ;
+ • Read: 
+ • Read: 2  xx .
+ • Read: 19 xx .
+ • Read: 12 xx .
+Read: 5 lines, chunks: 28
+0 
+ERROR! Unknown: S at executionPointer 3
+2 1 
+ERROR! Unknown: S at executionPointer 3
+19 0 
+ERROR! Unknown: S at executionPointer 3
+12 
+
+OK ./ddforth -e test19.fs
+ddForth v1.1.49
+ • Read: 0 10 array .S
+ • Read: 10 0 DO I 1 + 2 * i >ix loop .S
+ • Read: 10 0 DO I ix> 2 / i >ix loop .S
+Read: 3 lines, chunks: 27
+array returned false. Aborting!
+
+
+OK ./ddforth -e test20.fs
+ddForth v1.1.49
+ • Read: : showTagada s" tagada" LEN> 0 do I dup ." cell " . ." = " s" tagada" IX> . cr LOOP CR ;
+ • Read: 1 10 s" tagada" array CR ( create an INT array of 10 cells, value 1 )
+ • Read: showTagada
+ • Read: 10 0 do I I s" tagada" >IX LOOP  CR
+ • Read: showTagada
+ • Read: 10 0 do I 2 * I s" tagada" >IX LOOP  CR
+ • Read: showTagada
+ • Read: 33 s" tagada" IX+ 11 s" tagada" +IX
+ • Read: showTagada
+ • Read: 1 10 s" TT" array s" TT" alist 13 3 s" TT" >IX 3 s" TT" IX> . CR s" TT" alist CR
+ • Read: ." <ROT Left rot, ie UP, x 3:" CR
+ • Read: s" TT" 3 n<ROT s" TT" alist CR
+ • Read: ." ROT> Right rot, ie DOWN, x 6:" CR
+ • Read: s" TT" 6 nROT>
+ • Read: s" TT" alist
+Read: 15 lines, chunks: 117
+
+cell 0 = 1 
+cell 1 = 1 
+cell 2 = 1 
+cell 3 = 1 
+cell 4 = 1 
+cell 5 = 1 
+cell 6 = 1 
+cell 7 = 1 
+cell 8 = 1 
+cell 9 = 1 
+
+
+cell 0 = 0 
+cell 1 = 1 
+cell 2 = 2 
+cell 3 = 3 
+cell 4 = 4 
+cell 5 = 5 
+cell 6 = 6 
+cell 7 = 7 
+cell 8 = 8 
+cell 9 = 9 
+
+
+cell 0 = 0 
+cell 1 = 2 
+cell 2 = 4 
+cell 3 = 6 
+cell 4 = 8 
+cell 5 = 10 
+cell 6 = 12 
+cell 7 = 14 
+cell 8 = 16 
+cell 9 = 18 
+
+cell 0 = 11 
+cell 1 = 0 
+cell 2 = 2 
+cell 3 = 4 
+cell 4 = 6 
+cell 5 = 8 
+cell 6 = 10 
+cell 7 = 12 
+cell 8 = 14 
+cell 9 = 16 
+cell 10 = 18 
+cell 11 = 33 
+
+Cell #0: 1
+Cell #1: 1
+Cell #2: 1
+Cell #3: 1
+Cell #4: 1
+Cell #5: 1
+Cell #6: 1
+Cell #7: 1
+Cell #8: 1
+Cell #9: 1
+13 
+Cell #0: 1
+Cell #1: 1
+Cell #2: 1
+Cell #3: 13
+Cell #4: 1
+Cell #5: 1
+Cell #6: 1
+Cell #7: 1
+Cell #8: 1
+Cell #9: 1
+
+<ROT Left rot, ie UP, x 3:
+Cell #0: 13
+Cell #1: 1
+Cell #2: 1
+Cell #3: 1
+Cell #4: 1
+Cell #5: 1
+Cell #6: 1
+Cell #7: 1
+Cell #8: 1
+Cell #9: 1
+
+ROT> Right rot, ie DOWN, x 6:
+Cell #0: 1
+Cell #1: 1
+Cell #2: 1
+Cell #3: 1
+Cell #4: 1
+Cell #5: 1
+Cell #6: 13
+Cell #7: 1
+Cell #8: 1
+Cell #9: 1
+
+
+OK ./ddforth -e test21.fs
+ddForth v1.1.49
+ • Read: 0 10 s" TABLEAU" array
+ • Read: ." Tableau:" cr
+ • Read: 10 0 DO randomi 128 MOD I s" TABLEAU" >IX LOOP
+ • Read: s" TABLEAU" alist
+ • Read: : tableauAccu 0 DO I s" TABLEAU" IX> + LOOP ;
+ • Read: 0 ( original total ) 5 ( number of "days" ) tableauAccu . CR
+Read: 6 lines, chunks: 47
+Tableau:
+Cell #0: 5
+Cell #1: 107
+Cell #2: 106
+Cell #3: 78
+Cell #4: 21
+Cell #5: 92
+Cell #6: 36
+Cell #7: 68
+Cell #8: 46
+Cell #9: 63
+317 
+
+
+OK ./ddforth -e test22.fs
+ddForth v1.1.49
+ • Read: 0 10 s" TABLEAU" array
+ • Read: ." Tableau:" cr
+ • Read: 10 0 DO randomi 128 MOD I s" TABLEAU" >IX LOOP
+ • Read: CR s" TABLEAU" alist
+ • Read: : accumul VAR myarray 0 SWAP 0 DO I myarray @ IX> + LOOP ;
+ • Read: 10 s" TABLEAU" accumul ." Total: " DUP . CR
+ • Read: 5 s" TABLEAU" accumul ." Subtotal: " DUP . cr
+ • Read: ." Remainder: " - . cr
+Read: 8 lines, chunks: 61
+Tableau:
+
+Cell #0: 103
+Cell #1: 65
+Cell #2: 57
+Cell #3: 12
+Cell #4: 95
+Cell #5: 6
+Cell #6: 3
+Cell #7: 92
+Cell #8: 65
+Cell #9: 123
+Total: 621 
+Subtotal: 332 
+Remainder: 289 
+
+
+OK ./ddforth -e test23.fs
+ddForth v1.1.49
+ • Read: clear ." Split `"
+ • Read: s" 1"
+ • Read: 100 0 DO
+ • Read:   RANDOM 10 MOD INTSTR
+ • Read:   DUP .s
+ • Read:   STR+
+ • Read: LOOP
+ • Read: ." ` by: "
+ • Read: RANDOM 10 MOD
+ • Read: DUP .
+ • Read: INTSTR
+ • Read: SPLITD
+ • Read: CR DUP ." Pieces: " . CR
+ • Read: 0 DO
+ • Read:   ." * " .s cr
+ • Read: LOOP
+ • Read: 
+ • Read: 1 2 3 4 4 s" ints" VARRAY CR s" ints" alist
+ • Read: 1.1 2.2 3.3 4.4 4 s" floats" VARRAY CR s" floats" alist
+ • Read: s" un|deux|trois|quatre" s" |" SPLITD s" strings" VARRAY CR s" strings" alist
+Read: 20 lines, chunks: 74
+Split `9452097684758792568950151865086196236824284768743917311768981208735772346569719376964166984264037297` by: 0 
+Pieces: 6 
+* 37297
+* 8735772346569719376964166984264
+* 861962368242847687439173117689812
+* 151865
+* 9768475879256895
+* 19452
+
+Cell #0: 4
+Cell #1: 3
+Cell #2: 2
+Cell #3: 1
+
+Cell #0: 4.400000
+Cell #1: 3.300000
+Cell #2: 2.200000
+Cell #3: 1.100000
+
+Cell #0: quatre
+Cell #1: trois
+Cell #2: deux
+Cell #3: un
+
+
+OK ./ddforth -e test24.fs
+ddForth v1.1.49
+ • Read: clear s" Player3 Player2 Player1" SSPLIT s" Players" VARRAY
+ • Read: s" Players" len> DUP . ." players" CR 0 DO 0 4 I s" Players" IX> array LOOP
+ • Read: : SCORE s" Players" IX> >IX ;
+ • Read: 0 0 0 3 s" Scores" VARRAY 
+ • Read: -1 VAR scoreGagnant
+ • Read: -1 VAR gagnant
+ • Read: 0 BEGIN
+ • Read:   ." \ * Player " DUP 1 + .
+ • Read:   4 0 DO
+ • Read:     RANDOM 6 MOD OVER I SWAP SCORE
+ • Read:   LOOP
+ • Read:   DUP DUP s" Players" IX> ASUM ." Total score: " DUP DUP . CR
+ • Read:   rot swap s" Scores" >IX
+ • Read:   DUP scoreGagnant @ > IF
+ • Read:     ( ." yes\ " ) scoreGagnant swap !
+ • Read:     DUP gagnant swap !
+ • Read:   then ( ." no\ " ) drop else
+ • Read:   1 + DUP 3 =
+ • Read: UNTIL
+ • Read: s" Player" gagnant @ 1 + INTSTR s" \ wins!" STR+ str+ .s CR CR
+Read: 20 lines, chunks: 124
+3 players
+ * Player 1 Total score: 9 
+ * Player 2 Total score: 8 
+ * Player 3 Total score: 8 
+Player1 wins!
+
+
+
+OK
 ```
 
 ## DEBUG VERSION

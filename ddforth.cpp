@@ -1918,9 +1918,11 @@ int main(int argc, char **argv) {
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc2.hpp"
 #endif
+  bool exitOnEnd = false;
   if (argc == 3) {
-    if (strcmp(argv[1], "-f") == 0) {
+    if (strcmp(argv[1], "-f") == 0 || strcmp(argv[1], "-e") == 0) {
       chunks = loadAndTokenize(argv[2]);
+      if (strcmp(argv[1], "-e") == 0) exitOnEnd = true;
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
@@ -1951,6 +1953,7 @@ int main(int argc, char **argv) {
   memset(code, 0, 256);
   chunks.clear();
   cout << endl << endl << "OK ";
+  if(exitOnEnd) return 0;
 
   while (true) {
     std::cin.getline(code, 256);

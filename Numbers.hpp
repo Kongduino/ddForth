@@ -297,13 +297,24 @@ bool handle2Nums(unsigned char X) {
     // we need to know which comes first for / and -
     int i1;
     float f0, f1;
-    if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char *)"handle2Nums5");
-      return false;
-    }
-    if (popIntegerFromStack(&i1) == false) {
-      logStackOverflow((char *)"handle2Nums6");
-      return false;
+    if (intFirst) {
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char *)"handle2Nums6");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handle2Nums5");
+        return false;
+      }
+    } else {
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handle2Nums5");
+        return false;
+      }
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char *)"handle2Nums6");
+        return false;
+      }
     }
     f1 = i1;  // The int is converted to a float
     switch (X) {
@@ -387,7 +398,6 @@ bool handle2Nums(unsigned char X) {
   }
   return false;
 }
-
 bool handlePlus() {
   return handle2Nums(math_PLUS);
 }

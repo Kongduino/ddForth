@@ -1,7 +1,7 @@
 #!/bin/sh
 for x in `ls test*fs`
 do
-    echo "./ddforth -f $x"
-    ../ddforth -f $x
+    echo "./ddforth -e $x"
+    ../bin/ddforth -e $x
 done
 

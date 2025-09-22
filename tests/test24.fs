@@ -17,4 +17,4 @@ s" Players" len> DUP . ." players" CR 0 DO 0 4 I s" Players" IX> array LOOP
   then ( ." no\ " ) drop else
   1 + DUP 3 =
 UNTIL
-s" Player" gagnant @ 1 + INTSTR STR+ s" \ wins!" str+ .s CR CR
+s" Player" gagnant @ 1 + INTSTR s" \ wins!" STR+ str+ .s CR CR

@@ -55,8 +55,9 @@ bool handleFLOAD() {
     return false;
   }
   vector<string> tempChunks = loadAndTokenize((char*)name.c_str());
+  int savedExecutionPointer = executionPointer;
   evaluate(tempChunks);
   tempChunks.clear();
-  executionPointer = 1e6;
+      executionPointer = savedExecutionPointer;
   return true;
 }
