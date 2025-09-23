@@ -8,4 +8,4 @@
   1 + DUP
   0=
 UNTIL
-. .S CR
+. STACK CR

@@ -1,6 +1,6 @@
 BASE 16 !
 A5 BASE A ! . CR
--13 DUP DUP .S
+-13 DUP DUP STACK
 . U.
 HEX .
 DEC CR

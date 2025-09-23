@@ -861,8 +861,13 @@ bool lookupUC(string name) {
 }
 
 bool lookup(string c, bool *r) {
+  string cc, d;
+  cc = c;
+  std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
   for (int ix = 0; ix < nativeCmdCount; ix++) {
-    if (c == nativeCommands[ix].name) {
+    d = nativeCommands[ix].name;
+    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    if (cc == d) {
       *r = nativeCommands[ix].ptr();
       return true;
     }
@@ -1326,7 +1331,7 @@ bool handleCELLSTORE() {
 bool handleCELLRETRIEVE() {
   int number; // cell number
   string name; // array name
-  // number name ARRAY
+  // value name IX>
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE: No NAME on the stack!\n");
     logThis();
@@ -1391,7 +1396,7 @@ bool handleCELLRETRIEVE() {
 
 bool handleCELLPREPEND() {
   string name;  // array name
-  // number name ARRAY
+  // value name +IX
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLPREPEND: No NAME on the stack!\n");
     logThis();
@@ -1452,7 +1457,7 @@ bool handleCELLPREPEND() {
 
 bool handleCELLAPPEND() {
   string name;  // array name
-  // number name ARRAY
+  // value name IX+
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLAPPEND: No NAME on the stack!\n");
     logThis();

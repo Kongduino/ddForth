@@ -9,14 +9,14 @@ startCol @ 1 - 0 startCol @ 1 - 210 DRAWLINE
 0 1 s" saveY0" VARRAY
 0 1 s" saveY1" VARRAY
 
-: dottedLine ( py lastX firstX ) DO DUP I SWAP DUP I 5 + SWAP DRAWLINE .S I 5 + >R LOOP clear ;
+: dottedLine ( py lastX firstX ) DO DUP I SWAP DUP I 5 + SWAP DRAWLINE STACK I 5 + >R LOOP clear ;
 
 startCol @ 20 - 150 75 1.5 * INT - 8 - 0 0 66 .DT" 75"
 startCol @ 20 - 150 50 1.5 * INT - 8 - 0 0 66 .DT" 50"
 startCol @ 20 - 150 25 1.5 * INT - 8 - 0 0 66 .DT" 25"
 
 99 99 99 DRAWCOLOR
-75 1.5 * 150 SWAP - INT WIDTH startCol @ .S dottedLine
+75 1.5 * 150 SWAP - INT WIDTH startCol @ STACK dottedLine
 50 1.5 * 150 SWAP - INT WIDTH startCol @ dottedLine
 25 1.5 * 150 SWAP - INT WIDTH startCol @ dottedLine
 
@@ -32,7 +32,7 @@ DRAWPIXEL
 WIDTH 50 - startCol @ 1 + DO
 255 0 0 DRAWCOLOR
   I 1 - ( X index )
-  0 s" saveY0" IX>
+  0 s" saveY0" 0 IX>
   I
   random 80 mod 40 - 10.0 / 28.0 + ( random Y index )
   1.5 * INT 150 swap - DUP 0 s" saveY0" >IX

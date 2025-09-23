@@ -1,7 +1,7 @@
-1 2 OVER 1.2 2.1 OVER .S
+1 2 OVER 1.2 2.1 OVER STACK
 ." Loop and add" CR
 BEGIN
   DUP . +
   DEPTH 1 =
 UNTIL
-. CR .S
+. CR STACK
