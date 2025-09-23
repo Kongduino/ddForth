@@ -293,17 +293,28 @@ bool handle2Nums(unsigned char X) {
     xxxxxx = snprintf((char *)msg, 255, "1 INT, 1 FLOAT ");
     logThis();
     bool intFirst = false;
-    if (type0 == xINTEGER) intFirst = true;
+    if (type1 == xINTEGER) intFirst = true;
     // we need to know which comes first for / and -
     int i1;
     float f0, f1;
-    if (popFloatFromStack(&f0) == false) {
-      logStackOverflow((char *)"handle2Nums5");
-      return false;
-    }
-    if (popIntegerFromStack(&i1) == false) {
-      logStackOverflow((char *)"handle2Nums6");
-      return false;
+    if (intFirst) {
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char *)"handle2Nums5/a");
+        return false;
+      }
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handle2Nums5/b");
+        return false;
+      }
+    } else {
+      if (popFloatFromStack(&f0) == false) {
+        logStackOverflow((char *)"handle2Nums6/a");
+        return false;
+      }
+      if (popIntegerFromStack(&i1) == false) {
+        logStackOverflow((char *)"handle2Nums6/b");
+        return false;
+      }
     }
     f1 = i1;  // The int is converted to a float
     switch (X) {
@@ -387,7 +398,6 @@ bool handle2Nums(unsigned char X) {
   }
   return false;
 }
-
 bool handlePlus() {
   return handle2Nums(math_PLUS);
 }

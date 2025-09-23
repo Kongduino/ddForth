@@ -59,3 +59,39 @@ vector<string> loadFile(char *fn) {
   file.close();
   return thisBlock;
 }
+
+vector<string> loadAndTokenize(char* fn) {
+  vector<string> chunks;
+  vector<string> thisBlock = loadFile(fn);
+  if (thisBlock.size() == 0) {
+    cerr << "Unable to open file!" << endl;
+    return chunks;
+  }
+  int lineCount = 0;
+  string line;
+  for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+    line = *it;
+    while (!line.empty() && line.back() == '\n')
+      line.pop_back();
+    lineCount += 1;
+    strcpy(code, line.c_str());
+    chunks = tokenize(code, chunks);
+    cout << " • Read: " << line << endl;
+  }
+  cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
+  return chunks;
+}
+
+bool handleFLOAD() {
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"handleFLOAD/0");
+    return false;
+  }
+  vector<string> tempChunks = loadAndTokenize((char*)name.c_str());
+  int savedExecutionPointer = executionPointer;
+  evaluate(tempChunks);
+  tempChunks.clear();
+      executionPointer = savedExecutionPointer;
+  return true;
+}

@@ -40,7 +40,8 @@ bool handlePRINTSTACKSTRING() {
     logStackOverflow((char *)"handlePRINTSTACKSTRING");
     return false;
   }
-  printf("%s", s.c_str());
+  xxxxxx = snprintf((char *)msg, 255, "%s", s.c_str());
+  commonPrint(msg);
   return true;
 }
 
@@ -178,46 +179,47 @@ bool handleMULTSTR() {
     logStackOverflow((char *)"handleMULTSTR2");
     return false;
   }
-  for(i = 0; i < i0; i++)
+  for (i = 0; i < i0; i++)
     v.append(s);
   putStringOnStack(v);
   return true;
 }
 
 inline void ltrim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }));
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
 }
 // Trim from the end (in place)
 inline void rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
+  s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }).base(),
+          s.end());
 }
 
 // Trim from both ends (in place)
 inline void trim(std::string &s) {
-    rtrim(s);
-    ltrim(s);
+  rtrim(s);
+  ltrim(s);
 }
 
 // Trim from the start (copying)
 inline std::string ltrim_copy(std::string s) {
-    ltrim(s);
-    return s;
+  ltrim(s);
+  return s;
 }
 
 // Trim from the end (copying)
 inline std::string rtrim_copy(std::string s) {
-    rtrim(s);
-    return s;
+  rtrim(s);
+  return s;
 }
 
 // Trim from both ends (copying)
 inline std::string trim_copy(std::string s) {
-    trim(s);
-    return s;
+  trim(s);
+  return s;
 }
 
 bool handleSTRIPSTR() {
@@ -294,18 +296,18 @@ bool handleCSPLIT() {
   }
   int ln, ix, lastIX = 0, count = 0;
   ln = s.size();
-  for(ix = 0; ix < ln; ix++) {
+  for (ix = 0; ix < ln; ix++) {
     char c = s.at(ix);
     if (c == x) {
-      T = s.substr (lastIX, ix - lastIX);
+      T = s.substr(lastIX, ix - lastIX);
       putStringOnStack(T);
       // cout << "Push `" << T << "`." << endl;
       lastIX = ix + 1;
       count += 1;
     }
   }
-  if(lastIX < ix) {
-    T = s.substr (lastIX, ix - lastIX);
+  if (lastIX < ix) {
+    T = s.substr(lastIX, ix - lastIX);
     putStringOnStack(T);
     // cout << "Push `" << T << "`." << endl;
     count += 1;

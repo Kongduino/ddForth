@@ -269,30 +269,6 @@ bool handleRget() {
   return true;
 }
 
-bool handleWORDS() {
-  cout << "Handled in Code:" << endl
-       << "----------------" << endl;
-  for (vector<string>::iterator it = computedWords.begin(); it != computedWords.end(); ++it) {
-    string s = *it;
-    printf(" • %-11s (Handled in code)\n", s.c_str());
-  }
-  cout << endl
-       << "Native Commands:" << endl
-       << "----------------" << endl;
-  for (int ix = 0; ix < nativeCmdCount; ix++) {
-    // printf(" • %-11s (Native command)\n", nativeCommands[ix].name.c_str());
-    cout << nativeCommands[ix].name << " ";
-  }
-  cout << endl
-       << endl
-       << "User Commands:" << endl
-       << "--------------" << endl;
-  for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
-    printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
-  }
-  return true;
-}
-
 bool handleSETINT() {
   float f0;
   int i0;
@@ -732,7 +708,8 @@ bool printOtherBases(int number, unsigned int base) {
     buffer[ix - n] = b;
     n += 1;
   }
-  printf("%s ", buffer);
+  xxxxxx = snprintf((char *)msg, 255, "%s ", buffer);
+  commonPrint(msg);
   return true;
 }
 
@@ -774,8 +751,10 @@ bool handlePRINT() {
           return false;
         }
         int base = GetINT("BASE");
-        if (base == 10) cout << i0 << " ";
-        else printOtherBases(i0, base);
+        if (base == 10) {
+          xxxxxx = snprintf((char *)msg, 255, "%d ", i0);
+          commonPrint(msg);
+        } else printOtherBases(i0, base);
         break;
       }
     case xFLOAT:
@@ -785,7 +764,8 @@ bool handlePRINT() {
           logStackOverflow((char *)"handlePRINT2");
           return false;
         }
-        printf("%f ", f0);
+        xxxxxx = snprintf((char *)msg, 255, "%f ", f0);
+        commonPrint(msg);
         break;
       }
   }
@@ -812,7 +792,8 @@ bool handleUPRINT() {
           logStackOverflow((char *)"handleUPRINT1");
           return false;
         }
-        cout << i0 << " ";
+        xxxxxx = snprintf((char *)msg, 255, "%d ", i0);
+        commonPrint(msg);
         break;
       }
     case xFLOAT:
@@ -897,8 +878,13 @@ bool lookupUC(string name) {
 }
 
 bool lookup(string c, bool *r) {
+  string cc, d;
+  cc = c;
+  std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
   for (int ix = 0; ix < nativeCmdCount; ix++) {
-    if (c == nativeCommands[ix].name) {
+    d = nativeCommands[ix].name;
+    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    if (cc == d) {
       *r = nativeCommands[ix].ptr();
       return true;
     }
@@ -1359,7 +1345,7 @@ bool handleCELLSTORE() {
 bool handleCELLRETRIEVE() {
   int number;   // cell number
   string name;  // array name
-  // number name ARRAY
+  // value name IX>
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLRETRIEVE: No NAME on the stack!\n");
     logThis();
@@ -1423,7 +1409,7 @@ bool handleCELLRETRIEVE() {
 
 bool handleCELLPREPEND() {
   string name;  // array name
-  // number name ARRAY
+  // value name +IX
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLPREPEND: No NAME on the stack!\n");
     logThis();
@@ -1484,7 +1470,7 @@ bool handleCELLPREPEND() {
 
 bool handleCELLAPPEND() {
   string name;  // array name
-  // number name ARRAY
+  // value name IX+
   if (popStringFromStack(&name) == false) {
     xxxxxx = snprintf((char *)msg, 255, "handleCELLAPPEND: No NAME on the stack!\n");
     logThis();
@@ -1675,13 +1661,13 @@ void evaluate(vector<string> chunks) {
       executionPointer = chunks.size();
     } else if (isInsideIF && !isTrueIF) {
       // Skip to after then
-      while (chunks.at(executionPointer) != "THEN") {
+      while (chunks.at(executionPointer) != "THEN" && chunks.at(executionPointer) != "then") {
         executionPointer += 1;
       }
       executionPointer += 1;
       isInsideIF = false;
     } else if (isInsideIF && isTrueIF && skipElse) {
-      while (chunks.at(executionPointer) != "ELSE") {
+      while (chunks.at(executionPointer) != "ELSE" && chunks.at(executionPointer) != "else") {
         executionPointer += 1;
       }
       isInsideIF = false;
@@ -1764,7 +1750,7 @@ void evaluate(vector<string> chunks) {
         isStackingString = false;
         putStringOnStack(c);
       } else {
-        cout << c;
+        commonPrint((char*)c.c_str());
         isPrinting = false;
       }
       executionPointer += 1;
