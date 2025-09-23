@@ -26,11 +26,13 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 
 ```
 	.V WORDS
+.v words
+
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
 |   0/2   | BASE        |    0 |       10 |
-|   1/2   | VER.        |    1 |     1100 |
+|   1/2   | VER.        |    1 |     1156 |
 +-----------------------------------------+
 +-----------------------------------------+
 | Num     | FCONST Name | Addr | Value    |
@@ -43,17 +45,12 @@ Handled in Code:
  • VAR         (Handled in code)
  • CONST       (Handled in code)
  • : ... ;     (Handled in code)
+ • IF...THEN...ELSE (Handled in code)
+ • ( THIS IS A COMMENT. ) (Handled in code)
 
 Native Commands:
 ----------------
-WORDS + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT SQR
-SQRT SIN COS TAN ASIN ACOS ATAN SINH COSH TANH LOG LOG10 ROUND FLOOR
-CEIL EXP INT EMIT KEY LINE . ." s" .s +STR STR+ LEFTSTR MIDSTR
-RIGHTSTR LENSTR SUBSTR LOWERSTR UPPERSTR MULTSTR STRIPSTR
-LSTRIPSTR RSTRIPSTR INTSTR STRINT U. DUP DROP SWAP DEPTH CLEAR ROT
-ROLL OVER BASE BIN DEC HEX ! !+ @ CR .S .V = < <= > >= <> BEGIN
-UNTIL WHILE DO LOOP I I' J >R R> EXEC LOAD RANDOM RANDOMI IF THEN
-ELSE EXIT ( 
+WORDS HELP + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT SQR SQRT SIN COS TAN ASIN ACOS ATAN SINH COSH TANH LOG LOG10 ROUND FLOOR CEIL EXP INT EMIT KEY LINE . U. ." s" .s +STR STR+ LEFTSTR MIDSTR RIGHTSTR LENSTR SUBSTR LOWERSTR UPPERSTR MULTSTR STRIPSTR LSTRIPSTR RSTRIPSTR INTSTR STRINT CSPLIT SPLITD VARRAY DUP DROP SWAP DEPTH CLEAR ROT ROLL OVER BASE BIN DEC HEX ! !+ @ CR STACK .V = < <= > >= <> =? >? <? <=? >=? <>? BEGIN UNTIL WHILE DO LOOP +LOOP I I' J >R R> EXEC LOAD FLOAD RANDOM RANDOMI IF THEN ELSE EXIT ( ARRAY ARRAYS >IX IX> LEN> IX+ +IX <ROT ROT> ALIST ASUM 
 
 User Commands:
 --------------
@@ -74,6 +71,16 @@ User Commands:
  • NIP         SWAP DROP
  • TUCK        SWAP OVER
  • -ROT        ROT ROT
+ • nip         swap drop
+ • tuck        swap over
+ • -rot        rot rot
+ • true        1 =
+ • false       0 =
+ • nROT>       0 DO DUP ROT> LOOP CLEAR
+ • n<ROT       0 DO DUP <ROT LOOP CLEAR
+ • ssplit      32 csplit
+ • SSPLIT      32 CSPLIT
+OK
 ```
 
 ## REGULAR VERSION
@@ -85,7 +92,7 @@ rm -f ddforth ddforth_debug
 g++ -O3 ddforth.cpp -o ddforth
 > cd tests
 > ./tests.sh
-./tests.sh 
+./tests.sh
 ./ddforth -e test00.fs
 ddForth v1.1.54
  • Read: ." \"中文也行\"" CR ." ¥Á¥!"
@@ -111,37 +118,37 @@ ddForth v1.1.54
 Read: 13 lines, chunks: 40
 
 OUTSIDE LOOP
--10 
+-10
 > INSIDE LOOP
 ..........
--9 
+-9
 > INSIDE LOOP
 .........
--8 
+-8
 > INSIDE LOOP
 ........
--7 
+-7
 > INSIDE LOOP
 .......
--6 
+-6
 > INSIDE LOOP
 ......
--5 
+-5
 > INSIDE LOOP
 .....
--4 
+-4
 > INSIDE LOOP
 ....
--3 
+-3
 > INSIDE LOOP
 ...
--2 
+-2
 > INSIDE LOOP
 ..
--1 
+-1
 > INSIDE LOOP
 .
-0 Stack empty! 
+0 Stack empty!
 
 
 OK ./ddforth -e test02.fs
@@ -154,15 +161,15 @@ ddForth v1.1.54
  • Read: DEC CR
  • Read: BASE ? .V CR
 Read: 7 lines, chunks: 23
-165 
+165
 
 +-----------------------+
 | 0	| INT.	| -13	|
 | 1	| INT.	| -13	|
 | 2	| INT.	| -13	|
 +-----------------------+
--13 4294967283 fffffff3 
-10 
+-13 4294967283 fffffff3
+10
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
@@ -198,8 +205,8 @@ Read: 7 lines, chunks: 21
 | 5	| INT.	| 1	|
 +-----------------------+
 Loop and add
-1.200000 3.300000 4.500000 5.500000 7.500000 8.500000 
-Stack empty! 
+1.200000 3.300000 4.500000 5.500000 7.500000 8.500000
+Stack empty!
 
 OK ./ddforth -e test04.fs
 ddForth v1.1.54
@@ -212,13 +219,13 @@ ddForth v1.1.54
  • Read: UNTIL CR
 Read: 7 lines, chunks: 20
 Fact~	~Test
-3 ! =6 
-4 ! =24 
-5 ! =120 
-6 ! =720 
-7 ! =5040 
-8 ! =40320 
-9 ! =362880 
+3 ! =6
+4 ! =24
+5 ! =120
+6 ! =720
+7 ! =5040
+8 ! =40320
+9 ! =362880
 
 
 
@@ -236,7 +243,7 @@ ddForth v1.1.54
  • Read: UNTIL
  • Read: . STACK CR
 Read: 11 lines, chunks: 24
--10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty! 
+-10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty!
 
 
 OK ./ddforth -e test06.fs
@@ -249,7 +256,7 @@ Read: 1 line, chunks: 12
 | 1	| INT.	| 1	|
 | 2	| INT.	| 1	|
 +-----------------------+
-3 
+3
 
 
 OK ./ddforth -e test07.fs
@@ -264,7 +271,7 @@ Read: 4 lines, chunks: 16
 | 0	| INT.	| 256	|
 | 1	| INT.	| 2	|
 +-----------------------+
-14 
+14
 
 
 OK ./ddforth -e test08.fs
@@ -312,7 +319,7 @@ Read: 12 lines, chunks: 26
 | 0	| FLOAT	| 33.330	|
 | 1	| INT.	| 128	|
 +-----------------------+
-Stack empty! 
+Stack empty!
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
 +-----------------------------------------+
@@ -337,7 +344,7 @@ Stack empty!
 |   1/3   | GAG         |  386 |12.120000 |
 |   2/3   | PI          |  384 | 3.141593 |
 +-----------------------------------------+
-33.329998 
+33.329998
 
 
 OK ./ddforth -e test09.fs
@@ -353,7 +360,7 @@ ddForth v1.1.54
  • Read: UNTIL
  • Read: . STACK CR
 Read: 10 lines, chunks: 24
--10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty! 
+-10 ..........-9 .........-8 ........-7 .......-6 ......-5 .....-4 ....-3 ...-2 ..-1 .0 Stack empty!
 
 
 OK ./ddforth -e test10.fs
@@ -368,16 +375,16 @@ ddForth v1.1.54
  • Read:   DROP CR
  • Read: LOOP
 Read: 9 lines, chunks: 23
-0 ===> 1 2 3 4 5 6 7 8 9 
-1 ===> 2 3 4 5 6 7 8 9 
-2 ===> 3 4 5 6 7 8 9 
-3 ===> 4 5 6 7 8 9 
-4 ===> 5 6 7 8 9 
-5 ===> 6 7 8 9 
-6 ===> 7 8 9 
-7 ===> 8 9 
-8 ===> 9 
-9 ===> 10 
+0 ===> 1 2 3 4 5 6 7 8 9
+1 ===> 2 3 4 5 6 7 8 9
+2 ===> 3 4 5 6 7 8 9
+3 ===> 4 5 6 7 8 9
+4 ===> 5 6 7 8 9
+5 ===> 6 7 8 9
+6 ===> 7 8 9
+7 ===> 8 9
+8 ===> 9
+9 ===> 10
 
 
 OK ./ddforth -e test11.fs
@@ -391,11 +398,11 @@ ddForth v1.1.54
  • Read: LOOP
 Read: 7 lines, chunks: 14
 
-0 0 1 2 3 4 
-1 0 1 2 3 4 
-2 0 1 2 3 4 
-3 0 1 2 3 4 
-4 0 1 2 3 4 
+0 0 1 2 3 4
+1 0 1 2 3 4
+2 0 1 2 3 4
+3 0 1 2 3 4
+4 0 1 2 3 4
 
 
 OK ./ddforth -e test12.fs
@@ -405,11 +412,11 @@ ddForth v1.1.54
  • Read: 1 DO + LOOP
  • Read: R> / .
  • Read: ;
- • Read: 
+ • Read:
  • Read: 12.1 13 14 15 AVERAGE
 Read: 7 lines, chunks: 19
 
-0.073937 
+0.073937
 
 OK ./ddforth -e test13.fs
 ddForth v1.1.54
@@ -425,7 +432,7 @@ Read: 8 lines, chunks: 44
 Please enter numbers, separated by spaces, to average out:
 1 2 3 4 5 6
 1 2 3 4 5 6
-Average: 
+Average:
 
 ERROR! Unknown: (assign at executionPointer 5
 
@@ -456,11 +463,11 @@ UPPERCASE: HELLO
 lowercase: hello
 Stack +...2 times as a string, add a + at the end and print:
 +...+...+
-	fff  9 
-fff  10 
-fff11 
-	fff  0 
-fff0 
+	fff  9
+fff  10
+fff11
+	fff  0
+fff0
 Ligne n° 0
 Ligne n° 1
 Ligne n° 2
@@ -471,7 +478,7 @@ Ligne n° 6
 Ligne n° 7
 Ligne n° 8
 Ligne n° 9
-20 
+20
 
 
 OK ./ddforth -e test15.fs
@@ -494,7 +501,7 @@ ddForth v1.1.54
  • Read:   I DUP INTSTR .s ." ! = " fx . CR
  • Read: LOOP CR
 Read: 6 lines, chunks: 45
-6 24 120 720 5040 40320 362880 3628800 39916800 
+6 24 120 720 5040 40320 362880 3628800 39916800
 
 ERROR! Unknown: I' at executionPointer 27
 
@@ -503,9 +510,9 @@ OK ./ddforth -e test17.fs
 ddForth v1.1.54
  • Read: PI ? E ? 1 EXP . CR
  • Read: .V
- • Read: 
+ • Read:
 Read: 3 lines, chunks: 9
-3.141593 2.718282 2.718282 
+3.141593 2.718282 2.718282
 
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
@@ -524,18 +531,18 @@ Read: 3 lines, chunks: 9
 OK ./ddforth -e test18.fs
 ddForth v1.1.54
  • Read: : xx 15 >? . S IF DROP 15 THEN 12 =? IF DROP 21 THEN ELSE ELSE ;
- • Read: 
+ • Read:
  • Read: 2  xx .
  • Read: 19 xx .
  • Read: 12 xx .
 Read: 5 lines, chunks: 28
-0 
+0
 ERROR! Unknown: S at executionPointer 3
-2 1 
+2 1
 ERROR! Unknown: S at executionPointer 3
-19 0 
+19 0
 ERROR! Unknown: S at executionPointer 3
-12 
+12
 
 OK ./ddforth -e test19.fs
 ddForth v1.1.54
@@ -565,53 +572,53 @@ ddForth v1.1.54
  • Read: s" TT" alist
 Read: 15 lines, chunks: 117
 
-cell 0 = 1 
-cell 1 = 1 
-cell 2 = 1 
-cell 3 = 1 
-cell 4 = 1 
-cell 5 = 1 
-cell 6 = 1 
-cell 7 = 1 
-cell 8 = 1 
-cell 9 = 1 
+cell 0 = 1
+cell 1 = 1
+cell 2 = 1
+cell 3 = 1
+cell 4 = 1
+cell 5 = 1
+cell 6 = 1
+cell 7 = 1
+cell 8 = 1
+cell 9 = 1
 
 
-cell 0 = 0 
-cell 1 = 1 
-cell 2 = 2 
-cell 3 = 3 
-cell 4 = 4 
-cell 5 = 5 
-cell 6 = 6 
-cell 7 = 7 
-cell 8 = 8 
-cell 9 = 9 
+cell 0 = 0
+cell 1 = 1
+cell 2 = 2
+cell 3 = 3
+cell 4 = 4
+cell 5 = 5
+cell 6 = 6
+cell 7 = 7
+cell 8 = 8
+cell 9 = 9
 
 
-cell 0 = 0 
-cell 1 = 2 
-cell 2 = 4 
-cell 3 = 6 
-cell 4 = 8 
-cell 5 = 10 
-cell 6 = 12 
-cell 7 = 14 
-cell 8 = 16 
-cell 9 = 18 
+cell 0 = 0
+cell 1 = 2
+cell 2 = 4
+cell 3 = 6
+cell 4 = 8
+cell 5 = 10
+cell 6 = 12
+cell 7 = 14
+cell 8 = 16
+cell 9 = 18
 
-cell 0 = 11 
-cell 1 = 0 
-cell 2 = 2 
-cell 3 = 4 
-cell 4 = 6 
-cell 5 = 8 
-cell 6 = 10 
-cell 7 = 12 
-cell 8 = 14 
-cell 9 = 16 
-cell 10 = 18 
-cell 11 = 33 
+cell 0 = 11
+cell 1 = 0
+cell 2 = 2
+cell 3 = 4
+cell 4 = 6
+cell 5 = 8
+cell 6 = 10
+cell 7 = 12
+cell 8 = 14
+cell 9 = 16
+cell 10 = 18
+cell 11 = 33
 
 Cell #0: 1
 Cell #1: 1
@@ -623,7 +630,7 @@ Cell #6: 1
 Cell #7: 1
 Cell #8: 1
 Cell #9: 1
-13 
+13
 Cell #0: 1
 Cell #1: 1
 Cell #2: 1
@@ -680,7 +687,7 @@ Cell #6: 36
 Cell #7: 6
 Cell #8: 2
 Cell #9: 76
-393 
+393
 
 
 OK ./ddforth -e test22.fs
@@ -706,9 +713,9 @@ Cell #6: 105
 Cell #7: 51
 Cell #8: 22
 Cell #9: 101
-Total: 718 
-Subtotal: 438 
-Remainder: 280 
+Total: 718
+Subtotal: 438
+Remainder: 280
 
 
 OK ./ddforth -e test23.fs
@@ -729,16 +736,16 @@ ddForth v1.1.54
  • Read: 0 DO
  • Read:   ." * " .s cr
  • Read: LOOP
- • Read: 
+ • Read:
  • Read: 1 2 3 4 4 s" ints" VARRAY CR s" ints" alist
  • Read: 1.1 2.2 3.3 4.4 4 s" floats" VARRAY CR s" floats" alist
  • Read: s" un|deux|trois|quatre" s" |" SPLITD s" strings" VARRAY CR s" strings" alist
 Read: 20 lines, chunks: 74
-Split `8033902754976677404073491473782563057273704894103704892017389849974814791730163849275077472532400003` by: 7 
-Pieces: 20 
+Split `8033902754976677404073491473782563057273704894103704892017389849974814791730163849275077472532400003` by: 7
+Pieces: 20
 * 2532400003
 * 4
-* 
+*
 * 50
 * 301638492
 * 91
@@ -752,7 +759,7 @@ Pieces: 20
 * 3
 * 34914
 * 4040
-* 
+*
 * 66
 * 549
 * 18033902
@@ -778,7 +785,7 @@ ddForth v1.1.54
  • Read: clear s" Player3 Player2 Player1" SSPLIT s" Players" VARRAY
  • Read: s" Players" len> DUP . ." players" CR 0 DO 0 4 I s" Players" IX> array LOOP
  • Read: : SCORE s" Players" IX> >IX ;
- • Read: 0 0 0 3 s" Scores" VARRAY 
+ • Read: 0 0 0 3 s" Scores" VARRAY
  • Read: -1 VAR scoreGagnant
  • Read: -1 VAR gagnant
  • Read: 0 BEGIN
@@ -797,9 +804,9 @@ ddForth v1.1.54
  • Read: s" Player" gagnant @ 1 + INTSTR s" \ wins!" STR+ str+ .s CR CR
 Read: 20 lines, chunks: 124
 3 players
- * Player 1 Total score: 10 
- * Player 2 Total score: 14 
- * Player 3 Total score: 14 
+ * Player 1 Total score: 10
+ * Player 2 Total score: 14
+ * Player 3 Total score: 14
 Player2 wins!
 
 
@@ -812,7 +819,7 @@ OK
 (TL,DR: Boring stuff, See [debug_log.txt](debug_log.txt))
 
 ```sh
-for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;done > debug_log.txt 
+for x in `ls test*fs`;do;echo "./ddforth_debug  -f $x";./ddforth_debug  -f $x;done > debug_log.txt
 ```
 
 ## IoT version

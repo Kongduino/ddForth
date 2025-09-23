@@ -340,7 +340,7 @@ nativeCommand nativeCommands[] = {
   { handleLOOP, "LOOP", "( -- ) Increments loop index by 1 and loops or not." },
   { handlePlusLoop, "+LOOP", "( a -- ) Increments loop index by a instead of 1 and loops or not." },
   { handleI, "I", "( -- I ) Puts current loop index on top of the stack." },
-  { handleIprime, "( -- I' ) Puts loop maximum on top of the stack." },
+  { handleIprime, "I'", "( -- I' ) Puts loop maximum on top of the stack." },
   { handleJ, "J", "( -- I ) Puts outer loop index on top of the stack (imbricated loops)." },
   { handleRput, ">R", "( a -- ) Puts a on the return stack." },
   { handleRget, "R>", "( -- a ) Puts top of the return stack onto the stack." },
