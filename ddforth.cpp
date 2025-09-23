@@ -1918,23 +1918,23 @@ int main(int argc, char **argv) {
     strcpy(code, argv[1]);
     chunks = tokenize(code, chunks);
   } else {
-    vector<string> thisBlock = loadFile((char *)"tests/test22.fs");
-    if (thisBlock.size() == 0) {
-      cerr << "Unable to open file!" << endl;
-      return -1;
-    }
-    int lineCount = 0;
-    string line;
-    for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
-      line = *it;
-      while (!line.empty() && line.back() == '\n')
-        line.pop_back();
-      lineCount += 1;
-      strcpy(code, line.c_str());
-      chunks = tokenize(code, chunks);
-      cout << " • Read: " << line << endl;
-    }
-    cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
+//     vector<string> thisBlock = loadFile((char *)"tests/test22.fs");
+//     if (thisBlock.size() == 0) {
+//       cerr << "Unable to open file!" << endl;
+//       return -1;
+//     }
+//     int lineCount = 0;
+//     string line;
+//     for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
+//       line = *it;
+//       while (!line.empty() && line.back() == '\n')
+//         line.pop_back();
+//       lineCount += 1;
+//       strcpy(code, line.c_str());
+//       chunks = tokenize(code, chunks);
+//       cout << " • Read: " << line << endl;
+//     }
+//     cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
   }
   evaluate(chunks);
   memset(code, 0, 256);
