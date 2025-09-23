@@ -10,6 +10,8 @@ Run `./ddforth "WORDS"` to get the list of words that have been implemented.
 
 For IoT versions, you might need to edit the `platform.txt` file to remove `-fno-exceptions` and/or set `-fexceptions` in the `compiler.cpp.flags` section.
 
+They are mildly to very outdated as of now. I'll work on updates.
+
 ### Fonts
 
 * [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
@@ -26,7 +28,6 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 
 ```
 	.V WORDS
-.v words
 
 +-----------------------------------------+
 | Num     |  VAR Name   | Addr | Value    |
