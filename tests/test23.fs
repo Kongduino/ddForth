@@ -2,7 +2,7 @@ clear ." Split `"
 s" 1"
 100 0 DO
   RANDOM 10 MOD INTSTR
-  DUP .s
+  DUP cs
   STR+
 LOOP
 ." ` by: "
@@ -12,7 +12,7 @@ INTSTR
 SPLITD
 CR DUP ." Pieces: " . CR
 0 DO
-  ." * " .s cr
+  ." * " cs cr
 LOOP
 
 1 2 3 4 4 s" ints" VARRAY CR s" ints" alist

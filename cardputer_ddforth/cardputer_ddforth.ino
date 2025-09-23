@@ -1768,7 +1768,7 @@ void evaluate(vector<string> chunks) {
         if (!foundCMD) {
           for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
             if (it->name == c) {
-              sprintf(msg, "%-15s %s\n", it->name.c_str(), it->command.c_str());
+              sprintf(msg, "%s: %s\n", it->name.c_str(), it->command.c_str());
               commonPrint(msg);
               foundCMD = true;
             }
