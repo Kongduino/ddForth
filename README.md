@@ -15,7 +15,11 @@ For IoT versions, you might need to edit the `platform.txt` file to remove `-fno
 * [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
 * [Roboto](https://fonts.google.com/specimen/Roboto)
 
+### SDL demo
 
+```sh
+./bin/ddForth_SDL
+```
 ![MacMini.gif](assets/MacMini.gif)
 
 ![help.gif](assets/help.gif)
