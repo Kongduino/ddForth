@@ -478,5 +478,8 @@ bool handleHELP() {
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     printf(" • %-15s\t%s\n", nativeCommands[ix].name.c_str(), nativeCommands[ix].help.c_str());
   }
+  for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+    printf(" • %-20s %s\n", it->name.c_str(), it->command.c_str());
+  }
   return true;
 }
