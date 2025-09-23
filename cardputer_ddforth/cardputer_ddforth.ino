@@ -1974,41 +1974,7 @@ void setup() {
 }
 
 void loop() {
-  vector <string> mystrings;
-  if (Serial.available()) {
-    // Serial.println("incoming from user on Serial.");
-    char incoming[256];
-    memset(incoming, 0, 256);
-    uint8_t ix = 0;
-    while (Serial.available()) {
-      char c = Serial.read();
-      delay(25);
-      if (c == 13 || c == 10) {
-        // cr / lf: we want to buffer lines and treat them one by one
-        // when we're done receiving.
-        if (ix > 0) {
-          // only if we have a line to save:
-          // if we receive CR + LF, the second byte would give us
-          // an empty line.
-          incoming[ix] = 0;
-          string nextLine = string(incoming);
-          mystrings.push_back(nextLine);
-          ix = 0;
-        }
-      } else incoming[ix++] = c;
-    }
-  }
-  if (mystrings.size() > 0) {
-    vector<string> chunks;
-    uint8_t ix, iy = mystrings.size();
-    for (ix = 0; ix < iy; ix++) {
-      sprintf(msg, "\t%s\n", mystrings[ix].c_str());
-      Serial.print(msg);
-      chunks = tokenize((char *)mystrings[ix].c_str(), chunks);
-    }
-    evaluate(chunks);
-    mystrings.clear();
-  }
+  vector<string> mystrings;
 
   char kbdData[256];
   uint8_t kbdIdx;
@@ -2021,6 +1987,41 @@ void loop() {
   char carret[2] = { ' ', '_' };
   t0 = millis();
   while (true) {
+    if (Serial.available()) {
+      // Serial.println("incoming from user on Serial.");
+      char incoming[256];
+      memset(incoming, 0, 256);
+      uint8_t ix = 0;
+      while (Serial.available()) {
+        char c = Serial.read();
+        delay(25);
+        if (c == 13 || c == 10) {
+          // cr / lf: we want to buffer lines and treat them one by one
+          // when we're done receiving.
+          if (ix > 0) {
+            // only if we have a line to save:
+            // if we receive CR + LF, the second byte would give us
+            // an empty line.
+            incoming[ix] = 0;
+            string nextLine = string(incoming);
+            mystrings.push_back(nextLine);
+            cout << nextLine << endl;
+            ix = 0;
+          }
+        } else incoming[ix++] = c;
+      }
+    }
+    if (mystrings.size() > 0) {
+      vector<string> chunks;
+      uint8_t ix, iy = mystrings.size();
+      for (ix = 0; ix < iy; ix++) {
+        sprintf(msg, "\t%s\n", mystrings[ix].c_str());
+        Serial.print(msg);
+        chunks = tokenize((char *)mystrings[ix].c_str(), chunks);
+      }
+      evaluate(chunks);
+      mystrings.clear();
+    }
     M5Cardputer.update();
     if (M5Cardputer.Keyboard.isChange()) {
       if (M5Cardputer.Keyboard.isPressed()) {
@@ -2074,6 +2075,6 @@ void loop() {
         }
         kbdSprite.pushSprite(0, 24);
       }
-    } else delay(100);
+    }
   }
 }
