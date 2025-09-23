@@ -8,7 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
-#include <algorithm>  // std::transform
+#include <algorithm> // std::transform
 #include "random.hpp"
 
 using namespace std;
@@ -26,6 +26,7 @@ bool getRandomUInt();
 #endif
 
 bool handleHELP();
+bool handleHELPSTRING();
 
 bool handle2Nums(unsigned char);
 bool handleABS();
@@ -243,6 +244,7 @@ void logThis() {
 nativeCommand nativeCommands[] = {
   { handleWORDS, "WORDS", "( -- Displays vocabulary )" },
   { handleHELP, "HELP", "( -- Displays this help )" },
+  { handleHELPSTRING, "HELP\"", "( -- ) Print help for the word following, formatted as a string." },
   { handlePlus, "+", "( a b -- x ) Puts a+b on top of the stack." },
   { handleMinus, "-", "( a b -- x ) Puts a-b on top of the stack." },
   { handleMult, "*", "( a b -- x ) Puts a*b on top of the stack." },

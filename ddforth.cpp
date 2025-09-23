@@ -1,5 +1,6 @@
 #include "ddforth.hpp"
-bool insideString;
+bool insideString = false;
+bool isHelping = false;
 
 using namespace std;
 
@@ -1740,6 +1741,28 @@ void evaluate(vector<string> chunks) {
       } else if (isDrawing) {
         drawText(c);
 #endif
+      } else if (isHelping) {
+        string cc = c;
+        std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
+        isHelping = false;
+        insideString = false;
+        bool foundCMD = false;
+        cout << "Looking for " << cc << endl;
+        for (int ix = 0; ix < nativeCmdCount; ix++) {
+          if (nativeCommands[ix].name == cc) {
+            printf("%-15s: %s\n", cc.c_str(), nativeCommands[ix].help.c_str());
+            ix = nativeCmdCount;
+            foundCMD = true;
+          }
+        }
+        if (!foundCMD) {
+          for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+            if (it->name == c) {
+              printf("%-15s %s\n", it->name.c_str(), it->command.c_str());
+              foundCMD = true;
+            }
+          }
+        }
       } else {
         cout << c;
         isPrinting = false;

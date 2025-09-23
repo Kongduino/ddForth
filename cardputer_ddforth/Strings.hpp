@@ -9,6 +9,7 @@
 #include <vector>
 
 extern bool insideString;
+extern bool isHelping;
 
 bool handleEMIT() {
   char c;
@@ -19,6 +20,13 @@ bool handleEMIT() {
   }
   c = i0;
   printf("%c", c);
+  return true;
+}
+
+bool handleHELPSTRING() {
+  insideString = true;
+  isHelping = true;
+  isPrinting = false;
   return true;
 }
 

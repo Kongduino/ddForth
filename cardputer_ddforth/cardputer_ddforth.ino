@@ -7,6 +7,7 @@
 
 #include "ddforth.hpp"
 bool insideString;
+bool isHelping = false;
 
 using namespace std;
 
@@ -1749,8 +1750,32 @@ void evaluate(vector<string> chunks) {
       if (isStackingString) {
         isStackingString = false;
         putStringOnStack(c);
+      } else if (isHelping) {
+        string cc = c;
+        std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
+        isHelping = false;
+        insideString = false;
+        bool foundCMD = false;
+        cout << "Looking for " << cc << endl;
+        for (int ix = 0; ix < nativeCmdCount; ix++) {
+          if (nativeCommands[ix].name == cc) {
+            sprintf(msg, "%s: %s\n", cc.c_str(), nativeCommands[ix].help.c_str());
+            commonPrint(msg);
+            ix = nativeCmdCount;
+            foundCMD = true;
+          }
+        }
+        if (!foundCMD) {
+          for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+            if (it->name == c) {
+              sprintf(msg, "%-15s %s\n", it->name.c_str(), it->command.c_str());
+              commonPrint(msg);
+              foundCMD = true;
+            }
+          }
+        }
       } else {
-        commonPrint((char*)c.c_str());
+        commonPrint((char *)c.c_str());
         isPrinting = false;
       }
       executionPointer += 1;
