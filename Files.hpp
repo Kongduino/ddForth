@@ -1,4 +1,5 @@
-#include <fstream> // For ifstream
+#include <iostream>
+#include <fstream>
 
 extern char code[256];
 extern int xxxxxx;
@@ -61,3 +62,25 @@ bool handleFLOAD() {
       executionPointer = savedExecutionPointer;
   return true;
 }
+
+bool handleSave() {
+  // s" this is my code" s" /filename.fs" SAVE
+  string fn, cd;
+  if (popStringFromStack(&fn) == false) {
+    logStackOverflow((char *)"handleSave/0");
+    return false;
+  }
+  if (popStringFromStack(&cd) == false) {
+    logStackOverflow((char *)"handleSave/1");
+    return false;
+  }
+
+  ofstream myfile;
+  myfile.open (fn.c_str());
+  myfile << cd;
+  myfile.close();
+  cout << "File " << fn << " saved!" << endl;
+  return true;
+}
+
+// end

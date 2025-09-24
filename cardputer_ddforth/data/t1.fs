@@ -57,4 +57,3 @@ startCol @ 75 + 160 RED .DT" Temperature"
 startCol @ 75 + 190 BLUE .DT" RH%"
 
 WIDTH 2 / 210 BLACK s" THE END" .DST
-

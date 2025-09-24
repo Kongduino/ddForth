@@ -21,6 +21,7 @@ void hexDump(unsigned char *, int);
 unsigned char getRandomByte();
 bool putRandomByteOnStack();
 bool getRandomUInt();
+bool isDrawing = false;
 
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc0.hpp"
@@ -117,6 +118,8 @@ bool handleWHILE();
 bool handleWORDS();
 bool handleLOAD();
 bool handleFLOAD();
+bool handleSave();
+
 bool handleParens();
 bool handleCELLS();
 bool handleARRAYLIST();
@@ -351,6 +354,7 @@ nativeCommand nativeCommands[] = {
   { handleEXEC, "EXEC", "( s -- ?) Executes string on the stack. Can be used in conjunction with LINE." },
   { handleLOAD, "LOAD", "( -- ) Not very useful right now..." },
   { handleFLOAD, "FLOAD", "( s -- ?) Loads file named 'name' and executes it." },
+  { handleSave, "SAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
   { putRandomByteOnStack, "RANDOM", "( -- a ) Puts a random byte on top of the stack." },
   { putRandomUIntOnStack, "RANDOMI", "( -- a ) Puts a random INT on top of the stack." },
   { handleIF, "IF", "( cond -- ) Beginning of IF THEN ELSE" },

@@ -323,7 +323,7 @@ bool handleDRAWSTRING() {
 bool handleDRAWSTACKSTRING() {
   string s;
   if(popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handleFONT");
+    logStackOverflow((char *)"handleDRAWSTACKSTRING");
     return false;
   }
   drawText(s.c_str());

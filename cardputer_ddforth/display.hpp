@@ -22,6 +22,8 @@ void logInconsistent(char *who);
 void logStackOverflow(char *who);
 void logThis();
 bool handleDrawPixel();
+bool handleDRAWSTRING();
+bool handleDRAWSTACKSTRING();
 
 #define display M5Cardputer.Display
 extern char msg[256];
@@ -29,6 +31,11 @@ LGFX_Sprite gfxSprite(&display);
 LGFX_Sprite kbdSprite(&display);
 char kbdData[256];
 uint8_t kbdIdx;
+uint16_t cl16 = 0;
+uint8_t clR = 0, clG = 0, clB = 0;
+extern bool isDrawing;
+extern bool isPrinting;
+extern bool insideString;
 
 void commonPrint(char *);
 
@@ -111,13 +118,27 @@ void commonPrint(char *text) {
 }
 
 bool handleCLS() {
-  display.clear();
-  display.setTextFont(&fonts::FreeMonoBold12pt7b);
-  display.setTextColor(TFT_WHITE);
+    int r, g, b;
+  if (popIntegerFromStack(&b) == false) {
+    logStackOverflow((char *)"handleSetColor/B");
+    return false;
+  }
+  if (popIntegerFromStack(&g) == false) {
+    logStackOverflow((char *)"handleSetColor/G");
+    return false;
+  }
+  if (popIntegerFromStack(&r) == false) {
+    logStackOverflow((char *)"handleSetColor/R");
+    return false;
+  }
+  uint16_t mycl16 = (((uint8_t)r << 11) | ((uint8_t)g << 5) | (uint8_t)b);
+  display.clear(mycl16);
   gfxSprite.createSprite(240, 128);
+  gfxSprite.clear(mycl16);
   gfxSprite.setTextSize(1.0);
   gfxSprite.setTextFont(&fonts::FreeMonoBold12pt7b);
-  gfxSprite.setTextColor(TFT_WHITE);
+  uint16_t invCL = 0xFFFF - mycl16;
+  gfxSprite.setTextColor(invCL);
   gfxSprite.pushSprite(0, 0);
   return true;
 }
@@ -132,7 +153,6 @@ bool handleGetHeight() {
   return true;
 }
 
-uint16_t cl16;
 bool handleSetColor() {
   // void setColor(uint8_t r, uint8_t g, uint8_t b)
   int r, g, b;
@@ -148,8 +168,12 @@ bool handleSetColor() {
     logStackOverflow((char *)"handleSetColor/R");
     return false;
   }
-  gfxSprite.setColor((uint8_t)r, (uint8_t)g, (uint8_t)b);
+  clR = (uint8_t)r;
+  clG = (uint8_t)g;
+  clB = (uint8_t)b;
+  gfxSprite.setColor(clR, clG, clB);
   cl16 = (((uint8_t)r << 11) | ((uint8_t)g << 5) | (uint8_t)b);
+  gfxSprite.setTextColor(cl16);
   return true;
 }
 
@@ -206,7 +230,36 @@ bool handleDelay() {
   return true;
 }
 
+bool handleDRAWSTRING() {
+  isPrinting = false;
+  isDrawing = true;
+  insideString = true;
+  return true;
+}
 
+void drawText(string c) {
+  // void drawLine( int32_t x0, int32_t y0, int32_t x1, int32_t y1)
+  int x0, y0;
+  if (popIntegerFromStack(&y0) == false) {
+    logStackOverflow((char *)"drawText/y0");
+    return;
+  }
+  if (popIntegerFromStack(&x0) == false) {
+    logStackOverflow((char *)"drawText/x0");
+    return;
+  }
+  gfxSprite.drawString(c.c_str(), x0, y0);
+}
+
+bool handleDRAWSTACKSTRING() {
+  string s;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleDRAWSTACKSTRING");
+    return false;
+  }
+  drawText(s.c_str());
+  return true;
+}
 
 
 // end

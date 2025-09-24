@@ -1750,6 +1750,8 @@ void evaluate(vector<string> chunks) {
       if (isStackingString) {
         isStackingString = false;
         putStringOnStack(c);
+      } else if (isDrawing) {
+        drawText(c);
       } else if (isHelping) {
         string cc = c;
         std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
@@ -1947,15 +1949,27 @@ void setup() {
   }
 
   int fc = listAllFiles();
-  if (fc == 0 || BtnG0) {
-    SPIFFS.remove("/t0.fs");
-    File file = SPIFFS.open("/t0.fs", FILE_WRITE);
-    file.print("255 0 0 setcolor cls 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display 10 delay");
-    file.close();
-    int fc = listAllFiles();
+  //  if (fc == 0 || BtnG0) {
+  SPIFFS.remove("/t0.fs");
+  File file = SPIFFS.open("/t0.fs", FILE_WRITE);
+  file.print("255 0 0 DRAWCOLOR cls 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display 10 delay");
+  file.close();
+  // Get the total size of the array in bytes
+  size_t total_size = sizeof(t1);
+  // Calculate the number of rows
+  size_t num_rows = total_size / 64;
+  SPIFFS.remove("/t1.fs");
+  File file1 = SPIFFS.open("/t1.fs", FILE_WRITE);
+  for (int ix = 0; ix < num_rows; ix++) {
+    file1.print(t1[ix]);
+    cout << t1[ix] << endl;
   }
-  vector<string> thisBlock = loadFile("/t1.fs");
-  cout << "loadFile " << thisBlock.size() << endl;
+  file1.close();
+
+  fc = listAllFiles();
+  //  }
+  vector<string> thisBlock = loadFile("/t0.fs");
+  cout << "loadFile blocks: " << thisBlock.size() << endl;
   for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
     strcpy(code, it->c_str());
     cout << "Tokenizing " << *it << endl;
@@ -1974,8 +1988,6 @@ void setup() {
 }
 
 void loop() {
-  vector<string> mystrings;
-
   char kbdData[256];
   uint8_t kbdIdx;
   uint8_t fh = kbdSprite.fontHeight();
@@ -1987,8 +1999,9 @@ void loop() {
   char carret[2] = { ' ', '_' };
   t0 = millis();
   while (true) {
+    vector<string> chunks;
     if (Serial.available()) {
-      // Serial.println("incoming from user on Serial.");
+      Serial.println("incoming from user on Serial.");
       char incoming[256];
       memset(incoming, 0, 256);
       uint8_t ix = 0;
@@ -2003,24 +2016,15 @@ void loop() {
             // if we receive CR + LF, the second byte would give us
             // an empty line.
             incoming[ix] = 0;
-            string nextLine = string(incoming);
-            mystrings.push_back(nextLine);
-            cout << nextLine << endl;
+            chunks = tokenize(incoming, chunks);
+            cout << incoming << endl;
             ix = 0;
+            incoming[0] = 0;
           }
         } else incoming[ix++] = c;
       }
-    }
-    if (mystrings.size() > 0) {
-      vector<string> chunks;
-      uint8_t ix, iy = mystrings.size();
-      for (ix = 0; ix < iy; ix++) {
-        sprintf(msg, "\t%s\n", mystrings[ix].c_str());
-        Serial.print(msg);
-        chunks = tokenize((char *)mystrings[ix].c_str(), chunks);
-      }
-      evaluate(chunks);
-      mystrings.clear();
+      if (chunks.size() > 0)
+        evaluate(chunks);
     }
     M5Cardputer.update();
     if (M5Cardputer.Keyboard.isChange()) {
@@ -2075,6 +2079,6 @@ void loop() {
         }
         kbdSprite.pushSprite(0, 24);
       }
-    }
+    }// else delay(100);
   }
 }

@@ -37,7 +37,7 @@ bool showStack() {
     cout << "Stack empty! ";
     return true;
   }
-  cout << endl; // << "showStack " << dataStack.size();
+  cout << endl;  // << "showStack " << dataStack.size();
   int x = dataStack.size() - 1;
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
@@ -197,7 +197,7 @@ bool handleROLL() {
     return false;
   }
   unsigned char type0;
-  for(ix = 0; ix < levels; ix++) {
+  for (ix = 0; ix < levels; ix++) {
     type0 = dataStack.at(dataStack.size() - ix - 1);
     if (type0 != xINTEGER && type0 != xFLOAT) {
       logInconsistent((char *)"handleROLL");
@@ -429,7 +429,7 @@ bool popFloatFromStack(float *value) {
   return true;
 }
 
-bool popStringFromStack(string* s) {
+bool popStringFromStack(string *s) {
   if (dataStack.size() < 1) {
     return false;
   }
@@ -448,4 +448,3 @@ bool putFloatOnStack(float n) {
   dataStack.push_back(type);
   return true;
 }
-

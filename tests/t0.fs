@@ -16,7 +16,7 @@ startCol @ 20 - 150 50 1.5 * INT - 8 - 0 0 66 .DT" 50"
 startCol @ 20 - 150 25 1.5 * INT - 8 - 0 0 66 .DT" 25"
 
 99 99 99 DRAWCOLOR
-75 1.5 * 150 SWAP - INT WIDTH startCol @ STACK dottedLine
+75 1.5 * 150 SWAP - INT WIDTH startCol @ .S dottedLine
 50 1.5 * 150 SWAP - INT WIDTH startCol @ dottedLine
 25 1.5 * 150 SWAP - INT WIDTH startCol @ dottedLine
 
@@ -57,4 +57,3 @@ startCol @ 75 + 160 RED .DT" Temperature"
 startCol @ 75 + 190 BLUE .DT" RH%"
 
 WIDTH 2 / 210 BLACK s" THE END" .DST
-
