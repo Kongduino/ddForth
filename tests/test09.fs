@@ -7,4 +7,4 @@
   DROP 1 + DUP
   0=
 UNTIL
-. STACK CR
+. .S CR

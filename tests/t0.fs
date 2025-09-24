@@ -9,7 +9,7 @@ startCol @ 1 - 0 startCol @ 1 - 210 DRAWLINE
 0 1 s" saveY0" VARRAY
 0 1 s" saveY1" VARRAY
 
-: dottedLine ( py lastX firstX ) DO DUP I SWAP DUP I 5 + SWAP DRAWLINE STACK I 5 + >R LOOP clear ;
+: dottedLine ( py lastX firstX ) DO DUP I SWAP DUP I 5 + SWAP DRAWLINE .S I 5 + >R LOOP clear ;
 
 startCol @ 20 - 150 75 1.5 * INT - 8 - 0 0 66 .DT" 75"
 startCol @ 20 - 150 50 1.5 * INT - 8 - 0 0 66 .DT" 50"

@@ -10,4 +10,4 @@ CR ." OUTSIDE LOOP" CR
   1 + DUP
   0=
 UNTIL
-. STACK CR
+. .S CR

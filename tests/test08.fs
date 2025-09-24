@@ -5,8 +5,8 @@
 .V
 GOG
 GAG @ GOG @ +
-STACK
+.S
 !
-STACK
+.S
 .V
 GOG ? CR
