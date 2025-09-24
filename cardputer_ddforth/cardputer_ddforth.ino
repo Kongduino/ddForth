@@ -1952,7 +1952,7 @@ void setup() {
   //  if (fc == 0 || BtnG0) {
   SPIFFS.remove("/t0.fs");
   File file = SPIFFS.open("/t0.fs", FILE_WRITE);
-  file.print("0 0 0 cls 255 0 0 DRAWCOLOR 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display 10 delay");
+  file.print("0 0 0 cls 255 0 0 DRAWCOLOR 240 0 do I 0 239 I 0.66 * INT drawline I 2 +loop display clear");
   file.close();
   // Get the total size of the array in bytes
   size_t total_size = sizeof(t1);
