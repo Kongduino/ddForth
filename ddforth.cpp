@@ -936,7 +936,7 @@ bool handleEXEC() {
     logStackOverflow((char *)"handleEXEC");
     return false;
   }
-  cout << s << endl;
+  // cout << s << endl;
   int savedExecutionPointer = executionPointer;
   vector<string> myChunks;
   myChunks = tokenize((char *)s.c_str(), myChunks);
