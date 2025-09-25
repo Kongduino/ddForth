@@ -96,6 +96,8 @@ bool handleKEY();
 bool handleLINE();
 bool handleLOOP();
 bool handleOVER();
+bool handleSPICK();
+
 bool handlePlus();
 bool handlePRINT();
 bool handlePRINTSTRING();
@@ -320,6 +322,8 @@ nativeCommand nativeCommands[] = {
   { handleROT, "ROT", "(a b c -- c a b) Rotates the 3 values on top of the stack." },
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
   { handleOVER, "OVER", "( a b -- a b a) Place a copy of a on top of the stack." },
+  { handleSPICK, "SPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
+
   { handleBASE, "BASE", "( a -- ) Sets the base" },
   { handleBASE2, "BIN", "( -- ) Sets the base to binary" },
   { handleBASE10, "DEC", "( -- ) Sets the base to decimal" },

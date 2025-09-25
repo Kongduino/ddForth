@@ -457,3 +457,32 @@ bool putFloatOnStack(float n) {
   return true;
 }
 
+bool handleSPICK() {
+  int ix, x, n;
+  if (popIntegerFromStack(&x) == false) {
+    logStackOverflow((char *)"handleSPICK/0");
+    return false;
+  }
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleSPICK/1");
+    return false;
+  }
+  if (x >= n) {
+    putIntegerOnStack(n);
+    logStackOverflow((char *)"handleSPICK/2");
+    return false;
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (dataStack.at(dataStack.size() - 1 - ix) != xSTRING) {
+      putIntegerOnStack(n);
+      logStackOverflow((char *)"handleSPICK/2");
+      return false;
+    }
+  }
+  putIntegerOnStack(n);
+  putStringOnStack(userStrings.at(x));
+  return true;
+}
+
+
+// end

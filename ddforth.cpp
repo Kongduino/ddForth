@@ -14,8 +14,8 @@ mySTRCONSTs + 640
 */
 
 void StoreCONSTFLOAT(string name, float value) {
-  std::map<string, int>::iterator it;
   int ad;
+  std::map<string, int>::iterator it;
   it = fconstAddresses.find(name);
   if (it == fconstAddresses.end()) {
     myFCONSTs.push_back(value);
