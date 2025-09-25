@@ -1,37 +1,20 @@
-: GPRMC ." $GPRMC\t-----> " swap 1 - DUP 1- spick s" " S= IF ." No data!" THEN cs ELSE ;
-
+: GPRMC ." \t-----> " swap 1 - DUP 1- SPICK s" " S= IF ." No data!" THEN cs ELSE cr clear ;
+: GPGSV cs ." : " 1 spick STRINT . ." message" 1 spick strint 1 > IF ." s.\n" then ." .\n" else ( .S ) clear ;
+: GPGSA cs cr ;
+: GPTXT cs ." \t-----> " 4 spick cs cr clear ;
+: GPGLL cs ." \t-----> No need." cr clear ;
+: GPVTG cs ." \t-----> No need." cr clear ;
+: GPGGA cs ." \t-----> " 1 spick cs cr clear ;
 
 9600 s" /dev/tty.usbmodem21301" UOPEN
-clear UREADL 44 CSPLIT SREVERSE
+clear UREADL 44 CSPLIT
 0 var chunks
 begin
-  UREADL LENSTR 0 > IF
-    STRIPSTR ( DUP cs ) 44 csplit
-    SREVERSE DUP 0 > IF
-      swap dup cs swap ." \tchunks:\t"
-      DUP chunks swap ! chunks ? cr
-      swap DUP s" $GPGSV" S= IF
-        ." \t-----> Satellite Info.\n"
-        clear
-      THEN
-        DUP s" $GPTXT" S= IF
-          ." \t-----> " DUP cs ." : "
-          drop drop drop drop drop 42 csplit drop drop cs cr
-          clear
-        THEN
-          DUP s" $GPRMC" S= IF
-            drop ." \t-----> GPS specific information.\n"
-            swap GPRMC cr
-            clear
-          THEN
-          ELSE
-        ELSE
-      ELSE
-      clear
-    THEN
-    ELSE
-    clear
+  UREADL STRIPSTR 44 csplit DUP 0 > IF
+      0 spick cs ." \tchunks:\t" DUP . CR
+      0 spick 1 6 substr exec
+  THEN
   ELSE
+  clear
   1 1 =
 while
-GPS fix data
