@@ -147,9 +147,11 @@ bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
 bool handleINTSTR();
 bool handleSTRINT();
+bool handleSTRFLOAT();
 bool handleCSPLIT();
 bool handleSPLITDELIM();
 bool handleStringReverse();
+bool handleDINSERT();
 bool handleVARRAY();
 
 bool lookup(string);
@@ -308,9 +310,11 @@ nativeCommand nativeCommands[] = {
   { handleRSTRIPSTR, "RSTRIPSTR", "( a -- x ) Removes whitespaces on the right side of string a" },
   { handleINTSTR, "INTSTR", "( a -- x ) Converts int to str." },
   { handleSTRINT, "STRINT", "( a -- x ) Converts str to int." },
+  { handleSTRFLOAT, "STRFLOAT", "( a -- x ) Converts str to float." },
   { handleCSPLIT, "CSPLIT", "( s t -- a b c d...) Splits string s by delimiter t (one ASCII char) and puts the result on the stack." },
   { handleSPLITDELIM, "SPLITD", "( s t -- a b c d...) Splits string s by delimiter t (a string) and puts the result on the stack." },
   { handleStringReverse, "SREVERSE", "( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count." },
+  { handleDINSERT, "DINSERT", "( s1 s0 n -- s ) Inserts s0 into s1 every n chars." },
 
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, makeing sure there are num data pieces" },
 

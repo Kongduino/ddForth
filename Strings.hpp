@@ -274,6 +274,18 @@ bool handleSTRINT() {
   return true;
 }
 
+bool handleSTRFLOAT() {
+  string s;
+  float f0;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleSTRFLOAT");
+    return false;
+  }
+  f0 = std::atof(s.c_str());
+  putFloatOnStack(f0);
+  return true;
+}
+
 bool handleINTSTR() {
   string s;
   int i0;
@@ -388,6 +400,29 @@ bool handleStringEqual() {
   return true;
 }
 
-
+bool handleDINSERT() {
+  string s0, s1, fnStr;
+  int ix, n, ln;
+  if(popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleDINSERT/1");
+    return false;
+  }
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleDINSERT/0");
+    return false;
+  }
+  if (popStringFromStack(&s1) == false) {
+    logStackOverflow((char *)"handleDINSERT/2");
+    return false;
+  }
+  ln = s1.size();
+  fnStr = s1.substr(0, n);
+  for (ix = n ; ix < ln; ix += n) {
+    fnStr.append(s0);
+    fnStr.append(s1.substr(ix, n));
+  }
+  putStringOnStack(fnStr);
+  return true;
+}
 
 // end
