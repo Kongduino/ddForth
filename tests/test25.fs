@@ -12,7 +12,7 @@ begin
         clear
       THEN
         DUP s" $GPTXT" S= IF
-          ." \t-----> Text: " 
+          ." \t-----> " cs ." : "
           drop drop drop drop drop 42 csplit drop drop cs clear cr
         THEN
           DUP s" $GPRMC" S= IF
