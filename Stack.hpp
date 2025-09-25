@@ -142,6 +142,14 @@ bool handleDROP() {
       }
       return true;
       break;
+    case xSTRING:
+      string s0;
+      if (popStringFromStack(&s0) == false) {
+        logStackOverflow((char *)"handleDROP3");
+        return false;
+      }
+      return true;
+      break;
   }
   return false;
 }
