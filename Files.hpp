@@ -10,7 +10,7 @@ using namespace std;
 
 vector<string> loadFile(char *);
 
-vector<string> loadAndTokenize(char* fn) {
+vector<string> loadAndTokenize(char *fn) {
   vector<string> chunks;
   vector<string> thisBlock = loadFile(fn);
   if (thisBlock.size() == 0) {
@@ -55,16 +55,16 @@ bool handleFLOAD() {
     logStackOverflow((char *)"handleFLOAD/0");
     return false;
   }
-  vector<string> tempChunks = loadAndTokenize((char*)name.c_str());
+  vector<string> tempChunks = loadAndTokenize((char *)name.c_str());
   int savedExecutionPointer = executionPointer;
   evaluate(tempChunks);
   tempChunks.clear();
-      executionPointer = savedExecutionPointer;
+  executionPointer = savedExecutionPointer;
   return true;
 }
 
-bool handleSave() {
-  // s" this is my code" s" /filename.fs" SAVE
+bool handleFSAVE() {
+  // s" this is my code" s" /filename.fs" FSAVE
   string fn, cd;
   if (popStringFromStack(&fn) == false) {
     logStackOverflow((char *)"handleSave/0");
@@ -76,7 +76,7 @@ bool handleSave() {
   }
 
   ofstream myfile;
-  myfile.open (fn.c_str());
+  myfile.open(fn.c_str());
   myfile << cd;
   myfile.close();
   cout << "File " << fn << " saved!" << endl;

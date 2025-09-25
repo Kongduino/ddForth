@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm> // std::transform
 #include "random.hpp"
+#include "USB_UART.hpp"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ bool handleBASE16();
 bool handleDifferent();
 bool handleDiv();
 bool handleEqual();
+bool handleStringEqual();
 bool handleFact();
 bool handleGreater();
 bool handleGreaterEqual();
@@ -114,9 +116,8 @@ bool handleUNTIL();
 bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
-bool handleLOAD();
 bool handleFLOAD();
-bool handleSave();
+bool handleFSAVE();
 
 bool handleParens();
 bool handleCELLS();
@@ -146,6 +147,7 @@ bool handleINTSTR();
 bool handleSTRINT();
 bool handleCSPLIT();
 bool handleSPLITDELIM();
+bool handleStringReverse();
 bool handleVARRAY();
 
 bool lookup(string);
@@ -224,7 +226,7 @@ enum dataType {
   xINVALID,
   xINTEGER,
   xFLOAT,
-  xSTRING,  // not used so far
+  xSTRING, // not used so far
 };
 enum JumpType {
   xBEGIN,
@@ -302,10 +304,12 @@ nativeCommand nativeCommands[] = {
   { handleSTRIPSTR, "STRIPSTR", "( a -- x ) Removes whitespaces on both sides of string a" },
   { handleLSTRIPSTR, "LSTRIPSTR", "( a -- x ) Removes whitespaces on the left side of string a" },
   { handleRSTRIPSTR, "RSTRIPSTR", "( a -- x ) Removes whitespaces on the right side of string a" },
-  { handleINTSTR, "INTSTR", "( a -- x ) Converts int to str" },
-  { handleSTRINT, "STRINT", "( a -- x ) Converts str to int" },
+  { handleINTSTR, "INTSTR", "( a -- x ) Converts int to str." },
+  { handleSTRINT, "STRINT", "( a -- x ) Converts str to int." },
   { handleCSPLIT, "CSPLIT", "( s t -- a b c d...) Splits string s by delimiter t (one ASCII char) and puts the result on the stack." },
   { handleSPLITDELIM, "SPLITD", "( s t -- a b c d...) Splits string s by delimiter t (a string) and puts the result on the stack." },
+  { handleStringReverse, "SREVERSE", "( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count." },
+
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, makeing sure there are num data pieces" },
 
   { handleDUP, "DUP", "( a -- a a ) Duplicates value on top of the stack." },
@@ -327,6 +331,7 @@ nativeCommand nativeCommands[] = {
   { showStack, ".S", "( -- ) Displays the stack." },
   { showVars, ".V", "( -- ) Shows existing vars by type" },
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
+  { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
   { handleLower, "<", "( a b -- [01] ) Puts the result of (a < b) on top of the stack." },
   { handleLowerEqual, "<=", "( a b -- [01] ) Puts the result of (a <= b) on top of the stack." },
   { handleGreater, ">", "( a b -- [01] ) Puts the result of (a > b) on top of the stack." },
@@ -350,9 +355,11 @@ nativeCommand nativeCommands[] = {
   { handleRput, ">R", "( a -- ) Puts a on the return stack." },
   { handleRget, "R>", "( -- a ) Puts top of the return stack onto the stack." },
   { handleEXEC, "EXEC", "( s -- ?) Executes string on the stack. Can be used in conjunction with LINE." },
-  { handleLOAD, "LOAD", "( -- ) Not very useful right now..." },
   { handleFLOAD, "FLOAD", "( s -- ?) Loads file named 'name' and executes it." },
-  { handleSave, "SAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
+  { handleFSAVE, "FSAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
+  { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },
+  { handleReadLinePort, "UREADL", "( -- s ) Reads a line from port." },
+  { handleClosePort, "UCLOSE", "( -- ) Closes the port." },
 
   { putRandomByteOnStack, "RANDOM", "( -- a ) Puts a random byte on top of the stack." },
   { putRandomUIntOnStack, "RANDOMI", "( -- a ) Puts a random INT on top of the stack." },

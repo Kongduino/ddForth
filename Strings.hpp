@@ -349,3 +349,45 @@ bool handleSPLITDELIM() {
   putIntegerOnStack(count);
   return true;
 }
+
+bool handleStringReverse() {
+  // ( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n )
+  // Reverses a stack of strings prefixed by count
+  int ix, jx, number;
+  if(popIntegerFromStack(&number) == false) {
+    logStackOverflow((char *)"handleStringReverse/0");
+    return false;
+  }
+  for (ix = 0; ix < number; ix++) {
+    if(dataStack.at(dataStack.size() - 1 - ix) != xSTRING) {
+      logInconsistent((char*)"handleStringReverse");
+      return false;
+    }
+  }
+  jx = ix >> 1;
+  for (ix = 0; ix < jx; ix++) {
+    string tmp = userStrings.at(userStrings.size() - 1 - ix);
+    userStrings.at(userStrings.size() - 1 - ix) = userStrings.at(userStrings.size() - (number - ix));
+    userStrings.at(userStrings.size() - (number - ix)) = tmp;
+  }
+  putIntegerOnStack(number);
+  return true;
+}
+
+bool handleStringEqual() {
+  string s0, s1;
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleStringEqual/0");
+    return false;
+  }
+  if (popStringFromStack(&s1) == false) {
+    logStackOverflow((char *)"handleStringEqual/1");
+    return false;
+  }
+  putIntegerOnStack((s0 == s1));
+  return true;
+}
+
+
+
+// end
