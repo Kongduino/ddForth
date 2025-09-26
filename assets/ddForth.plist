@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	ddForth language module for BBEdit
+	https://github.com/Kongduino/ddForth
+	Changes:
+	2025/09/26  First commit
+-->
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<false/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>-</string>
+		<string>!</string>
+		<string>!+</string>
+		<string>.</string>
+		<string>.&quot;</string>
+		<string>.S</string>
+		<string>.V</string>
+		<string>(</string>
+		<string>@</string>
+		<string>*</string>
+		<string>/</string>
+		<string>&gt;</string>
+		<string>&gt;?</string>
+		<string>&gt;=</string>
+		<string>&gt;=?</string>
+		<string>&gt;IX</string>
+		<string>&gt;R</string>
+		<string>&lt;</string>
+		<string>&lt;?</string>
+		<string>&lt;&gt;</string>
+		<string>&lt;&gt;?</string>
+		<string>&lt;=</string>
+		<string>&lt;=?</string>
+		<string>&lt;ROT</string>
+		<string>+</string>
+		<string>+IX</string>
+		<string>+LOOP</string>
+		<string>+STR</string>
+		<string>=</string>
+		<string>=?</string>
+		<string>ABS</string>
+		<string>ACOS</string>
+		<string>ALIST</string>
+		<string>AND</string>
+		<string>ARRAY</string>
+		<string>ARRAYS</string>
+		<string>ASIN</string>
+		<string>ASUM</string>
+		<string>ATAN</string>
+		<string>BASE</string>
+		<string>BEGIN</string>
+		<string>BIN</string>
+		<string>C&quot;</string>
+		<string>CEIL</string>
+		<string>CLEAR</string>
+		<string>COS</string>
+		<string>COSH</string>
+		<string>CR</string>
+		<string>CS</string>
+		<string>CSPLIT</string>
+		<string>DEC</string>
+		<string>DEPTH</string>
+		<string>DINSERT</string>
+		<string>DO</string>
+		<string>DROP</string>
+		<string>DUP</string>
+		<string>ELSE</string>
+		<string>EMIT</string>
+		<string>EXEC</string>
+		<string>EXIT</string>
+		<string>EXP</string>
+		<string>FACT</string>
+		<string>FLOAD</string>
+		<string>FLOOR</string>
+		<string>FSAVE</string>
+		<string>HELP</string>
+		<string>HELP&quot;</string>
+		<string>HEX</string>
+		<string>I</string>
+		<string>I'</string>
+		<string>IF</string>
+		<string>INT</string>
+		<string>INTSTR</string>
+		<string>INVERT</string>
+		<string>IX&gt;</string>
+		<string>IX+</string>
+		<string>J</string>
+		<string>KEY</string>
+		<string>LEFTSTR</string>
+		<string>LEN&gt;</string>
+		<string>LENSTR</string>
+		<string>LINE</string>
+		<string>LOG</string>
+		<string>LOG10</string>
+		<string>LOOP</string>
+		<string>LOWERSTR</string>
+		<string>LSTRIPSTR</string>
+		<string>MAX</string>
+		<string>MIDSTR</string>
+		<string>MIN</string>
+		<string>MOD</string>
+		<string>MULTSTR</string>
+		<string>NEGATE</string>
+		<string>NOT</string>
+		<string>OR</string>
+		<string>OVER</string>
+		<string>R&gt;</string>
+		<string>RANDOM</string>
+		<string>RANDOMI</string>
+		<string>RIGHTSTR</string>
+		<string>ROLL</string>
+		<string>ROT</string>
+		<string>ROT&gt;</string>
+		<string>ROUND</string>
+		<string>RSTRIPSTR</string>
+		<string>S&quot;</string>
+		<string>S=</string>
+		<string>SIN</string>
+		<string>SINH</string>
+		<string>SPICK</string>
+		<string>SPLITD</string>
+		<string>SQR</string>
+		<string>SQRT</string>
+		<string>SREVERSE</string>
+		<string>STR+</string>
+		<string>STRFLOAT</string>
+		<string>STRINT</string>
+		<string>STRIPSTR</string>
+		<string>SUBSTR</string>
+		<string>SWAP</string>
+		<string>TAN</string>
+		<string>TANH</string>
+		<string>THEN</string>
+		<string>U.</string>
+		<string>UCLOSE</string>
+		<string>UNTIL</string>
+		<string>UOPEN</string>
+		<string>UPPERSTR</string>
+		<string>UREADL</string>
+		<string>VARRAY</string>
+		<string>WHILE</string>
+		<string>WORDS</string>
+		<string>XOR</string>
+	</array>
+	<key>BBLMLanguageCode</key>
+	<string>R___</string>
+	<key>BBLMCommentPrefixDefault</key>
+	<string>(</string>
+	<key>BBLMCommentSuffixDefault</key>
+	<string>)</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>ddForth</string>
+	<key>BBLMScansFunctions</key>
+	<true/>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.fs</string>
+		</dict>
+	</array>
+	<key>Language Features</key>
+	<dict>
+		<key>Close Parameter Lists</key>
+		<string>)</string>
+		<key>Close Statement Blocks</key>
+		<string>}</string>
+		<key>Close Strings 1</key>
+		<string>&quot;</string>
+		<key>Escape Char in Strings 1</key>
+		<string>\</string>
+		<key>Escape Char in Strings 2</key>
+		<string>\</string>
+		<key>Identifier and Keyword Characters</key>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz.%&gt;&lt;</string>
+		<key>Open Parameter Lists</key>
+		<string>(</string>
+		<key>Open Statement Blocks</key>
+		<string>{</string>
+		<key>Open Strings 1</key>
+		<string>s&quot; </string>
+		<key>Open Strings 2</key>
+		<string>.&quot; </string>
+		<key>Prefix for Functions</key>
+		<string></string>
+		<key>Prefix for Procedures</key>
+		<string></string>
+		<key>Terminator for Prototypes 1</key>
+		<string></string>
+		<key>Terminator for Prototypes 2</key>
+		<string></string>
+		<key>String Pattern</key>
+		<string>(?x: ("(\\"|[^"])*") | ('(\\'|[^'])*') )</string>
+		<key>Comment Pattern</key>
+		<string>(?x:
+			(\( +.* \))
+		)</string>
+</dict>
+</dict>
+</plist>
