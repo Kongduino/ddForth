@@ -32,7 +32,7 @@ DRAWPIXEL
 WIDTH 50 - startCol @ 1 + DO
 255 0 0 DRAWCOLOR
   I 1 - ( X index )
-  0 s" saveY0" 0 IX>
+  0 s" saveY0" IX>
   I
   random 80 mod 40 - 10.0 / 28.0 + ( random Y index )
   1.5 * INT 150 swap - DUP 0 s" saveY0" >IX
