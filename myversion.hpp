@@ -1,1 +1,1 @@
-#define myVERSION 1187
+#define myVERSION 1188

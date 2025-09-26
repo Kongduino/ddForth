@@ -5,7 +5,7 @@
 	ddForth language module for BBEdit
 	https://github.com/Kongduino/ddForth
 	Changes:
-	2025/09/26  First commit
+	2025/09/26	First commit
 -->
 <dict>
 	<key>BBEditDocumentType</key>
@@ -16,20 +16,6 @@
 	<false/>
 	<key>BBLMKeywordList</key>
 	<array>
-		<string>VAR</string>
-		<string>CONST</string>
-		<string>DRAWCOLOR</string>
-		<string>DRAWPIXEL</string>
-		<string>DRAWLINE</string>
-		<string>FILLRECT</string>
-		<string>DRAWRECT</string>
-		<string>FONT</string>
-		<string>REFRESH</string>
-		<string>WIDTH</string>
-		<string>HEIGHT</string>
-		<string>.DST</string>
-		<string>CLS</string>
-		<string>.DT&quot;</string>
 		<string>-</string>
 		<string>!</string>
 		<string>!+</string>
@@ -139,7 +125,7 @@
 		<string>S=</string>
 		<string>SIN</string>
 		<string>SINH</string>
-		<string>STRPICK</string>
+		<string>SPICK</string>
 		<string>SPLITD</string>
 		<string>SQR</string>
 		<string>SQRT</string>
@@ -194,7 +180,7 @@
 		<key>Escape Char in Strings 2</key>
 		<string>\</string>
 		<key>Identifier and Keyword Characters</key>
-		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz.%+!@?&gt;&lt;</string>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz.%&gt;&lt;</string>
 		<key>Open Parameter Lists</key>
 		<string>(</string>
 		<key>Open Statement Blocks</key>
@@ -208,15 +194,28 @@
 		<key>Prefix for Procedures</key>
 		<string>:</string>
 		<key>Terminator for Prototypes 1</key>
-		<string>;</string>
+		<string></string>
 		<key>Terminator for Prototypes 2</key>
-		<string>;</string>
+		<string></string>
 		<key>String Pattern</key>
-		<string>(?x: ("(\\"|[^"])*"))</string>
+		<string>(?x: ("(\\"|[^"])*") | ('(\\'|[^'])*') )</string>
 		<key>Comment Pattern</key>
 		<string>(?x:
 			(\( +.* \))
 		)</string>
-</dict>
+		<key>Function Pattern</key>
+		<string><![CDATA[
+			(?x: 
+				(?P<function>
+					:\s+
+					(?P<function_name>
+						[a-zA-Z_][a-zA-Z0-9_]+
+					)
+					(?s:.+?)
+					;\s+
+				)
+			)
+		]]></string>
+	</dict>
 </dict>
 </plist>
