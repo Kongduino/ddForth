@@ -174,8 +174,6 @@ bool handleFlushPort() {
   return true;
 }
 
-
-
 // end
 //   // Flush the input buffer (data received but not yet read)
 //   tcflush(serial_port, TCIFLUSH);

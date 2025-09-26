@@ -146,9 +146,49 @@
 		<string>UPPERSTR</string>
 		<string>UREADL</string>
 		<string>VARRAY</string>
+		<string>VAR</string>
+		<string>CONST</string>
 		<string>WHILE</string>
 		<string>WORDS</string>
 		<string>XOR</string>
+		<string>0=</string>
+		<string>0&gt;</string>
+		<string>0&lt;</string>
+		<string>TRUE</string>
+		<string>FALSE</string>
+		<string>?</string>
+		<string>1+</string>
+		<string>1-</string>
+		<string>2+</string>
+		<string>2-</string>
+		<string>2*</string>
+		<string>2/</string>
+		<string>pi</string>
+		<string>++</string>
+		<string>NIP</string>
+		<string>TUCK</string>
+		<string>-ROT</string>
+		<string>nip</string>
+		<string>tuck</string>
+		<string>-rot</string>
+		<string>true</string>
+		<string>false</string>
+		<string>nROT&gt;</string>
+		<string>n&lt;ROT</string>
+		<string>ssplit</string>
+		<string>SSPLIT</string>
+		<string>DRAWCOLOR</string>
+		<string>DRAWPIXEL</string>
+		<string>DRAWLINE</string>
+		<string>FILLRECT</string>
+		<string>DRAWRECT</string>
+		<string>CLS</string>
+		<string>.DT\</string>
+		<string>.DST</string>
+		<string>FONT</string>
+		<string>REFRESH</string>
+		<string>WIDTH</string>
+		<string>HEIGHT</string>
 	</array>
 	<key>BBLMLanguageCode</key>
 	<string>R___</string>
