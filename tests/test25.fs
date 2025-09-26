@@ -12,11 +12,11 @@
 : GPGGA2 ." , SIV: " 7 spick strint . 2 spick cs 3 spick cs ." , " 4 spick cs 5 spick cs cr clear ;
 
 9600 s" /dev/tty.usbmodem21301" UOPEN
-clear UREADL 44 CSPLIT
+clear UREADL DUP cs 44 CSPLIT
 0 var chunks
 begin
   UREADL STRIPSTR 44 csplit DUP 0 > IF
-      0 spick cs ." \tchunks:\t" DUP . CR
+      0 spick s" \tchunks:\t" STR+ cs DUP . CR
       0 spick 1 6 substr exec
   THEN
   ELSE

@@ -368,5 +368,3 @@ bool handleHEIGHT() {
   putIntegerOnStack(h);
   return true;
 }
-
-

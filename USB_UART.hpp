@@ -161,7 +161,7 @@ bool handleReadLinePort() {
 
 bool handleClosePort() {
   // ( -- ) UCLOSE
-  if (serial_port == -1) return false;
+  if (serial_port == -1) return true;
   tcflush(serial_port, TCIOFLUSH);
   close(serial_port);
   serial_port = -1;
