@@ -16,6 +16,20 @@
 	<false/>
 	<key>BBLMKeywordList</key>
 	<array>
+		<string>VAR</string>
+		<string>CONST</string>
+		<string>DRAWCOLOR</string>
+		<string>DRAWPIXEL</string>
+		<string>DRAWLINE</string>
+		<string>FILLRECT</string>
+		<string>DRAWRECT</string>
+		<string>FONT</string>
+		<string>REFRESH</string>
+		<string>WIDTH</string>
+		<string>HEIGHT</string>
+		<string>.DST</string>
+		<string>CLS</string>
+		<string>.DT&quot;</string>
 		<string>-</string>
 		<string>!</string>
 		<string>!+</string>
