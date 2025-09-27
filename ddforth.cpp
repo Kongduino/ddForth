@@ -936,7 +936,7 @@ bool handleEXEC() {
     logStackOverflow((char *)"handleEXEC");
     return false;
   }
-  // cout << s << endl;
+  //cout << "handleEXEC(" << s << ")" << endl;
   int savedExecutionPointer = executionPointer;
   vector<string> myChunks;
   myChunks = tokenize((char *)s.c_str(), myChunks);
@@ -1802,6 +1802,77 @@ void evaluate(vector<string> chunks) {
       logThis();
       userCommand x = { dictName, miniChunks };
       userCommands.push_back(x);
+    } else if (cl == "case") {
+      if (executionPointer == 0) {
+        logStackOverflow((char *)"case/data");
+        return;
+      }
+      string argument = chunks.at(executionPointer - 1);
+      // value CASE x OF ... ENDOF y OF ... ENDOF z OF ... ENDOF ENDCASE
+      // cout << "CASE " << argument << endl;
+      executionPointer += 1;
+      std::map<string, string> pointers;
+      // We are going to index the code
+      while (cl != "endcase") {
+        string WW = chunks.at(executionPointer++);
+        string dl = chunks.at(executionPointer++);
+        std::transform(dl.begin(), dl.end(), dl.begin(), ::tolower);
+        // cout << "Condition " << WW << " " << dl << endl;
+        // we should have now in cl the value we compare to, and OF – well, of
+        if (dl != "of") {
+          // we skip until the end
+          // cout << "we skip until the end..." << endl;
+          while (dl != "endcase") {
+            dl = chunks.at(executionPointer++);
+            std::transform(dl.begin(), dl.end(), dl.begin(), ::tolower);
+            insideCase = false;
+            break;
+          }
+        } else {
+          string wordsToAdd;
+          c = chunks.at(executionPointer++);
+          dl = c;
+          std::transform(dl.begin(), dl.end(), dl.begin(), ::tolower);
+          while (dl != "endof") {
+            wordsToAdd.append(c);
+            wordsToAdd.append(" ");
+            c = chunks.at(executionPointer++);
+            dl = c;
+            std::transform(dl.begin(), dl.end(), dl.begin(), ::tolower);
+          }
+          pointers[WW] = wordsToAdd;
+          // cout << "\t`" << wordsToAdd << "`\n" ;
+          cl = chunks.at(executionPointer);
+          std::transform(cl.begin(), cl.end(), cl.begin(), ::tolower);
+        }
+      }
+      executionPointer += 1;
+      // cout << "EndCase!\n" ;
+      std::map<string, string>::iterator it;
+      it = pointers.find(argument);
+      if (it == pointers.end()) {
+        cout << "Argument " << argument << " not found!\n";
+      } else {
+        cout << it->second << endl;
+        c = it->second;
+        putStringOnStack(c);
+        int savedExecutionPointer = executionPointer;
+        vector<string> myChunks;
+        myChunks = tokenize((char *)c.c_str(), myChunks);
+        evaluate(myChunks);
+        executionPointer = savedExecutionPointer;
+      }
+      // cout << "handleDROP\n";
+      handleDROP();
+      executionPointer -= 2;
+      c = chunks.at(executionPointer++);
+      cl = c;
+      std::transform(cl.begin(), cl.end(), cl.begin(), ::tolower);
+      while (cl != "endcase") {
+        c = chunks.at(executionPointer++);
+        cl = c;
+        std::transform(cl.begin(), cl.end(), cl.begin(), ::tolower);
+      }
     } else {
       if (lookup(c, &r)) {
         if (r == false) {
