@@ -1825,7 +1825,6 @@ void evaluate(vector<string> chunks) {
           while (dl != "endcase") {
             dl = chunks.at(executionPointer++);
             std::transform(dl.begin(), dl.end(), dl.begin(), ::tolower);
-            insideCase = false;
             break;
           }
         } else {
