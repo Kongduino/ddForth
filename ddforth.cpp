@@ -1808,6 +1808,8 @@ void evaluate(vector<string> chunks) {
         return;
       }
       string argument = chunks.at(executionPointer - 1);
+      int argumentType = dataStack.at(dataStack.size() - 1);
+      // we need to know what 
       // value CASE x OF ... ENDOF y OF ... ENDOF z OF ... ENDOF ENDCASE
       // cout << "CASE " << argument << endl;
       executionPointer += 1;
@@ -1852,17 +1854,15 @@ void evaluate(vector<string> chunks) {
       if (it == pointers.end()) {
         cout << "Argument " << argument << " not found!\n";
       } else {
-        cout << it->second << endl;
+        // cout << it->second << endl;
         c = it->second;
-        putStringOnStack(c);
+        // putStringOnStack(c);
         int savedExecutionPointer = executionPointer;
         vector<string> myChunks;
         myChunks = tokenize((char *)c.c_str(), myChunks);
         evaluate(myChunks);
         executionPointer = savedExecutionPointer;
       }
-      // cout << "handleDROP\n";
-      handleDROP();
       executionPointer -= 2;
       c = chunks.at(executionPointer++);
       cl = c;
