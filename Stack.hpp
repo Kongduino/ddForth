@@ -61,7 +61,7 @@ bool showStack() {
         printf("%.3f\t|\n", userFloats.at(myFloats--));
         break;
       case xSTRING:
-        cout << "STR.\t| " << userStrings.at(myStrings--) << "\t|" << endl;
+        cout << "STR.\t| `" << userStrings.at(myStrings--) << "`\t|" << endl;
         break;
     }
     x -= 1;

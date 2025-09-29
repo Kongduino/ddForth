@@ -363,7 +363,17 @@ bool handleSPLITDELIM() {
     logStackOverflow((char *)"handleSPLITDELIM/1");
     return false;
   }
-
+  if (delimLen == 0) {
+    // Special case!
+    int i, j;
+    j = sentence.length();
+    for (int i = 0; i < j; ++i) {
+      string nn = sentence.substr(i, 1);
+      putStringOnStack(nn);
+    }
+    putIntegerOnStack(j);
+    return true;
+  }
   while ((end = sentence.find(delim.c_str(), start)) != string::npos) {
     putStringOnStack(sentence.substr(start, end - start));
     start = end + delimLen;
