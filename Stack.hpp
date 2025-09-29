@@ -484,5 +484,39 @@ bool handleSPICK() {
   return true;
 }
 
+bool handlePICK() {
+  int ix, x, n;
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handlePICK/0");
+    return false;
+  }
+  x = dataStack.size();
+  if (n >= x) {
+    putIntegerOnStack(n);
+    logStackOverflow((char *)"handlePICK/1");
+    return false;
+  }
+  n = x - n -1;
+  int count = 0, type = dataStack.at(dataStack.size() - 1 - n);
+  for (ix = 0; ix < n; ix++) {
+    if (dataStack.at(dataStack.size() - 1 - ix) == type)
+      count += 1;
+  }
+  // we now have the offset for the proper stack
+  if (type == xSTRING) {
+    putStringOnStack(userStrings.at(userStrings.size() - 1 - count));
+    return true;
+  }
+  if (type == xINTEGER) {
+    putIntegerOnStack(userIntegers.at(userIntegers.size() - 1 - count));
+    return true;
+  }
+  if (type == xFLOAT) {
+    putFloatOnStack(userFloats.at(userFloats.size() - 1 - count));
+    return true;
+  }
+  return false;  
+}
+
 
 // end

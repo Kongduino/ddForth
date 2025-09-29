@@ -22,6 +22,9 @@ bool handleDRAWSTACKSTRING();
 SDL_Window* window;
 SDL_Renderer* renderer;
 static TTF_Font* font = NULL;
+uint16_t cl16 = 0;
+uint8_t clR = 0, clG = 0, clB = 0;
+uint8_t bgclR, bgclG, bgclB;
 
 void drawLine(int x0, int y0, int x1, int y1) {
   SDL_RenderLine(renderer, (float)x0, (float)y0, (float)x1, (float)y1);
@@ -62,6 +65,14 @@ void drawText(string mytext) {
   size_t measured_length;
   h = 16;
   TTF_MeasureString(font, (const char *)mytext.c_str(), 0, 0, &w, &measured_length);
+  // Save the current forecolor
+  // Set the forecolor to the backgroung color
+  // fill a rectangle to erase the area where the text will be drawn
+  // reset the forecolor
+  uint8_t r0 = clR, g0 = clG, b0 = clB;
+  foreColor(bgclR, bgclG, bgclB);
+  fillRect(x, y, w, h);
+  foreColor(r0, g0, b0);
   SDL_Color color = { (Uint8)r, (Uint8)g, (Uint8)b, SDL_ALPHA_OPAQUE };
   SDL_Surface* text;
   SDL_Texture* texture = NULL;
@@ -115,6 +126,9 @@ void drawRect(int x0, int y0, int w, int h) {
 bool handleCLS() {
   if (!handleDrawColor()) return false;
   SDL_RenderClear(renderer); // to clear the window with that color,
+  bgclR = clR;
+  bgclG = clG;
+  bgclB = clB;
   return true;
 }
 
@@ -234,6 +248,10 @@ bool handleDrawColor() {
   );
   logThis();
   foreColor(r, g, b);
+  clR = (uint8_t)r;
+  clG = (uint8_t)g;
+  clB = (uint8_t)b;
+  cl16 = (((uint8_t)r << 11) | ((uint8_t)g << 5) | (uint8_t)b);
   return true;
 }
 

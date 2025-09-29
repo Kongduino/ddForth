@@ -15,11 +15,24 @@ bool handleEMIT() {
   char c;
   int i0;
   if (popIntegerFromStack(&i0) == false) {
-    logStackOverflow((char *)"handleEMIT1");
+    logStackOverflow((char *)"handleEMIT/0");
     return false;
   }
   c = i0;
   printf("%c", c);
+  return true;
+}
+
+bool handleASC2CHR() {
+  char c;
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleASC2CHR/0");
+    return false;
+  }
+  c = i0;
+  xxxxxx = snprintf((char *)msg, 255, "%c", c);
+  putStringOnStack(msg);
   return true;
 }
 
@@ -146,7 +159,7 @@ bool handleSUBSTR() {
 bool handleLEN() {
   string s;
   if (popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handleLEFT");
+    logStackOverflow((char *)"handleLEN");
     return false;
   }
   putStringOnStack(s);
@@ -304,13 +317,13 @@ bool handleCSPLIT() {
   int i0;
   unsigned char x;
   if (popIntegerFromStack(&i0) == false) {
-    logStackOverflow((char *)"handleCSPLIT/1");
+    logStackOverflow((char *)"handleCSPLIT/i0");
     return false;
   }
   x = (i0 & 0xFF);
   string s, T;
   if (popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handleCSPLIT/0");
+    logStackOverflow((char *)"handleCSPLIT/s0");
     return false;
   }
   int ln, ix, lastIX = 0, count = 0;

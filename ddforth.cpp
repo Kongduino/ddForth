@@ -1614,6 +1614,17 @@ bool handleCELLRROT() {
   return true;
 }
 
+bool handleSleep() {
+  int seconds;
+  if (popIntegerFromStack(&seconds) == false) {
+    logStackOverflow((char *)"handleSleep/0");
+    logThis();
+    return false;
+  }
+  sleep(seconds); // Sleep for x seconds
+  return true;
+}
+
 void cleanup() {
   handleCLEAR();
 }
@@ -1856,7 +1867,6 @@ void evaluate(vector<string> chunks) {
       } else {
         // cout << it->second << endl;
         c = it->second;
-        // putStringOnStack(c);
         int savedExecutionPointer = executionPointer;
         vector<string> myChunks;
         myChunks = tokenize((char *)c.c_str(), myChunks);
@@ -1876,6 +1886,14 @@ void evaluate(vector<string> chunks) {
       if (lookup(c, &r)) {
         if (r == false) {
           cout << c << " returned false. Aborting!" << endl;
+          executionPointer -= 2;
+          if (executionPointer < 0) executionPointer = 0;
+          int limit = executionPointer + 5;
+          if (limit >= chunks.size()) executionPointer = chunks.size() -1;
+          cout << "\nCONTEXT:" << executionPointer << " to " << limit << "\n\t";
+          for(int xx = executionPointer; xx < limit; xx++)
+            cout << chunks.at(xx) << " ";
+          cout << endl;
           cleanup();
           return;
         }

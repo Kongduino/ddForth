@@ -10,7 +10,6 @@
 #include <vector>
 #include <algorithm> // std::transform
 #include "random.hpp"
-#include "USB_UART.hpp"
 
 using namespace std;
 
@@ -88,6 +87,7 @@ bool handlePlusLoop();
 bool handleDROP();
 bool handleDUP();
 bool handleEMIT();
+bool handleASC2CHR();
 bool handleEXEC();
 bool handleI();
 bool handleIprime();
@@ -97,6 +97,7 @@ bool handleLINE();
 bool handleLOOP();
 bool handleOVER();
 bool handleSPICK();
+bool handlePICK();
 
 bool handlePlus();
 bool handlePRINT();
@@ -176,6 +177,8 @@ vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
 int GetINTaddress(string);
 bool handleEXIT();
+bool handleGotoXY();
+bool handleClearTerminal();
 
 bool handleIF();
 bool handleTHEN();
@@ -193,6 +196,18 @@ void logStack(char *);
 void logInconsistent(char *who);
 void logStackOverflow(char *who);
 void logThis();
+
+bool read_byte(char&);
+string readUntil(char);
+bool handleOpenPort();
+bool handleReadLinePort();
+bool handleReadUntilPort();
+bool handleReadDiscardPort();
+bool handleClosePort();
+bool handleFlushPort();
+bool handleReadCharPort();
+
+bool handleSleep();
 
 int executionPointer = -1;
 vector<int> jumpStack;
@@ -287,6 +302,7 @@ nativeCommand nativeCommands[] = {
   { handleEXP, "EXP", "( a -- x ) Computes e raised to power a" },
   { handleSETINT, "INT", "( a -- x ) Converts a to an integer" },
   { handleEMIT, "EMIT", "( a -- ) printf(\"%c\", a);" },
+  { handleASC2CHR, "CHR", "( a -- s ) Converts an ASCII code to a string and puts it on the stack." },
   { handleKEY, "KEY", "( -- x) Waits for a key and puts it on the stack." },
   { handleLINE, "LINE", "( -- x ) Waits for a line, and puts it on the stack." },
   { handleUPRINT, "U.", "( a -- ) Prints a numerical value as a UINT" },
@@ -327,6 +343,7 @@ nativeCommand nativeCommands[] = {
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
   { handleOVER, "OVER", "( a b -- a b a) Place a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
+  { handlePICK, "PICK", "( a b c d e f... n -- x ) Copies element n as x on top of the stack." },
 
   { handleBASE, "BASE", "( a -- ) Sets the base" },
   { handleBASE2, "BIN", "( -- ) Sets the base to binary" },
@@ -367,6 +384,9 @@ nativeCommand nativeCommands[] = {
   { handleFSAVE, "FSAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
   { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },
   { handleReadLinePort, "UREADL", "( -- s ) Reads a line from port." },
+  { handleReadDiscardPort, "UDISCARDUNTIL", "( s -- ) Reads and discards from port until s." },
+  { handleReadUntilPort, "UREADUNTIL", "( s -- ) Reads from port until s." },
+  { handleReadCharPort, "UREADC", "( -- c ) Reads one byte from serial port." },
   { handleClosePort, "UCLOSE", "( -- ) Closes the port." },
 
   { putRandomByteOnStack, "RANDOM", "( -- a ) Puts a random byte on top of the stack." },
@@ -387,6 +407,10 @@ nativeCommand nativeCommands[] = {
   { handleCELLRROT, "ROT>", "( name -- ) Rotates down array name." },
   { handleCELLLIST, "ALIST", "( -- ) List of arrays." },
   { handleARRAYSUM, "ASUM", "( name -- a ) Puts the sum of all elements of array name on top of the stack." },
+
+  { handleGotoXY, "POSXY", "( x y -- ) Positions cursor (terminal/UNIX-like) to x:y." },
+  { handleClearTerminal, "CLEAN", "( -- ) Clears the screen (terminal/UNIX-like) and sets cursor to 1:1." },
+  { handleSleep, "SLEEP", "( n -- ) Sleeps for n seconds." },
 // #include "lowercase.hpp"
 
 #if defined(NEED_SDL)
@@ -403,6 +427,7 @@ char numerics[] = "0123456789abcdef";
 #include "Numbers.hpp"
 #include "Stack.hpp"
 #include "ExtraCommands.hpp"
+#include "USB_UART.hpp"
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_helper.hpp"
 #endif
@@ -503,5 +528,27 @@ bool handleHELP() {
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-20s %s\n", it->name.c_str(), it->command.c_str());
   }
+  return true;
+}
+
+bool handleGotoXY() {
+  // ANSI escape code for cursor positioning: \033[<line>;<column>H
+  int x, y;
+  if (popIntegerFromStack(&y) == false) {
+    logStackOverflow((char *)"handleGotoXY/0");
+    return false;
+  }
+  if (popIntegerFromStack(&x) == false) {
+    logStackOverflow((char *)"handleGotoXY/1");
+    return false;
+  }
+  cout << "\033[" << y << ";" << x << "H";
+  flush(cout); // Ensure the escape code is sent immediately
+  return true;
+}
+
+bool handleClearTerminal() {
+  cout << "\033[2J\033[1;1H";
+  // Clears screen and moves cursor to top-left
   return true;
 }
