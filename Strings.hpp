@@ -438,4 +438,30 @@ bool handleDINSERT() {
   return true;
 }
 
+bool handleStringReplace() {
+  string s0, s1, s2;
+  if (popStringFromStack(&s2) == false) {
+    logStackOverflow((char *)"handleDINSERT/0");
+    return false;
+  }
+  if (popStringFromStack(&s1) == false) {
+    logStackOverflow((char *)"handleDINSERT/1");
+    return false;
+  }
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleDINSERT/2");
+    return false;
+  }
+  size_t pos = s0.find(s1);
+  // Iterate through the string and replace all
+  // occurrences
+  while (pos != string::npos) {
+    s0.replace(pos, s1.size(), s2);
+    pos = s0.find(s1, pos + s2.size());
+  }
+  putStringOnStack(s0);
+  return true;
+}
+
+
 // end

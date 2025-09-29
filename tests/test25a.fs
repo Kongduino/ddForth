@@ -11,11 +11,11 @@
 : xxGGA1 1 STRPICK 46 CSPLIT drop drop s" :" 2 DINSERT cs ." , Qulaity: " DUP  14 > IF 6 STRPICK dup cs strint 0 = IF ." : Fix not available" cr clear THEN xxGGA2 ELSE ;
 : xxGGA2 ." , SIV: " 7 STRPICK strint . 2 STRPICK cs 3 STRPICK cs ." , " 4 STRPICK cs 5 STRPICK cs cr clear ;
 
-
 : readDollar begin uReadC s" $" S= until CLEAR ureadl STRIPSTR DUP cs cr ;
 
 : showStack DEPTH 0 DO 60 I 1 + posxy DEPTH I - 1 - . ." \t---> " DEPTH I - 1 - PICK . LOOP cr ;
 ( 1 2 3 4 5 6 clean showStack )
+( depth 0 do 60 I 10 + posxy ." Element #" depth i - 1 - dup . ." \t" pick . cr loop )
 
 uclose 9600 s" /dev/tty.usbmodem21301" UOPEN
 clean 1 30 posxy clear ." Hello there..."

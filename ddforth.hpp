@@ -97,7 +97,9 @@ bool handleLINE();
 bool handleLOOP();
 bool handleOVER();
 bool handleSPICK();
+bool handleSSTORE();
 bool handlePICK();
+bool handleSJOIN();
 
 bool handlePlus();
 bool handlePRINT();
@@ -153,6 +155,7 @@ bool handleCSPLIT();
 bool handleSPLITDELIM();
 bool handleStringReverse();
 bool handleDINSERT();
+bool handleStringReplace();
 bool handleVARRAY();
 
 bool lookup(string);
@@ -331,6 +334,7 @@ nativeCommand nativeCommands[] = {
   { handleSPLITDELIM, "SPLITD", "( s t -- a b c d...) Splits string s by delimiter t (a string) and puts the result on the stack." },
   { handleStringReverse, "SREVERSE", "( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count." },
   { handleDINSERT, "DINSERT", "( s1 s0 n -- s ) Inserts s0 into s1 every n chars." },
+  { handleStringReplace, "STRREPLACE", "( s0 s1 s2 -- s ) Replaces instances of s1 by s2 in s0." },
 
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, makeing sure there are num data pieces" },
 
@@ -343,6 +347,8 @@ nativeCommand nativeCommands[] = {
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
   { handleOVER, "OVER", "( a b -- a b a) Place a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
+  { handleSSTORE, "STRSTORE", "( s0 s s2 s3... n S x -- s0 s s2 s3... n ) Takes string S and stores itat index x." },
+  { handleSJOIN, "STRJOIN", "( s0 s s2 s3... n S -- s ) Joins strings on stack with S." },
   { handlePICK, "PICK", "( a b c d e f... n -- x ) Copies element n as x on top of the stack." },
 
   { handleBASE, "BASE", "( a -- ) Sets the base" },

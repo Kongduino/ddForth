@@ -484,6 +484,64 @@ bool handleSPICK() {
   return true;
 }
 
+bool handleSSTORE() {
+  int ix, x, n;
+  string s0;
+  if (popIntegerFromStack(&x) == false) {
+    logStackOverflow((char *)"handleSSTORE/0");
+    return false;
+  }
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleSSTORE/1");
+    return false;
+  }
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleSSTORE/2");
+    return false;
+  }
+  if (x >= n) {
+    putIntegerOnStack(n);
+    logStackOverflow((char *)"handleSSTORE/3");
+    return false;
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (dataStack.at(dataStack.size() - 1 - ix) != xSTRING) {
+      putIntegerOnStack(n);
+      logStackOverflow((char *)"handleSSTORE/4");
+      return false;
+    }
+  }
+  putIntegerOnStack(n);
+  userStrings.at(x) = s0;
+  return true;
+}
+
+bool handleSJOIN() {
+  int ix, x, n;
+  string s0, finalStr, s1;
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleSJOIN/0");
+    return false;
+  }
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleSJOIN/1");
+    return false;
+  }
+  if (popStringFromStack(&finalStr) == false) {
+    logStackOverflow((char *)"handleSJOIN/2");
+    return false;
+  }
+  for (ix = 1; ix < n; ix++) {
+    if (popStringFromStack(&s1) == false) {
+      logStackOverflow((char *)"handleSJOIN/3");
+      return false;
+    }
+    finalStr = s1 + s0 + finalStr;
+  }
+  putStringOnStack(finalStr);
+  return true;
+}
+
 bool handlePICK() {
   int ix, x, n;
   if (popIntegerFromStack(&n) == false) {

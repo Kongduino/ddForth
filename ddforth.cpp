@@ -1905,6 +1905,7 @@ void evaluate(vector<string> chunks) {
           for(int xx = executionPointer; xx < limit; xx++)
             cout << chunks.at(xx) << " ";
           cout << "        " << endl;
+          showStack();
           cleanup();
           return;
         }
