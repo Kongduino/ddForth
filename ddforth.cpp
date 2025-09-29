@@ -726,7 +726,7 @@ bool handleLINE() {
 bool handlePRINT() {
   logStack((char *)"handlePRINT");
   if (dataStack.size() == 0) {
-    logStackOverflow((char *)"handlePRINT");
+    logStackOverflow((char *)"handlePRINT/0");
     return false;
   }
   unsigned char x = dataStack.at(dataStack.size() - 1);
@@ -735,7 +735,7 @@ bool handlePRINT() {
       {
         int i0;
         if (popIntegerFromStack(&i0) == false) {
-          logStackOverflow((char *)"handlePRINT1");
+          logStackOverflow((char *)"handlePRINT/1");
           return false;
         }
         int base = GetINT("BASE");
@@ -747,10 +747,21 @@ bool handlePRINT() {
       {
         float f0;
         if (popFloatFromStack(&f0) == false) {
-          logStackOverflow((char *)"handlePRINT2");
+          logStackOverflow((char *)"handlePRINT/2");
           return false;
         }
         printf("%f ", f0);
+        break;
+      }
+    case xSTRING:
+      {
+      // I need a universal print
+        string s;
+        if (popStringFromStack(&s) == false) {
+          logStackOverflow((char *)"handlePRINT/3");
+          return false;
+        }
+        cout << s;
         break;
       }
   }
@@ -1889,11 +1900,11 @@ void evaluate(vector<string> chunks) {
           executionPointer -= 2;
           if (executionPointer < 0) executionPointer = 0;
           int limit = executionPointer + 5;
-          if (limit >= chunks.size()) executionPointer = chunks.size() -1;
-          cout << "\nCONTEXT:" << executionPointer << " to " << limit << "\n\t";
+          if (limit >= chunks.size()) limit = chunks.size();
+          cout << "\nCONTEXT: " << executionPointer << " to " << limit << "\n        ";
           for(int xx = executionPointer; xx < limit; xx++)
             cout << chunks.at(xx) << " ";
-          cout << endl;
+          cout << "        " << endl;
           cleanup();
           return;
         }

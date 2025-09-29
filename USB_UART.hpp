@@ -268,7 +268,7 @@ bool handleReadDiscardPort() {
 }
 
 bool handleFlushPort() {
-  if (serial_port == -1) return false;
+  if (serial_port == -1) return true;
   tcflush(serial_port, TCIOFLUSH);
   return true;
 }

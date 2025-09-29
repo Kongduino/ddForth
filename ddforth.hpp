@@ -384,6 +384,8 @@ nativeCommand nativeCommands[] = {
   { handleFSAVE, "FSAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
   { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },
   { handleReadLinePort, "UREADL", "( -- s ) Reads a line from port." },
+  { handleFlushPort, "UFLUSH", "( -- s ) Flushes the port." },
+  
   { handleReadDiscardPort, "UDISCARDUNTIL", "( s -- ) Reads and discards from port until s." },
   { handleReadUntilPort, "UREADUNTIL", "( s -- ) Reads from port until s." },
   { handleReadCharPort, "UREADC", "( -- c ) Reads one byte from serial port." },

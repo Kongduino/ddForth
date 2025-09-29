@@ -14,7 +14,8 @@
 
 : readDollar begin uReadC s" $" S= until CLEAR ureadl STRIPSTR DUP cs cr ;
 
-: showStack DEPTH 0 DO 60 I posxy  ;
+: showStack DEPTH 0 DO 60 I 1 + posxy DEPTH I - 1 - . ." \t---> " DEPTH I - 1 - PICK . LOOP cr ;
+( 1 2 3 4 5 6 clean showStack )
 
 uclose 9600 s" /dev/tty.usbmodem21301" UOPEN
 clean 1 30 posxy clear ." Hello there..."
