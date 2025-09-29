@@ -2,15 +2,37 @@
 
 A minimal implementation of the Forth language in (mostly) C++. When I was a kid – a looooong time ago: the book I still have is based on FORTH-79... – I was fascinated by Forth, and RPN in general. I tried a few times, with various (lack of) success to write my own. Recently I decided to give it another go.
 
-Surprisingly, it went well, beyond expectations, and I can run quite a few of the examples in my book. So I decided to keep pushing. I runs on my computer, as they say, which happens to be a Macbook Pro with an Apple M4 Pro CPU (and a 2018 Mac Mini Intel Core 7!). The compiled binary is small (110 KB on ARM, 85 KB on Intel).
+Surprisingly, it went well, beyond expectations, and I can run quite a few of the examples in my book. So I decided to keep pushing. I runs on my computer, as they say, which happens to be a Macbook Pro with an Apple M4 Pro CPU (and a 2018 Mac Mini Intel Core 7!). The compiled binary is still quite small (260 KB on ARM).
 
-Run `./ddforth "WORDS"` to get the list of words that have been implemented.
+This README itself is outdated. Run `./ddforth "WORDS"` to get the list of words that have been implemented. See below. It's a huge update compared to the last time I edited this README. Among other things, string manipulations are now quite advanced. The stack operations by and large support all 3 types of data seamlessly. USB basic functions work – I focused so far on reading.
+
+When code fails, the interpreter tries to be helpful, and shows context (a couple of words before and after the culprit) and the stack – before nuking it. Example:
+
+```
+OK s" This is a string" s" \ " splitd 5 strpick cs cr
+handleSPICK/2 Stack overflow!
+strpick returned false. Aborting!
+
+CONTEXT: 4 to 9
+        splitd 5 strpick cs cr         
+
++-----------------------+
+| 0	| INT.	| 4	|
+| 1	| STR.	| string	|
+| 2	| STR.	| a	|
+| 3	| STR.	| is	|
+| 4	| STR.	| This	|
++-----------------------+
+OK 
+```
+
+Yeah dude, there are only 4 chunks...
 
 ### NOTE
 
 For IoT versions, you might need to edit the `platform.txt` file to remove `-fno-exceptions` and/or set `-fexceptions` in the `compiler.cpp.flags` section.
 
-They are mildly to very outdated as of now. I'll work on updates.
+They are mildly to very outdated as of now. I'll work on updates. The less outdated is probably the CardPuter one.
 
 ### Fonts
 
@@ -51,15 +73,17 @@ Handled in Code:
 
 Native Commands:
 ----------------
-WORDS HELP + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT
-SQR SQRT SIN COS TAN ASIN ACOS ATAN SINH COSH TANH LOG LOG10 ROUND
-FLOOR CEIL EXP INT EMIT KEY LINE . U. ." s" .s +STR STR+ LEFTSTR MIDSTR
+WORDS HELP HELP" + - * / ABS MIN MAX FACT MOD AND OR XOR NOT NEGATE INVERT
+SQR SQRT SIN COS TAN ASIN ACOS ATAN SINH COSH TANH LOG LOG10 ROUND FLOOR
+CEIL EXP INT EMIT CHR KEY LINE U. ." S" C" . CS +STR STR+ LEFTSTR MIDSTR
 RIGHTSTR LENSTR SUBSTR LOWERSTR UPPERSTR MULTSTR STRIPSTR LSTRIPSTR
-RSTRIPSTR INTSTR STRINT CSPLIT SPLITD VARRAY DUP DROP SWAP DEPTH CLEAR
-ROT ROLL OVER BASE BIN DEC HEX ! !+ @ CR STACK .V = < <= > >= <> =?
->? <? <=? >=? <>? BEGIN UNTIL WHILE DO LOOP +LOOP I I' J >R R> EXEC
-LOAD FLOAD RANDOM RANDOMI IF THEN ELSE EXIT ( ARRAY ARRAYS >IX IX>
-LEN> IX+ +IX <ROT ROT> ALIST ASUM 
+RSTRIPSTR INTSTR STRINT STRFLOAT CSPLIT SPLITD SREVERSE DINSERT STRREPLACE
+VARRAY DUP DROP SWAP DEPTH CLEAR ROT ROLL OVER STRPICK STRSTORE STRJOIN
+PICK BASE BIN DEC HEX ! !+ @ CR .S .V = S= < <= > >= <> =? >? <? <=? >=?
+<>? BEGIN UNTIL WHILE DO LOOP +LOOP I I' J >R R> EXEC FLOAD FSAVE UOPEN
+UREADL UFLUSH UDISCARDUNTIL UREADUNTIL UREADC UCLOSE RANDOM RANDOMI IF THEN
+ELSE EXIT ( ARRAY ARRAYS >IX IX> LEN> IX+ +IX <ROT ROT> ALIST ASUM POSXY
+CLEAN SLEEP 
 
 User Commands:
 --------------
@@ -89,7 +113,10 @@ User Commands:
  • n<ROT       0 DO DUP <ROT LOOP CLEAR
  • ssplit      32 csplit
  • SSPLIT      32 CSPLIT
-OK
+OK 
+OK help" sleep"
+Looking for SLEEP
+SLEEP          : ( n -- ) Sleeps for n seconds.
 ```
 
 ## REGULAR VERSION
