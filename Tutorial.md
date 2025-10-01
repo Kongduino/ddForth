@@ -110,6 +110,17 @@ OK PI @ 3 * . CR
 OK
 ```
 
+Let's create a user word that calculates the length of a circle:
+
+```
+OK : circleWithRadius ( r -- length ) 2.0 * PI @ * ;
+OK 5.0 circleWithRadius . CR
+31.415928
+OK 
+```
+
+Here `2.0` is not necessary, but slightly faster: homogenous calculations are evaluated first. `2` would work just as well, just slightly slower – although on a modern computer the difference is not relevant.
+
 ### Strings
 
 ddForth is intended to be great with strings. It isn't yet, but I'll try very hard :-) First, to stack a string, you must tell Forth that's what you want to do: without a keyword to say "please stack this as a string" something like "this is a string" would be interpreted as `"this`, `is`, `a`, `string"`. We do not want that. I modeled this on `." print this string"` and called it `s"`:
