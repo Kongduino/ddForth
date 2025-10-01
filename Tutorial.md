@@ -18,13 +18,13 @@ A modern Forth tailored for my needs – IoT and command-line scripting.
 
 ## Background
 
-I started with Forth around 1982/3 – memory's a bit fuzzy by now... Anyway, 40+ years ago. It's actually my third language, after 6800/6809 ASM and Microsoft BASIC. I was, and still am, fascinated by this language, because it felt so alien – [RPN](https://www.hpmuseum.org/rpn.htm)🔗 is indeed a bit alien to normal human beings. At the same time, RPN calculators like the HP-12C and especially the [HP-16C](https://www.hpmuseum.org/hp16.htm)🔗 were considered to be the Rolls Royce of calculators.
+I started with Forth around 1982/3 – memory's a bit fuzzy by now... Anyway, 40+ years ago. It's actually my third language, after 6800/6809 ASM and Microsoft BASIC. I was, and still am, fascinated by this language, because it felt/feels so alien – [RPN](https://www.hpmuseum.org/rpn.htm)🔗 is indeed a bit alien to normal human beings. At the same time, RPN calculators like the HP-12C and especially the [HP-16C](https://www.hpmuseum.org/hp16.htm)🔗 were considered to be the Rolls Royce of calculators.
 
 ![HP-16C](assets/HP-16C.jpg)
 
-So poor students like us, who couldn't buy an HP calculator, could play with RPN on a computer with a Forth interpreter. And Forth, even on smaller 8-bit computers, had more than 203 bytes of RAM, so we could actually write useful(ish) programs.
+So poor students like us, who couldn't buy an HP calculator, played with RPN on a computer with a Forth interpreter. And Forth, even on smaller 8-bit computers, had more than 203 bytes of RAM, so we could actually write useful(ish) programs.
 
-So while the craze faded – at least for me – it never really disappeared, and over the next 4 decades I wrote a few half-assed implementations, some of which were trying to be Forth-79 conforming, others, more ah-hoc. But I never went very far. And I had a job, and and and...
+While the craze faded – at least for me – it never really disappeared, and over the next 4 decades I wrote a few half-assed implementations, some of which were trying to be Forth-79 conforming, others, more ad-hoc. But I never went very far. And I had a job, and and and...
 
 Not anymore, Buster. Well, I have two jobs, but I also have a much more relaxed approach to life, so recently I started a new implementation. At first, just to test the waters. I decided to do it in C++ this time, betting on the balance between ease of use and the powerful traits of the language. It turned out to be a good choice. The first iterations went so well that I found myself, before I knew it, with something that actually worked – not well yet, but it was indeed usable...
 
@@ -51,7 +51,7 @@ OK .
 
 The user enters `1 2 3`, which stacks 1, then 2, then 3. 3 is thus on top of the stack, as shown by `.S`.
 
-`* +` is interpreted in that order, `*` first: 2 * 3, which removes 3 and 2, and puts 6 on the stack, then `+`: 1 + 6, finally putting 7 on the stack. Remember, operations that "touch" the stack affect it.
+`* +` is interpreted in that order, `*` first: 2 * 3, which removes 3 and 2, and puts 6 on the stack, then `+`: 1 + 6, finally putting 7 on the stack. Remember, operations that "touch" the stack affect it. (Things like `PICK` do not affect the state of the stack, but they're exceptions.)
 
 You can do the same with floats:
 
