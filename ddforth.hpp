@@ -38,6 +38,7 @@ bool handleBASE10();
 bool handleBASE16();
 bool handleDifferent();
 bool handleDiv();
+bool handleWITHIN();
 bool handleEqual();
 bool handleStringEqual();
 bool handleFact();
@@ -366,6 +367,7 @@ nativeCommand nativeCommands[] = {
   { handleCR, "CR", "( -- ) Prints a Carriage Return" },
   { showStack, ".S", "( -- ) Displays the stack." },
   { showVars, ".V", "( -- ) Shows existing vars by type" },
+  { handleWITHIN, "WITHIN", "( n0 n1 n2 -- [01] ) Puts the result of (n1 >= n0 && N1 <= n2) on top of the stack." },
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
   { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
   { handleLower, "<", "( a b -- [01] ) Puts the result of (a < b) on top of the stack." },

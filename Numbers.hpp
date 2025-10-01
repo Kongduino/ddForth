@@ -405,6 +405,7 @@ bool handlePlus() {
 bool handleMinus() {
   return handle2Nums(math_MINUS);
 }
+
 bool handleMult() {
   return handle2Nums(math_MULT);
 }
@@ -1017,5 +1018,26 @@ bool handleBASE16() {
   xxxxxx = snprintf((char *)msg, 255, "handleBASE16 ");
   logThis();
   StoreINT("BASE", 16);
+  return true;
+}
+
+bool handleWITHIN() {
+  int n0, n1, n2;
+  if (popIntegerFromStack(&n2) == false) {
+    logStackOverflow((char *)"handleWITHIN/2");
+    return false;
+  }
+  if (popIntegerFromStack(&n1) == false) {
+    logStackOverflow((char *)"handleWITHIN/1");
+    return false;
+  }
+  if (popIntegerFromStack(&n0) == false) {
+    logStackOverflow((char *)"handleWITHIN/0");
+    return false;
+  }
+  if(n1 >= n0 && n1 <= n2)
+    putIntegerOnStack(1);
+  else
+    putIntegerOnStack(0);
   return true;
 }
