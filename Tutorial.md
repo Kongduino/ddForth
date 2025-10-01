@@ -401,7 +401,7 @@ One important use case for me is string manipulations. At some point I might add
 * `MULTSTR`: ( s a -- x ) Puts a string that's a times string s on the stack. `s" A" 6 MULTSTR` ==> AAAAAA
 * `SREVERSE`: ( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count.
 * `+STR`: ( a b -- ba ) Prepends string b to string a. AA BB +STR ===> BBAA
-* `STR+`: ( a b -- ab ) Appends string b to string a. AA BB +STR ===> AABB
+* `STR+`: ( a b -- ab ) Appends string b to string a. AA BB STR+ ===> AABB
 ----
 * `INTSTR`: ( a -- x ) Converts int to str.
 * `STRFLOAT`: ( a -- x ) Converts str to float.

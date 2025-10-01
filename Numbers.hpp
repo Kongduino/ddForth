@@ -1035,7 +1035,7 @@ bool handleWITHIN() {
     logStackOverflow((char *)"handleWITHIN/0");
     return false;
   }
-  if(n1 >= n0 && n1 <= n2)
+  if(n0 >= n1 && n0 <= n2)
     putIntegerOnStack(1);
   else
     putIntegerOnStack(0);

@@ -2044,6 +2044,23 @@ bool handleLOAD() {
   // Later on add a buffer editor.
 }
 
+// supplied by the user on the command line
+// can be requested by code
+vector<string>supp_args;
+
+bool handleSuppArgs() {
+  // puts the supplementary args on the stack like a split string
+  int ix = 0, n = supp_args.size();
+  if (n == 0) {
+    putIntegerOnStack(0);
+    return true;
+  }
+  while (ix < n)
+    putStringOnStack(supp_args.at(ix++));
+  putIntegerOnStack(n);
+  return true;
+}
+
 int main(int argc, char **argv) {
   vector<string> chunks;
   initForth();
@@ -2051,35 +2068,28 @@ int main(int argc, char **argv) {
 #include "sdl_helpers/sdl_inc2.hpp"
 #endif
   bool exitOnEnd = false;
-  if (argc == 3) {
+  if (argc > 2) {
     if (strcmp(argv[1], "-f") == 0 || strcmp(argv[1], "-e") == 0) {
+      // execute file and exit if -e
       chunks = loadAndTokenize(argv[2]);
       if (strcmp(argv[1], "-e") == 0) exitOnEnd = true;
+    } else if (strcmp(argv[1], "-s") == 0) {
+      // execute string
+      strcpy(code, argv[2]);
+      chunks = tokenize(code, chunks);
     } else {
       cerr << argv[1] << "!= -f" << endl;
       return 0;
     }
-  } else if (argc == 2) {
-    strcpy(code, argv[1]);
-    chunks = tokenize(code, chunks);
-  } else {
-//     vector<string> thisBlock = loadFile((char *)"tests/test22.fs");
-//     if (thisBlock.size() == 0) {
-//       cerr << "Unable to open file!" << endl;
-//       return -1;
-//     }
-//     int lineCount = 0;
-//     string line;
-//     for (vector<string>::iterator it = thisBlock.begin(); it != thisBlock.end(); ++it) {
-//       line = *it;
-//       while (!line.empty() && line.back() == '\n')
-//         line.pop_back();
-//       lineCount += 1;
-//       strcpy(code, line.c_str());
-//       chunks = tokenize(code, chunks);
-//       cout << " • Read: " << line << endl;
-//     }
-//     cout << "Read: " << lineCount << " line" << (lineCount > 1 ? "s," : ",") << " chunks: " << chunks.size() << endl;
+  }
+  if (argc > 3) {
+    // we have extra args
+    uint8_t ix = 3;
+    cout << "Supplementary args:\n";
+    while (ix < argc) {
+      cout << " * " << argv[ix] << endl;
+      supp_args.push_back(argv[ix++]);
+    }    
   }
   evaluate(chunks);
   memset(code, 0, 256);

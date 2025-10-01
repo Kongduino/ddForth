@@ -29,6 +29,7 @@ bool getRandomUInt();
 bool handleHELP();
 bool handleHELPSTRING();
 
+bool handleSuppArgs();
 bool handle2Nums(unsigned char);
 bool handleABS();
 bool handleAND();
@@ -273,8 +274,9 @@ void logThis() {
 }
 
 nativeCommand nativeCommands[] = {
-  { handleWORDS, "WORDS", "( -- Displays vocabulary )" },
-  { handleHELP, "HELP", "( -- Displays this help )" },
+  { handleWORDS, "WORDS", "( --  Displays vocabulary." },
+  { handleHELP, "HELP", "( -- ) Displays this help." },
+  { handleSuppArgs, "SUPP_ARGS", "( -- a b c d... n) Puts the supplementary arguments, if any, on the stack and the count on top." },
   { handleHexDump, "HEXDUMP", "( s -- Displays as string in hexadecimal as a table. )" },
   { handleHELPSTRING, "HELP\"", "( -- ) Print help for the word following, formatted as a string." },
   { handlePlus, "+", "( a b -- x ) Puts a+b on top of the stack." },
@@ -321,7 +323,7 @@ nativeCommand nativeCommands[] = {
   { handlePRINT, ".", "( a -- ) Prints a numerical value" },
   { handlePRINTSTACKSTRING, "CS", "( a -- ) Print the string on top of the stack." },
   { handlePREPENDSTACKSTRING, "+STR", "( a b -- ba ) Prepends string b to string a. AA BB +STR ===> BBAA" },
-  { handleAPPENDSTACKSTRING, "STR+", "( a b -- ab ) Appends string b to string a. AA BB +STR ===> AABB" },
+  { handleAPPENDSTACKSTRING, "STR+", "( a b -- ab ) Appends string b to string a. AA BB STR+ ===> AABB" },
   { handleLEFT, "LEFTSTR", "( a -- a x ) Puts the leftmost char of string a on top of the stack." },
   { handleMID, "MIDSTR", "( a b -- a x ) Puts the bth char of string a on top of the stack." },
   { handleRIGHT, "RIGHTSTR", "( a -- a x ) Puts the rightmost char of the string on top of the stack." },
@@ -367,7 +369,7 @@ nativeCommand nativeCommands[] = {
   { handleCR, "CR", "( -- ) Prints a Carriage Return" },
   { showStack, ".S", "( -- ) Displays the stack." },
   { showVars, ".V", "( -- ) Shows existing vars by type" },
-  { handleWITHIN, "WITHIN", "( n0 n1 n2 -- [01] ) Puts the result of (n1 >= n0 && N1 <= n2) on top of the stack." },
+  { handleWITHIN, "WITHIN", "( n0 n1 n2 -- [01] ) Puts the result of (n0 >= n1 && n0 <= n2) on top of the stack." },
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
   { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
   { handleLower, "<", "( a b -- [01] ) Puts the result of (a < b) on top of the stack." },
