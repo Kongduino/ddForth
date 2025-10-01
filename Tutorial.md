@@ -3,6 +3,9 @@
 A modern Forth tailored for my needs – IoT and command-line scripting.
 
 * [Background](##background)
+* [How does that work?](#how-does-that-work)
+	* [Numbers](#numbers)
+	* [Strings](#strings)
 * [Under the hood](#under-the-hood)
 * [Heterogenous but unified stack](#heterogenous-but-unified-stack)
 * [Recursive user words](#recursive-user-words)
