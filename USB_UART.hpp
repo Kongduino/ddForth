@@ -5,6 +5,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <cstring>
+#include <sys/ioctl.h>
 
 using namespace std;
 bool popFloatFromStack(float *);
@@ -106,11 +107,6 @@ bool handleOpenPort() {
     return false;
   }
   cout << "Serial port configured successfully." << endl;
-  // Example: Write a string
-  //   string data_to_send = "Hello Serial!\n";
-  //   write(serial_port, data_to_send.c_str(), data_to_send.length());
-  //   cout << "Sent: " << data_to_send;
-  // Example: Read data
   putIntegerOnStack(1);
   return true;
 }
@@ -122,6 +118,15 @@ bool handleClosePort() {
   tcflush(serial_port, TCIOFLUSH);
   close(serial_port);
   serial_port = -1;
+  return true;
+}
+
+bool handleFIONREAD() {
+  if (serial_port == -1) return false;
+  int argp = -1;
+  int rslt = ioctl(serial_port, FIONREAD, &argp);
+  if (rslt == -1) return false;
+  putIntegerOnStack(argp);
   return true;
 }
 
@@ -155,6 +160,33 @@ bool readUntil(char delimiter, string *received_data) {
       return false;
     }
   }
+  return true;
+}
+
+bool handleReadRawPort() {
+  // ( n -- s ) UREADRAW
+  string received_data;
+  if (serial_port == -1) return false;
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleReadRawPort/0");
+    return false;
+  }
+  char byte;
+  while (i0 > 0) {
+    // Read a single byte (or small chunk) from the serial port
+    // This would involve platform-specific API calls or library methods
+    // e.g., ReadFile on Windows, read on Linux, or a library's read_byte function
+    if (read_byte(byte)) {
+      // Assume read_byte returns true on success
+      received_data += byte;
+      i0 -= 1;
+    } else {
+      // Handle read error or timeout
+      return false;
+    }
+  }
+  putStringOnStack(received_data);
   return true;
 }
 
@@ -273,20 +305,19 @@ bool handleFlushPort() {
   return true;
 }
 
+bool handleWritePort() {
+  // Write a string ( s -- )
+  if (serial_port == -1) return false;
+  string s;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleWritePort/0");
+    return false;
+  }
+  write(serial_port, s.c_str(), s.length());
+  cout << "Sent to USB: " << s << endl;
+  // Example: Read data
+  return true;
+}
+
+
 // end
-//   // Flush the input buffer (data received but not yet read)
-//   tcflush(serial_port, TCIFLUSH);
-//   // Flush the output buffer (data waiting to be sent)
-//   tcflush(serial_port, TCOFLUSH);
-//   // Flush both input and output buffers
-//   tcflush(serial_port, TCIOFLUSH);
-// 
-//   char read_buf[256];
-//   while (1) {
-//     //     ssize_t num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
-//     //     if (num_bytes > 0) {
-//     //       read_buf[num_bytes] = '\0';  // Null-terminate the received data
-//     //       cout << "Received: " << read_buf;
-//     //     }
-//   }
-//   close(serial_port);

@@ -17,6 +17,7 @@ using namespace std;
 
 bool getRandomBuffer();
 void hexDump(unsigned char *, int);
+bool handleHexDump();
 unsigned char getRandomByte();
 bool putRandomByteOnStack();
 bool getRandomUInt();
@@ -202,13 +203,16 @@ void logThis();
 
 bool read_byte(char&);
 string readUntil(char);
+bool handleFIONREAD();
 bool handleOpenPort();
 bool handleReadLinePort();
+bool handleReadRawPort();
 bool handleReadUntilPort();
 bool handleReadDiscardPort();
 bool handleClosePort();
 bool handleFlushPort();
 bool handleReadCharPort();
+bool handleWritePort();
 
 bool handleSleep();
 
@@ -270,6 +274,7 @@ void logThis() {
 nativeCommand nativeCommands[] = {
   { handleWORDS, "WORDS", "( -- Displays vocabulary )" },
   { handleHELP, "HELP", "( -- Displays this help )" },
+  { handleHexDump, "HEXDUMP", "( s -- Displays as string in hexadecimal as a table. )" },
   { handleHELPSTRING, "HELP\"", "( -- ) Print help for the word following, formatted as a string." },
   { handlePlus, "+", "( a b -- x ) Puts a+b on top of the stack." },
   { handleMinus, "-", "( a b -- x ) Puts a-b on top of the stack." },
@@ -336,7 +341,7 @@ nativeCommand nativeCommands[] = {
   { handleDINSERT, "DINSERT", "( s1 s0 n -- s ) Inserts s0 into s1 every n chars." },
   { handleStringReplace, "STRREPLACE", "( s0 s1 s2 -- s ) Replaces instances of s1 by s2 in s0." },
 
-  { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, makeing sure there are num data pieces" },
+  { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces" },
 
   { handleDUP, "DUP", "( a -- a a ) Duplicates value on top of the stack." },
   { handleDROP, "DROP", "( a -- ) Drops value on top of the stack." },
@@ -347,7 +352,7 @@ nativeCommand nativeCommands[] = {
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
   { handleOVER, "OVER", "( a b -- a b a) Place a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
-  { handleSSTORE, "STRSTORE", "( s0 s s2 s3... n S x -- s0 s s2 s3... n ) Takes string S and stores itat index x." },
+  { handleSSTORE, "STRSTORE", "( s0 s s2 s3... n S x -- s0 s s2 s3... n ) Takes string S and stores it at index x." },
   { handleSJOIN, "STRJOIN", "( s0 s s2 s3... n S -- s ) Joins strings on stack with S." },
   { handlePICK, "PICK", "( a b c d e f... n -- x ) Copies element n as x on top of the stack." },
 
@@ -388,14 +393,17 @@ nativeCommand nativeCommands[] = {
   { handleEXEC, "EXEC", "( s -- ?) Executes string on the stack. Can be used in conjunction with LINE." },
   { handleFLOAD, "FLOAD", "( s -- ?) Loads file named 'name' and executes it." },
   { handleFSAVE, "FSAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
+
   { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },
   { handleReadLinePort, "UREADL", "( -- s ) Reads a line from port." },
+  { handleReadRawPort, "UREADRAW", "( n -- s ) Reads x bytes from port and puts them as a string on the stack." },
   { handleFlushPort, "UFLUSH", "( -- s ) Flushes the port." },
-  
+  { handleFIONREAD, "UINQ", "( -- n ) Puts on the stack how many bytes are available on the port." },
   { handleReadDiscardPort, "UDISCARDUNTIL", "( s -- ) Reads and discards from port until s." },
   { handleReadUntilPort, "UREADUNTIL", "( s -- ) Reads from port until s." },
   { handleReadCharPort, "UREADC", "( -- c ) Reads one byte from serial port." },
   { handleClosePort, "UCLOSE", "( -- ) Closes the port." },
+  { handleWritePort, "UWRITE", "( s -- ) Writes string s to the port." },
 
   { putRandomByteOnStack, "RANDOM", "( -- a ) Puts a random byte on top of the stack." },
   { putRandomUIntOnStack, "RANDOMI", "( -- a ) Puts a random INT on top of the stack." },
@@ -560,3 +568,16 @@ bool handleClearTerminal() {
   // Clears screen and moves cursor to top-left
   return true;
 }
+
+bool handleHexDump() {
+  string mySTRING;
+  if (popStringFromStack(&mySTRING) == false) {
+    logStackOverflow((char *)"handleHexDump/0");
+    return false;
+  }
+  hexDump((unsigned char *)mySTRING.c_str(), mySTRING.length());
+  return true;
+}
+
+
+// end

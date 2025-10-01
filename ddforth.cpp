@@ -797,6 +797,12 @@ bool handleUPRINT() {
         logThis();
         return false;
       }
+    case xSTRING:
+      {
+        xxxxxx = snprintf((char *)msg, 255, "handleUPRINT only works with integers!\n");
+        logThis();
+        return false;
+      }
   }
   return true;
 }
@@ -893,7 +899,7 @@ bool isInteger(string c, int *i0) {
   int base = GetINT("BASE");
   xxxxxx = snprintf((char *)msg, 255, "isInteger/%d/%s", base, c.c_str());
   logThis();
-  string nums("0123456789ABCDEF");
+  string nums("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
   nums = nums.substr(0, base);
   if (base == 10 && c.at(0) == '-') {
     sign = -1;
@@ -2070,6 +2076,8 @@ int main(int argc, char **argv) {
     std::cin.getline(code, 256);
     if (std::cin.eof()) {
       std::cin.clear();  // Clear error flags (eofbit, failbit, badbit)
+      handleClosePort();
+      handleClearTerminal();
       cout << " the end\n\n\n";
       return 0;
     }
