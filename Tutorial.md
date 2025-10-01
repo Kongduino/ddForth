@@ -27,16 +27,108 @@ Not anymore, Buster. Well, I have two jobs, but I also have a much more relaxed 
 
 I was using a 1983 French book by Mr Pinault, based on Forth-79. While I deviated from the standard after a while, and picked what I wanted from it, while ignoring other stuff, and adding my own words, I have now something that looks and feels like Forth, with original parts, and a few modern bits.
 
-## Under the hood
+## How does that work?
 
-### Heterogenous, but Unified, Stack
+Let's have a look at a few simple examples – suggested by Jaypee:
 
-Initially, Forth was integer numbers only. It was a bit limiting, but it's not like I was doing floating maths in 6809 ASM either. Over the years, my implementations tried to add floats. Today, ddForth accepts floats, integers and strings on the stack, and, so far so good, doesn't seem to mind.
+### Numbers
 
 ```
-ddForth v1.2.0
+OK 1 2 3 .S
+
++-----------------------+
+| 0	| INT.	| 3	|
+| 1	| INT.	| 2	|
+| 2	| INT.	| 1	|
++-----------------------+
+OK * +
+OK .
+7 OK 
+```
+
+The user enters `1 2 3`, which stacks 1, then 2, then 3. 3 is thus on top of the stack, as shown by `.S`.
+
+`* +` is interpreted in that order, `*` first: 2 * 3, which removes 3 and 2, and puts 6 on the stack, then `+`: 1 + 6, finally putting 7 on the stack. Remember, operations that "touch" the stack affect it.
+
+You can do the same with floats:
+
+```
+OK 3.14 5.0 2.0 .S *  * .
+
++-----------------------+
+| 0	| FLOAT	| 2.000	|
+| 1	| FLOAT	| 5.000	|
+| 2	| FLOAT	| 3.140	|
++-----------------------+
+31.400002 OK 
+```
+
+The slight "mistake", 31.400002 instead of 31.4, is due to how computers store floats. A common problem. Let's see what happens when we use the `PI` constant.
+
+```
+OK PI
+OK .S
+
++-----------------------+
+| 0	| INT.	| 384	|
++-----------------------+
+OK 
+```
+
+Whatta...? This is one of the first things that trip programmers coming from other languages. Variables and constants are memory cells, and calling them puts their address on the stack. That's how you read from AND write to them.
+
+The keyword to read from is `@`, and you use `!` to write. You can't write to `PI`, though, as it is a constant. So, to get PI on the stack you do:
+
+```
+OK PI ?
+3.141593 OK 
+OK PI @ 5.0 2.0 * * .
+31.415928 OK 
+```
+
+A useful keyword is `?`, which is a user command I added in the default set of commands, which evaluates to `@ .`. See the `WORDS` command:
+
+```
+[...]
+User Commands:
+--------------
+ • 0=          0 =
+ • 0>          0 >
+ • 0<          0 <
+ • TRUE        1 =
+ • FALSE       0 =
+ • ?           @ .
+[...]
+```
+
+This works with floats and integers:
+
+```
+OK PI @ 3 * . CR
+( CR means carriage return, and yes this is a comment )
+9.424778
+OK
+```
+
+### Numbers
+
+ddForth is intended to be great with strings. It isn't yet, but I'll try very hard :-) First, to stack a string, you must tell Forth that's what you want to do: without a keyword to say "please stack this as a string" something like "this is a string" would be interpreted as `"this`, `is`, `a`, `string"`. We do not want that. I modeled this on `." print this string"` and called it `s"`:
+
+```
+OK s" this is a string"
+OK .S
+
++-----------------------+
+| 0	| STR.	| `this is a string`	|
+
++-----------------------+
+OK 
+```
+
+So, what can we do with that? In [Strings](#strings) you'll see the list of commands. But let's try a quick example:
 
 
+```
 OK clear s" Player3 Player2 Player1" SSPLIT
 OK .S
 
@@ -49,7 +141,73 @@ OK .S
 OK
 ```
 
-The `SSPLIT` command leaves on top of the stack the number of chunks. This is achieved by maintaining **FOUR** stacks separately, one for each type, but a fourth one that records the type of each element in the virtual unified stack. The native words supplied in ddForth know what they need in terms of data types, and will complain, and fail, if they don't get what they want. So it's up to the user to keep a clean stack.
+The `SSPLIT` keyword is a user command that leaves on top of the stack the number of chunks. It is evaluated to `32 csplit`:
+
+```
+OK help" ssplit"
+Looking for SSPLIT
+ssplit          32 csplit
+OK 
+```
+
+(See how the `help"` command works like `."` and `s"`? Very helpful. No pun intended...) Now that we have three strings on the stack, we could store them in a `VARRAY` named "Players", for example:
+
+```
+OK s" Players" VARRAY
+OK .S
+Stack empty!
+OK arrays
+Integer arrays: 0
+Float arrays: 0
+String arrays: 1
+* Players
+OK s" Players" alist
+Cell #0: Player1
+Cell #1: Player2
+Cell #2: Player3
+OK 
+```
+
+`VARRAY` takes the name of the array, then the number on top of the stack (or fails loudly!), then checks there are indeed 3 strings, then creates the array, if it doesn't exist, or again complains. Let's look at a common mistake – speaking, ahem, from experience here:
+
+```
+OK clear s" Player3 Player2 Player1" SSPLIT
+OK . ( this is a mistake! )
+3 OK s" Players" VARRAY
+handleVARRAY/1 Stack overflow!
+VARRAY returned false. Aborting!
+
+CONTEXT: 0 to 3
+        s" Players" VARRAY         
+
++-----------------------+
+| 0	| STR.	| `Player1`	|
+| 1	| STR.	| `Player2`	|
+| 2	| STR.	| `Player3`	|
++-----------------------+
+OK 
+```
+Printing `3` with the `.` command consumed 3 – so now `VARRAY` cannot find a row count, and bails. If you wanted to display the number of rows without breaking, you add `DUP` before `.`:
+
+```
+OK clear s" Player3 Player2 Player1" SSPLIT
+OK DUP . CR
+3
+OK s" Players" VARRAY
+OK s" Players" ALIST 
+Cell #0: Player1
+Cell #1: Player2
+Cell #2: Player3
+OK 
+```
+
+## Under the hood
+
+### Heterogenous, but Unified, Stack
+
+Initially, Forth was integer numbers only. It was a bit limiting, but it's not like I was doing floating maths in 6809 ASM either. Over the years, my implementations tried to add floats. Today, ddForth accepts floats, integers and strings on the stack, and, so far so good, doesn't seem to mind.
+
+As we saw above, the `SSPLIT` command leaves on top of the stack the number of chunks. This is achieved by maintaining **FOUR** stacks separately, one for each type, but a fourth one that records the type of each element in the virtual unified stack. The native words supplied in ddForth know what they need in terms of data types, and will complain, and fail, if they don't get what they want. So it's up to the user to keep a clean stack.
 
 For example, with the stack as above, this is what happens if you call `cs`, display a string.
 
@@ -211,7 +369,7 @@ One important use case for me is string manipulations. At some point I might add
 * `STRREPLACE`: ( s0 s1 s2 -- s ) Replaces instances of s1 by s2 in s0.
 * `MULTSTR`: ( s a -- x ) Puts a string that's a times string s on the stack. `s" A" 6 MULTSTR` ==> AAAAAA
 * `SREVERSE`: ( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count.
-* `+STR`: ( a b -- ab ) Prepends string b to string a. AA BB +STR ===> BBAA
+* `+STR`: ( a b -- ba ) Prepends string b to string a. AA BB +STR ===> BBAA
 * `STR+`: ( a b -- ab ) Appends string b to string a. AA BB +STR ===> AABB
 ----
 * `INTSTR`: ( a -- x ) Converts int to str.

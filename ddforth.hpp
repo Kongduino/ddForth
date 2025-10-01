@@ -319,7 +319,7 @@ nativeCommand nativeCommands[] = {
   { handleSTACKSTRING, "C\"", "( -- ) Puts a string following that command on the stack. Forth 2012" },
   { handlePRINT, ".", "( a -- ) Prints a numerical value" },
   { handlePRINTSTACKSTRING, "CS", "( a -- ) Print the string on top of the stack." },
-  { handlePREPENDSTACKSTRING, "+STR", "( a b -- ab ) Prepends string b to string a. AA BB +STR ===> BBAA" },
+  { handlePREPENDSTACKSTRING, "+STR", "( a b -- ba ) Prepends string b to string a. AA BB +STR ===> BBAA" },
   { handleAPPENDSTACKSTRING, "STR+", "( a b -- ab ) Appends string b to string a. AA BB +STR ===> AABB" },
   { handleLEFT, "LEFTSTR", "( a -- a x ) Puts the leftmost char of string a on top of the stack." },
   { handleMID, "MIDSTR", "( a b -- a x ) Puts the bth char of string a on top of the stack." },
