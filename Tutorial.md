@@ -110,7 +110,7 @@ OK PI @ 3 * . CR
 OK
 ```
 
-### Numbers
+### Strings
 
 ddForth is intended to be great with strings. It isn't yet, but I'll try very hard :-) First, to stack a string, you must tell Forth that's what you want to do: without a keyword to say "please stack this as a string" something like "this is a string" would be interpreted as `"this`, `is`, `a`, `string"`. We do not want that. I modeled this on `." print this string"` and called it `s"`:
 
@@ -126,7 +126,6 @@ OK
 ```
 
 So, what can we do with that? In [Strings](#strings) you'll see the list of commands. But let's try a quick example:
-
 
 ```
 OK clear s" Player3 Player2 Player1" SSPLIT
@@ -198,6 +197,24 @@ OK s" Players" ALIST
 Cell #0: Player1
 Cell #1: Player2
 Cell #2: Player3
+OK 
+```
+
+And once you have a bunch of rows, you can of course join them again into one string:
+
+```
+OK clear s" Player3 Player2 Player1" SSPLIT
+OK .S
+
++-----------------------+
+| 0	| INT.	| 3	|
+| 1	| STR.	| `Player1`	|
+| 2	| STR.	| `Player2`	|
+| 3	| STR.	| `Player3`	|
++-----------------------+
+OK s" ;" strjoin
+OK cs CR
+Player3;Player2;Player1
 OK 
 ```
 
