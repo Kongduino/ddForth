@@ -929,7 +929,22 @@ bool isFloat(string c, float *f0) {
   if (c.length() == 0) return false;
   xxxxxx = snprintf((char *)msg, 255, "isFloat: %s?\n", c.c_str());
   logThis();
-  if (GetINT("BASE") == 10) {
+  int sign = 1;
+  int base = GetINT("BASE");
+  if (base == 10) {
+    string nums("0123456789.");
+    nums = nums.substr(0, base);
+    if (base == 10 && c.at(0) == '-') {
+      sign = -1;
+      c.erase(0, 1);
+    }
+    string::const_iterator it = c.begin();
+    while (it != c.end() && nums.find(*it) != string::npos) ++it;
+    if (c.empty() || it != c.end()) {
+      xxxxxx = snprintf((char *)msg, 255, "%s is not a float.\n", c.c_str());
+      logThis();
+      return false;
+    }
     try {
       *f0 = stof(c);
       return true;
