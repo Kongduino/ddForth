@@ -48,25 +48,34 @@ bool showStack() {
   cout << "\tmyFloats\t" << (myFloats + 1);
   cout << "\tmyStrings\t" << (myStrings + 1) << endl;
 #endif
-  cout << "+-----------------------+" << endl;
+  cout << "+--------------------------------------------------------+" << endl;
   while (x > -1) {
     int type0 = dataStack.at(x);
-    cout << "| " << (count++) << "\t| ";
+    xxxxxx = snprintf((char *)msg, 255, "| %-5zu\t", (dataStack.size() - count++ - 1));
+    cout << msg;
+
+    // cout << "| " << (count++) << "\t| ";
     switch (type0) {
       case xINTEGER:
-        cout << "INT.\t| " << userIntegers.at(myInts--) << "\t|" << endl;
+        xxxxxx = snprintf((char *)msg, 255, "| %-5s\t| %-38d |\n", "INT.", userIntegers.at(myInts--));
+        cout << msg;
+        // cout << "INT.\t| " << userIntegers.at(myInts--) << "\t|" << endl;
         break;
       case xFLOAT:
-        cout << "FLOAT\t| ";
-        printf("%.3f\t|\n", userFloats.at(myFloats--));
+        xxxxxx = snprintf((char *)msg, 255, "| %-5s\t| %-38f |\n", "FLOAT", userFloats.at(myFloats--));
+        cout << msg;
+        // cout << "FLOAT\t| ";
+        // printf("%.3f\t|\n", userFloats.at(myFloats--));
         break;
       case xSTRING:
-        cout << "STR.\t| `" << userStrings.at(myStrings--) << "`\t|" << endl;
+        xxxxxx = snprintf((char *)msg, 255, "| %-5s\t| %-38s |\n", "STR.", userStrings.at(myStrings--).c_str());
+        cout << msg;
+        // cout << "STR.\t| `" << userStrings.at(myStrings--) << "`\t|" << endl;
         break;
     }
     x -= 1;
   }
-  cout << "+-----------------------+" << endl;
+  cout << "+--------------------------------------------------------+" << endl;
   return true;
 }
 
