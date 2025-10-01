@@ -11,11 +11,11 @@ A modern Forth tailored for my needs – IoT and command-line scripting.
 * [Numbers and maths](#numbers-and-maths)
 * [Perfect segue variables!](#perfect-segue-variables!)
 * [U(ART|SB)](#uartsb)
-* [Files & automatic execution](#files--automatic-execution)
+* [Keyboard, files & automatic execution](#keyboard-files--automatic-execution)
 
 ## Background
 
-I started with Forth around 1982/3 – memory's a bit fuzzy by now... Anyway, 40+ years ago. It's actually my third language, after 6800/6809 ASM and Microsoft BASIC. I was, and still am, fascinated by this language, because it felt so alien – [RPN](https://www.hpmuseum.org/rpn.htm) is indeed a bit alien to normal human beings. At the same time, RPN calculators like the HP-12C and especially the [HP-16C](https://www.hpmuseum.org/hp16.htm) were considered to be the Rolls Royce of calculators.
+I started with Forth around 1982/3 – memory's a bit fuzzy by now... Anyway, 40+ years ago. It's actually my third language, after 6800/6809 ASM and Microsoft BASIC. I was, and still am, fascinated by this language, because it felt so alien – [RPN](https://www.hpmuseum.org/rpn.htm)🔗 is indeed a bit alien to normal human beings. At the same time, RPN calculators like the HP-12C and especially the [HP-16C](https://www.hpmuseum.org/hp16.htm)🔗 were considered to be the Rolls Royce of calculators.
 
 ![HP-16C](assets/HP-16C.jpg)
 
@@ -168,7 +168,7 @@ OK
 
 ### Control Flow Statement
 
-[DO...LOOP](https://www.forth.com/starting-forth/6-forth-do-loops/) is a very common way in Forth to do loops (HENCE THE NAME!). Searching for DO.LLOP will usually give you a Forth-related link towards the top.
+[DO...LOOP](https://www.forth.com/starting-forth/6-forth-do-loops/)🔗 is a very common way in Forth to do loops (HENCE THE NAME!). Searching for DO.LLOP will usually give you a Forth-related link towards the top.
 
 ```
 % ddforth -f tests/test11.fs
@@ -518,8 +518,11 @@ I need to be able to talk to external devices (current use cases are GPS and UWB
 * `UCLOSE`: ( -- ) Closes the port.
 * `UWRITE`: ( s -- ) Writes string s to the port.
 
-### Files & automatic execution
+### Keyboard, Files & automatic execution
 
+* `EMIT`: ( a -- ) printf(\"%c\", a);
+* `CHR`: ( a -- s ) Converts an ASCII code to a string and puts it on the stack.
+* `KEY`: ( -- x) Waits for a key and puts it on the stack.
 * `LINE`: ( -- x ) Waits for a line, and puts it on the stack.
 * `EXEC`: ( s -- ?) Executes string on the stack. Can be used in conjunction with LINE.
 * `FLOAD`: ( s -- ?) Loads file named 'name' and executes it.
