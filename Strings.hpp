@@ -10,6 +10,7 @@
 
 extern bool insideString;
 extern bool isHelping;
+string hexDigits = "0123456789abcdef";
 
 bool handleEMIT() {
   char c;
@@ -207,39 +208,39 @@ bool handleMULTSTR() {
 }
 
 inline void ltrim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }));
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+    return !std::isspace(ch);
+  }));
 }
 // Trim from the end (in place)
 inline void rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
+  s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+    return !std::isspace(ch);
+  }).base(), s.end());
 }
 
 // Trim from both ends (in place)
 inline void trim(std::string &s) {
-    rtrim(s);
-    ltrim(s);
+  rtrim(s);
+  ltrim(s);
 }
 
 // Trim from the start (copying)
 inline std::string ltrim_copy(std::string s) {
-    ltrim(s);
-    return s;
+  ltrim(s);
+  return s;
 }
 
 // Trim from the end (copying)
 inline std::string rtrim_copy(std::string s) {
-    rtrim(s);
-    return s;
+  rtrim(s);
+  return s;
 }
 
 // Trim from both ends (copying)
 inline std::string trim_copy(std::string s) {
-    trim(s);
-    return s;
+  trim(s);
+  return s;
 }
 
 bool handleSTRIPSTR() {
@@ -279,7 +280,7 @@ bool handleSTRINT() {
   string s;
   int i0;
   if (popStringFromStack(&s) == false) {
-    logStackOverflow((char *)"handleINTSTR");
+    logStackOverflow((char *)"handleSTRINT");
     return false;
   }
   i0 = std::atoi(s.c_str());
@@ -303,10 +304,22 @@ bool handleINTSTR() {
   string s;
   int i0;
   if (popIntegerFromStack(&i0) == false) {
-    logStackOverflow((char *)"handleSTRINT");
+    logStackOverflow((char *)"handleINTSTR");
     return false;
   }
   s = std::to_string(i0);
+  putStringOnStack(s);
+  return true;
+}
+
+bool handleFLOATSTR() {
+  string s;
+  float f0;
+  if (popFloatFromStack(&f0) == false) {
+    logStackOverflow((char *)"handleFLOATSTR");
+    return false;
+  }
+  s = std::to_string(f0);
   putStringOnStack(s);
   return true;
 }
@@ -470,6 +483,62 @@ bool handleStringReplace() {
     pos = s0.find(s1, pos + s2.size());
   }
   putStringOnStack(s0);
+  return true;
+}
+
+bool handleSlicer() {
+  int ln, ix, i0, runlength = 0, count = 0;
+  if (popIntegerFromStack(&ln) == false) {
+    logStackOverflow((char *)"handleSlicer/0");
+    return false;
+  }
+  vector<int> slices;
+  for(ix = 0; ix < ln; ix++) {
+    if (popIntegerFromStack(&i0) == false) {
+      logStackOverflow((char *)"handleSlicer/1");
+      return false;
+    }
+    slices.push_back(i0);
+    count += i0;
+  }
+  string s0;
+  if (popStringFromStack(&s0) == false) {
+    logStackOverflow((char *)"handleDINSERT/2");
+    return false;
+  }
+  if (count != s0.length()) {
+    cout << "Slices don't match string length!\n";
+    return false;
+  }
+  for(ix = 0; ix < ln; ix++) {
+    i0 = slices.at(ln - ix - 1);
+    putStringOnStack(s0.substr(runlength, i0));
+    runlength += i0;
+  }
+  return true;
+}
+
+bool handleHEX2NUM() {
+  // ( s -- n )
+  string s;
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleHEX2NUM/0");
+    return false;
+  }
+  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+  size_t found;
+  uint32_t result = 0;
+  for (int ix = 0; ix < s.length(); ix++) {
+    result = result * 16;
+    found = hexDigits.find(s.at(ix));
+    if (found == string::npos) {
+      logInconsistent((char*)"handleHEX2NUM");
+      return false;
+    }
+    result += found;
+    // cout << s.at(ix) << " = " << found << ", result = " << result << endl;
+  }
+  putIntegerOnStack(result);
   return true;
 }
 

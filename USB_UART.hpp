@@ -315,7 +315,6 @@ bool handleWritePort() {
   }
   write(serial_port, s.c_str(), s.length());
   cout << "Sent to USB: " << s << endl;
-  // Example: Read data
   return true;
 }
 

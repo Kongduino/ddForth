@@ -933,11 +933,6 @@ bool isFloat(string c, float *f0) {
   int base = GetINT("BASE");
   if (base == 10) {
     string nums("0123456789.");
-    nums = nums.substr(0, base);
-    if (base == 10 && c.at(0) == '-') {
-      sign = -1;
-      c.erase(0, 1);
-    }
     string::const_iterator it = c.begin();
     while (it != c.end() && nums.find(*it) != string::npos) ++it;
     if (c.empty() || it != c.end()) {

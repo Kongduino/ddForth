@@ -585,5 +585,71 @@ bool handlePICK() {
   return false;  
 }
 
+bool handlePLACE() {
+  int i, ix, x, n;
+  float nf;
+  string ns;
+  if (popIntegerFromStack(&ix) == false) {
+    logStackOverflow((char *)"handlePLACE/ix");
+    return false;
+  }
+  // cout << "ix = " << ix << endl;
+  int type = dataStack.at(dataStack.size() - 1);
+  // cout << "type = " << type << endl;
+  switch (type) {
+    case xINTEGER:
+      {
+        if (popIntegerFromStack(&n) == false) {
+          logStackOverflow((char *)"handlePLACE/0");
+          return false;
+        }
+        break;
+      }
+    case xFLOAT:
+      {
+        if (popFloatFromStack(&nf) == false) {
+          logStackOverflow((char *)"handlePLACE/1");
+          return false;
+        }
+        break;
+      }
+    case xSTRING:
+      {
+        if (popStringFromStack(&ns) == false) {
+          logStackOverflow((char *)"handlePLACE/2");
+          return false;
+        }
+        break;
+      }
+  }
+  x = dataStack.size();
+  if (ix >= x) {
+    // cout << "ix = " << ix << ", x = " << x << endl;
+    logStackOverflow((char *)"handlePLACE/3");
+    return false;
+  }
+  ix = x - ix -1;
+  int count = 0;
+  for (i = 0; i < ix; i++) {
+    if (dataStack.at(dataStack.size() - 1 - i) == type)
+      count += 1;
+  }
+  // we now have the offset for the proper stack
+  // cout << "count = " << count << endl;
+  if (type == xSTRING) {
+    userStrings.at(userStrings.size() - 1 - count) = ns;
+    return true;
+  }
+  if (type == xINTEGER) {
+    userIntegers.at(userIntegers.size() - 1 - count) = n;
+    return true;
+  }
+  if (type == xFLOAT) {
+    userFloats.at(userFloats.size() - 1 - count) = nf;
+    return true;
+  }
+  return false;  
+}
+
 
 // end

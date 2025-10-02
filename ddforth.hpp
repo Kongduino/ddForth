@@ -102,7 +102,10 @@ bool handleOVER();
 bool handleSPICK();
 bool handleSSTORE();
 bool handlePICK();
+bool handlePLACE();
 bool handleSJOIN();
+bool handleSlicer();
+bool handleHEX2NUM();
 
 bool handlePlus();
 bool handlePRINT();
@@ -152,6 +155,7 @@ bool handleSTRIPSTR();
 bool handleLSTRIPSTR();
 bool handleRSTRIPSTR();
 bool handleINTSTR();
+bool handleFLOATSTR();
 bool handleSTRINT();
 bool handleSTRFLOAT();
 bool handleCSPLIT();
@@ -336,6 +340,7 @@ nativeCommand nativeCommands[] = {
   { handleLSTRIPSTR, "LSTRIPSTR", "( a -- x ) Removes whitespaces on the left side of string a" },
   { handleRSTRIPSTR, "RSTRIPSTR", "( a -- x ) Removes whitespaces on the right side of string a" },
   { handleINTSTR, "INTSTR", "( a -- x ) Converts int to str." },
+  { handleFLOATSTR, "FLOATSTR", "( a -- x ) Converts float to str." },
   { handleSTRINT, "STRINT", "( a -- x ) Converts str to int." },
   { handleSTRFLOAT, "STRFLOAT", "( a -- x ) Converts str to float." },
   { handleCSPLIT, "CSPLIT", "( s t -- a b c d...) Splits string s by delimiter t (one ASCII char) and puts the result on the stack." },
@@ -353,11 +358,14 @@ nativeCommand nativeCommands[] = {
   { handleCLEAR, "CLEAR", "( a b c d... -- ) Removes everything from the stack." },
   { handleROT, "ROT", "(a b c -- c a b) Rotates the 3 values on top of the stack." },
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
-  { handleOVER, "OVER", "( a b -- a b a) Place a copy of a on top of the stack." },
+  { handleOVER, "OVER", "( a b -- a b a) Places a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
   { handleSSTORE, "STRSTORE", "( s0 s s2 s3... n S x -- s0 s s2 s3... n ) Takes string S and stores it at index x." },
   { handleSJOIN, "STRJOIN", "( s0 s s2 s3... n S -- s ) Joins strings on stack with S." },
   { handlePICK, "PICK", "( a b c d e f... n -- x ) Copies element n as x on top of the stack." },
+  { handlePLACE, "PLACE", "( a b c d e f... n -- x n ) Puts x into row n." },
+  { handleSlicer, "SLICER", "( s a b c d e f... n -- s0 s1 s2... sn ) Slices a string s into n elements of variable size." },
+  { handleHEX2NUM, "HEX2NUM", "( s -- n ) Converts a hex string to a number." },
 
   { handleBASE, "BASE", "( a -- ) Sets the base" },
   { handleBASE2, "BIN", "( -- ) Sets the base to binary" },
