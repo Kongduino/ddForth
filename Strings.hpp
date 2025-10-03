@@ -506,8 +506,8 @@ bool handleSlicer() {
     logStackOverflow((char *)"handleDINSERT/2");
     return false;
   }
-  if (count != s0.length()) {
-    cout << "Slices don't match string length!\n";
+  if (count > s0.length()) {
+    cout << "Slicer: Not enough bytes!\n";
     return false;
   }
   for(ix = 0; ix < ln; ix++) {

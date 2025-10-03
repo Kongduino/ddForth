@@ -23,6 +23,7 @@ void logStackOverflow(char *who);
 void logThis();
 
 int serial_port = -1;
+bool needHEX = false;
 
 bool handleOpenPort() {
   // ( 9600 s" /dev/tty.usb..." -- n ) UOPEN
@@ -151,7 +152,13 @@ bool readUntil(char delimiter, string *received_data) {
     // e.g., ReadFile on Windows, read on Linux, or a library's read_byte function
     if (read_byte(byte)) {
       // Assume read_byte returns true on success
-      received_data += byte;
+      if (!needHEX)
+        received_data += byte;
+      else {
+        xxxxxx = snprintf((char *)msg, 255, "%02x", byte);
+        received_data += msg[0];
+        received_data += msg[1];
+      }
       if (byte == delimiter) {
         break; // Delimiter found
       }
@@ -179,7 +186,12 @@ bool handleReadRawPort() {
     // e.g., ReadFile on Windows, read on Linux, or a library's read_byte function
     if (read_byte(byte)) {
       // Assume read_byte returns true on success
-      received_data += byte;
+      if (!needHEX)
+        received_data += byte;
+      else {
+        xxxxxx = snprintf((char *)msg, 255, "%02x", byte);
+        received_data += msg;
+      }
       i0 -= 1;
     } else {
       // Handle read error or timeout
@@ -188,6 +200,13 @@ bool handleReadRawPort() {
   }
   putStringOnStack(received_data);
   return true;
+}
+
+bool handleReadRawHexPort() {
+  needHEX = true;
+  bool result = handleReadRawPort();
+  needHEX = false;
+  return result;
 }
 
 bool handleReadLinePort() {
@@ -201,11 +220,15 @@ bool handleReadLinePort() {
     // e.g., ReadFile on Windows, read on Linux, or a library's read_byte function
     if (read_byte(byte)) {
       // Assume read_byte returns true on success
+      if (!needHEX)
+        received_data += byte;
+      else {
+        xxxxxx = snprintf((char *)msg, 255, "%02x", byte);
+        received_data += msg[0];
+        received_data += msg[1];
+      }
       if (byte == '\n') {
         break; // Delimiter found
-      } else if (byte != '\r') {
-        // skip \r
-        received_data += byte;
       }
     } else {
       // Handle read error or timeout
@@ -214,6 +237,13 @@ bool handleReadLinePort() {
   }
   putStringOnStack(received_data);
   return true;
+}
+
+bool handleReadHEXLinePort() {
+  needHEX = true;
+  bool result = handleReadLinePort();
+  needHEX = false;
+  return result;
 }
 
 bool handleReadCharPort() {
@@ -260,6 +290,13 @@ bool handleReadUntilPort() {
   return false;
 }
 
+bool handleReadHEXUntilPort() {
+  needHEX = true;
+  bool result = handleReadUntilPort();
+  needHEX = false;
+  return result;
+}
+
 bool handleReadDiscardPort() {
   // ( s -- ) UDISCARDUNTIL
   // c can be a uint8_t or a string
@@ -267,16 +304,20 @@ bool handleReadDiscardPort() {
   if (serial_port == -1) return false;
   char delim;
   string d;
+  if(dataStack.size() == 0) {
+    logStackOverflow((char *)"handleReadDiscardPort/0");
+    return false;
+  }
   if(dataStack.at(dataStack.size() - 1) == xINTEGER) {
     int i0;
     if (popIntegerFromStack(&i0) == false) {
-      logStackOverflow((char *)"handleReadDiscardPort/0");
+      logStackOverflow((char *)"handleReadDiscardPort/1");
       return false;
     }
-    delim = (uint8_t) i0 & 0xFF;
+    delim = ((uint8_t) i0 & 0xFF);
   } else if (dataStack.at(dataStack.size() - 1) == xSTRING) {
     if (popStringFromStack(&d) == false) {
-      logStackOverflow((char *)"handleReadDiscardPort/1");
+      logStackOverflow((char *)"handleReadDiscardPort/2");
       return false;
     }
     delim = d.at(0);

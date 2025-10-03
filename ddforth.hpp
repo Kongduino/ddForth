@@ -212,8 +212,11 @@ string readUntil(char);
 bool handleFIONREAD();
 bool handleOpenPort();
 bool handleReadLinePort();
+bool handleReadHEXLinePort();
 bool handleReadRawPort();
+bool handleReadRawHexPort();
 bool handleReadUntilPort();
+bool handleReadHEXUntilPort();
 bool handleReadDiscardPort();
 bool handleClosePort();
 bool handleFlushPort();
@@ -408,10 +411,13 @@ nativeCommand nativeCommands[] = {
 
   { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },
   { handleReadLinePort, "UREADL", "( -- s ) Reads a line from port." },
+  { handleReadHEXLinePort, "UREADHEXL", "( -- s ) Reads a line from port." },
   { handleReadRawPort, "UREADRAW", "( n -- s ) Reads x bytes from port and puts them as a string on the stack." },
+  { handleReadRawHexPort, "UREADHEX", "( n -- s ) Reads x bytes from port and puts them as a HEX string on the stack." },
   { handleFlushPort, "UFLUSH", "( -- s ) Flushes the port." },
   { handleFIONREAD, "UINQ", "( -- n ) Puts on the stack how many bytes are available on the port." },
   { handleReadDiscardPort, "UDISCARDUNTIL", "( s -- ) Reads and discards from port until s." },
+  { handleReadHEXUntilPort, "UREADHEXUNTIL", "( s -- ) Reads from port until s." },
   { handleReadUntilPort, "UREADUNTIL", "( s -- ) Reads from port until s." },
   { handleReadCharPort, "UREADC", "( -- c ) Reads one byte from serial port." },
   { handleClosePort, "UCLOSE", "( -- ) Closes the port." },
