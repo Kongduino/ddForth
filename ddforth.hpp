@@ -168,6 +168,7 @@ bool handleVARRAY();
 bool lookup(string);
 bool lookupUC(string);
 bool lookupVAR(string);
+bool forgetVAR();
 bool popFloatFromStack(float *);
 bool popFromLoopStack(int *);
 bool popIntegerFromJumpStack(int *);
@@ -224,6 +225,7 @@ bool handleReadCharPort();
 bool handleWritePort();
 
 bool handleSleep();
+bool handleDelay();
 
 int executionPointer = -1;
 vector<int> jumpStack;
@@ -352,7 +354,8 @@ nativeCommand nativeCommands[] = {
   { handleDINSERT, "DINSERT", "( s1 s0 n -- s ) Inserts s0 into s1 every n chars." },
   { handleStringReplace, "STRREPLACE", "( s0 s1 s2 -- s ) Replaces instances of s1 by s2 in s0." },
 
-  { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces" },
+  { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces." },
+  { forgetVAR, "FORGET", "( name -- ) Erases var/const named 'name' if it exists." },
 
   { handleDUP, "DUP", "( a -- a a ) Duplicates value on top of the stack." },
   { handleDROP, "DROP", "( a -- ) Drops value on top of the stack." },
@@ -445,6 +448,7 @@ nativeCommand nativeCommands[] = {
   { handleGotoXY, "POSXY", "( x y -- ) Positions cursor (terminal/UNIX-like) to x:y." },
   { handleClearTerminal, "CLEAN", "( -- ) Clears the screen (terminal/UNIX-like) and sets cursor to 1:1." },
   { handleSleep, "SLEEP", "( n -- ) Sleeps for n seconds." },
+  { handleDelay, "DELAY", "( n -- ) Sleeps for n seconds." },
 // #include "lowercase.hpp"
 
 #if defined(NEED_SDL)

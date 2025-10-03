@@ -854,6 +854,36 @@ bool lookupVAR(string name) {
   return false;
 }
 
+bool forgetVAR() {
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"forgetVAR");
+    return false;
+  }
+  std::map<string, int>::iterator it;
+  it = varAddresses.find(name);
+  if (it != varAddresses.end()) {
+    // found it
+    varAddresses.erase(it->first);
+    return true;
+  }
+  it = fvarAddresses.find(name);
+  if (it != fvarAddresses.end()) {
+    // found it
+    fvarAddresses.erase(it->first);
+    return true;
+  }
+  it = strvarAddresses.find(name);
+  if (it != strvarAddresses.end()) {
+    // found it
+    strvarAddresses.erase(it->first);
+    return true;
+  }
+  xxxxxx = snprintf((char *)msg, 255, "No VAR called: %s. CONSTs cannot be deleted.\n", name.c_str());
+  logThis();
+  return false;
+}
+
 bool lookupUC(string name) {
   xxxxxx = snprintf((char *)msg, 255, "lookupUC %s ", name.c_str());
   logThis();
@@ -1649,6 +1679,17 @@ bool handleSleep() {
     return false;
   }
   sleep(seconds); // Sleep for x seconds
+  return true;
+}
+
+bool handleDelay() {
+  int microseconds;
+  if (popIntegerFromStack(&microseconds) == false) {
+    logStackOverflow((char *)"handleDelay/0");
+    logThis();
+    return false;
+  }
+  usleep(microseconds);
   return true;
 }
 
