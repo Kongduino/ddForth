@@ -1,6 +1,7 @@
 #include "ddforth.hpp"
 bool insideString = false;
 bool isHelping = false;
+bool usedForget = false;
 
 using namespace std;
 
@@ -71,6 +72,39 @@ void StoreSTRING(string name, string value) {
     xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s updated to %s\n", name.c_str(), value.c_str());
     logThis();
   } else {
+    if (usedForget) {
+      // Compact if needed
+      int lastID = 511;
+      int ix, j = mySTRVARs.size(), n;
+      vector<int> missing;
+      it = strvarAddresses.begin();
+      while (it != strvarAddresses.end()) {
+        n = it->second;
+        cout << n << ": ";
+        if (n != (lastID + 1)) {
+          // hole!
+          missing.push_back(n - 1);
+          cout << (n - 1) << " is missing!\n";
+          strvarAddresses[it->first] = n - 1;
+          mySTRVARs.at(n - 512 - 1) = mySTRVARs.at(n - 512);
+          n = n - 1;
+        } else {
+          cout << "ok!\n";
+        }
+        it++;
+        lastID = n;
+      }
+      cout << "Size of missing: " << missing.size() << endl;
+      if (missing.size() > 0) {
+        std::map<string, int>::iterator it = strvarAddresses.begin();
+        while (it != strvarAddresses.end()) {
+          cout << it->first << ": " << it->second << ": " << mySTRVARs.at(it->second - 512) << endl;
+          it++;
+        }
+      }
+      for (ix = 0; ix < missing.size(); ix++)
+        mySTRVARs.pop_back();
+    }
     mySTRVARs.push_back(value);
     strvarAddresses[name] = mySTRVARs.size() - 1 + 512;
     xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s initialized with %s\n", name.c_str(), value.c_str());
@@ -86,6 +120,39 @@ void StoreFLOAT(string name, float value) {
     logThis();
     myFVARs.at(it->second - 128) = value;
   } else {
+    if (usedForget) {
+      // Compact if needed
+      int lastID = 127;
+      int ix, j = myFVARs.size(), n;
+      vector<int> missing;
+      it = fvarAddresses.begin();
+      while (it != fvarAddresses.end()) {
+        n = it->second;
+        cout << n << ": ";
+        if (n != (lastID + 1)) {
+          // hole!
+          missing.push_back(n - 1);
+          cout << (n - 1) << " is missing!\n";
+          fvarAddresses[it->first] = n - 1;
+          myFVARs.at(n - 128 - 1) = myFVARs.at(n - 128);
+          n = n - 1;
+        } else {
+          cout << "ok!\n";
+        }
+        it++;
+        lastID = n;
+      }
+      cout << "Size of missing: " << missing.size() << endl;
+      if (missing.size() > 0) {
+        std::map<string, int>::iterator it = fvarAddresses.begin();
+        while (it != fvarAddresses.end()) {
+          cout << it->first << ": " << it->second << ": " << myFVARs.at(it->second - 128) << endl;
+          it++;
+        }
+      }
+      for (ix = 0; ix < missing.size(); ix++)
+        myFVARs.pop_back();
+    }
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
     xxxxxx = snprintf((char *)msg, 255, "FVAR name: %s initialized with %f\n", name.c_str(), value);
@@ -103,6 +170,39 @@ void StoreINT(string name, int value) {
   } else {
     xxxxxx = snprintf((char *)msg, 255, "INT VAR name: %s initialized with %d\n", name.c_str(), value);
     logThis();
+    if (usedForget) {
+      // Compact if needed
+      int lastID = -1;
+      int ix, j = myVARs.size(), n;
+      vector<int> missing;
+      it = varAddresses.begin();
+      while (it != varAddresses.end()) {
+        n = it->second;
+        cout << n << ": ";
+        if (n != (lastID + 1)) {
+          // hole!
+          missing.push_back(n - 1);
+          cout << (n - 1) << " is missing!\n";
+          varAddresses[it->first] = n-1;
+          myVARs.at(n - 1) = myVARs.at(n);
+          n = n - 1;
+        } else {
+          cout << "ok!\n";
+        }
+        it++;
+        lastID = n;
+      }
+      cout << "Size of missing: " << missing.size() << endl;
+      if(missing.size() > 0) {
+        std::map<string, int>::iterator it = varAddresses.begin();
+        while (it != varAddresses.end()) {
+          cout << it->first << ": " << it->second << ": " << myVARs.at(it->second) << endl;
+          it++;
+        }
+      }
+      for(ix = 0; ix < missing.size(); ix++)
+        myVARs.pop_back();
+    }
     myVARs.push_back(value);
     varAddresses[name] = myVARs.size() - 1;
   }
@@ -854,6 +954,8 @@ bool lookupVAR(string name) {
   return false;
 }
 
+// This will let us know that FORGET has been used at least once
+// And that we might have to compact the relevant std::map
 bool forgetVAR() {
   string name;
   if (popStringFromStack(&name) == false) {
@@ -864,20 +966,38 @@ bool forgetVAR() {
   it = varAddresses.find(name);
   if (it != varAddresses.end()) {
     // found it
-    varAddresses.erase(it->first);
-    return true;
+    if (it->second >= firstUserINT) {
+      varAddresses.erase(it->first);
+      usedForget = true;
+      return true;
+    } else {
+      cout << "Protected variable: " << it->first << endl;
+      return false;
+    }
   }
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     // found it
-    fvarAddresses.erase(it->first);
-    return true;
+    if (it->second >= firstUserINT) {
+      fvarAddresses.erase(it->first);
+      usedForget = true;
+      return true;
+    } else {
+      cout << "Protected variable: " << it->first << endl;
+      return false;
+    }
   }
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
     // found it
-    strvarAddresses.erase(it->first);
-    return true;
+    if (it->second >= firstUserINT) {
+      strvarAddresses.erase(it->first);
+      usedForget = true;
+      return true;
+    } else {
+      cout << "Protected variable: " << it->first << endl;
+      return false;
+    }
   }
   xxxxxx = snprintf((char *)msg, 255, "No VAR called: %s. CONSTs cannot be deleted.\n", name.c_str());
   logThis();

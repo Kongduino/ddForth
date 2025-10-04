@@ -248,6 +248,8 @@ std::map<string, int> strconstAddresses;
 std::map<string, vector<int>> myIntArrays;
 std::map<string, vector<float>> myFloatArrays;
 std::map<string, vector<string>> myStringArrays;
+int firstUserINT = 2;
+int firstUserFLOAT = 2;
 vector<int> myVARs;
 vector<float> myFVARs;
 vector<int> myCONSTs;
@@ -448,7 +450,7 @@ nativeCommand nativeCommands[] = {
   { handleGotoXY, "POSXY", "( x y -- ) Positions cursor (terminal/UNIX-like) to x:y." },
   { handleClearTerminal, "CLEAN", "( -- ) Clears the screen (terminal/UNIX-like) and sets cursor to 1:1." },
   { handleSleep, "SLEEP", "( n -- ) Sleeps for n seconds." },
-  { handleDelay, "DELAY", "( n -- ) Sleeps for n seconds." },
+  { handleDelay, "DELAY", "( n -- ) Sleeps for n microseconds." },
 // #include "lowercase.hpp"
 
 #if defined(NEED_SDL)
@@ -476,8 +478,10 @@ void initForth() {
   nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
   StoreINT("BASE", 10);
   StoreINT("VER.", myVERSION);
+  firstUserINT = myVARs.size();
   StoreCONSTFLOAT("PI", 3.141592653f);
   StoreCONSTFLOAT("E", 2.718281828459045f);
+  firstUserFLOAT = myFVARs.size();
   // words that are handled in code (evaluate)
   computedWords.push_back("VAR");
   computedWords.push_back("CONST");
