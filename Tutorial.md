@@ -575,7 +575,10 @@ Cell 28 = -20
 Cell 29 = -5 
 ```
 
+Speed tests with 100 and 10,000 shuffles:
+
 OK ddforth -e tests/test32.fs  0.03s user 0.05s system 96% cpu 0.081 total
+OK ddforth -e tests/test32.fs  0.22s user 0.30s system 99% cpu 0.519 total
 
 
 ### Recursive user words
@@ -958,6 +961,22 @@ OK
 ```
 
 This example demonstrates a few features together, including string functions like `SPLITD` and `STR+`, `VARRAY` and `RANDOM`, which produces random bytes (`RANDOMI` produces INTs).
+
+In [test32](tests/test32.fs) we show how VARRAYs can be sorted up/downwards. 
+
+```
+." SORT\n=========\n"
+s" MyArray" SORTV
+s" MyArray" DUP LEN> 0 DO
+  ." Cell " DUP I I . ." = " swap IX> . CR
+loop
+
+." REVERSE SORT\n=========\n"
+s" MyArray" RSORTV
+s" MyArray" DUP LEN> 0 DO
+  ." Cell " DUP I I . ." = " swap IX> . CR
+loop
+```
 
 ### U(ART|SB)
 
