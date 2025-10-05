@@ -978,6 +978,24 @@ s" MyArray" DUP LEN> 0 DO
 loop
 ```
 
+And of course, once you have your data in a VARRAY, you might want to find it, especially after a few hundred shuffles:
+
+```
+OK 0 1 2 3 4 5 6 7 8 9 10 s" vv" varray
+OK 0 s" vv" findv
+OK .s
+
++-------------------------------+
+| 1        | INT.     | 1       |
+| 0        | INT.     | 9       |
++-------------------------------+
+
+OK IF ." Found at position " . then ." Not found!" else CR
+Found at position 9
+OK
+```
+`FINDV` puts `TRUE` (1) or `FALSE` (0) on top of the stack, and below, if TRUE, the index.
+
 ### U(ART|SB)
 
 I need to be able to talk to external devices (current use cases are GPS and UWB modules). So here we go:

@@ -397,6 +397,104 @@ bool handleSortVARRAY() {
   return true;
 }
 
+bool handleFindVARRAY() {
+  // value "name" FINDV
+  // it must be a new array
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"handleFindVARRAY/0");
+    return false;
+  }
+  int type0 = dataStack.at(dataStack.size() - 1);
+  // now let's check that the array doesn't exist...
+  switch (type0) {
+    case xINTEGER:
+      {
+        std::map<string, vector<int>>::iterator it;
+        it = myIntArrays.find(name);
+        if (it == myIntArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/INT doesn't exist!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        vector<int> tmp = it->second;
+        int i0;
+        if (popIntegerFromStack(&i0) == false) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/INT pop fail!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        auto it0 = std::find(tmp.begin(), tmp.end(), i0);
+        if (it0 != tmp.end()) {
+          int index = std::distance(tmp.begin(), it0);
+          // std::cout << "Element " << i0 << " found at index: " << index << std::endl;
+          putIntegerOnStack(index);
+          putIntegerOnStack(1);
+        } else {
+          // std::cout << "Element " << i0 << " not found in the vector." << std::endl;
+          putIntegerOnStack(0);
+        }
+        return true;
+        break;
+      }
+    case xFLOAT:
+      {
+        // cout << " FLOAT VARRAY ";
+        std::map<string, vector<float>>::iterator itF;
+        itF = myFloatArrays.find(name);
+        if (itF != myFloatArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/Float exists!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        vector<float> tmpF;
+        float f0;
+        if (popFloatFromStack(&f0) == false) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/FLOAT pop fail!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        auto it0 = std::find(tmpF.begin(), tmpF.end(), f0);
+        if (it0 != tmpF.end()) {
+          int index = std::distance(tmpF.begin(), it0);
+          std::cout << "Element " << f0 << " found at index: " << index << std::endl;
+        } else {
+          std::cout << "Element " << f0 << " not found in the vector." << std::endl;
+        }
+        return true;
+        break;
+      }
+    case xSTRING:
+      {
+        // cout << " STRING VARRAY ";
+        std::map<string, vector<string>>::iterator itS;
+        itS = myStringArrays.find(name);
+        if (itS != myStringArrays.end()) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/String doesn't exist!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        vector<string> tmpS;
+        string s0;
+        if (popStringFromStack(&s0) == false) {
+          xxxxxx = snprintf((char *)msg, 255, "handleFindVARRAY %s/STR pop fail!\n", name.c_str());
+          logThis();
+          return false;
+        }
+        auto it0 = std::find(tmpS.begin(), tmpS.end(), s0);
+        if (it0 != tmpS.end()) {
+          int index = std::distance(tmpS.begin(), it0);
+          std::cout << "Element " << s0 << " found at index: " << index << std::endl;
+        } else {
+          std::cout << "Element " << s0 << " not found in the vector." << std::endl;
+        }
+        return true;
+        break;
+      }
+  }
+  return false;
+}
+
 bool handleSortReverseVARRAY() {
   needsReverse = true;
   return handleSortVARRAY();

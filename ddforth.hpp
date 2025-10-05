@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm> // std::transform
 #include "random.hpp"
+#include <iterator> // Required for std::distance
 
 using namespace std;
 
@@ -166,6 +167,7 @@ bool handleStringReplace();
 bool handleVARRAY();
 bool handleSortVARRAY();
 bool handleSortReverseVARRAY();
+bool handleFindVARRAY();
 
 bool lookup(string);
 bool lookupUC(string);
@@ -361,7 +363,8 @@ nativeCommand nativeCommands[] = {
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces." },
   { handleSortVARRAY, "SORTV", "( name -- ) Sorts varray name." },
   { handleSortReverseVARRAY, "RSORTV", "( name -- ) Sorts varray name in reverse." },
-  
+  { handleFindVARRAY, "FINDV", "( value name -- ) Looks for value in varray name." },
+
   { forgetVAR, "FORGET", "( name -- ) Erases var/const named 'name' if it exists." },
 
   { handleDUP, "DUP", "( a -- a a ) Duplicates value on top of the stack." },
