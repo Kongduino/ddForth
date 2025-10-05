@@ -250,10 +250,15 @@ bool handleVARRAY() {
   }
   int type0 = dataStack.at(dataStack.size() - 1);
   int type1, ix;
+  // check we have enough data
+  if (number < dataStack.size()) {
+    logStackOverflow((char *)"handleVARRAY/2");
+    return false;
+  }
   for (ix = 1; ix < number; ix++) {
     type1 = dataStack.at(dataStack.size() - ix - 1);
     if (type0 != type1) {
-      xxxxxx = snprintf((char *)msg, 255, "handleVARRAY/2/%d", ix);
+      xxxxxx = snprintf((char *)msg, 255, "handleVARRAY/3/%d", ix);
       logInconsistent(msg);
       return false;
     }

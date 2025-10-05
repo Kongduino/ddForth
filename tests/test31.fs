@@ -2,7 +2,7 @@ uclose supp_args 0 pick strint 1 pick ( 115200 s" /dev/tty.usbserial-110" ) UOPE
 ( Let's use the supplementary args )
 clean clear
 
-: revhex 0 var mylen lenstr 2 / mylen swap ! mylen @ 0 do i 2 * 2 substr swap loop drop mylen @ sreverse s" " strjoin ;
+: revhex 0 var mylen lenstr 2 / mylen swap ! mylen @ 0 do i 2 * 2 substr swap loop drop mylen @ sreverse s" " strjoin s" mylen" FORGET ;
 : distance 5 pick 0 8 substr swap drop DUP . ." : " revhex hex2num 10 / ;
 : cm2m 1.0 * 100.0 / floatstr s" ." splitd depth 2 - pick 0 2 substr swap drop depth 2 - place s" ." strjoin s" \ m" str+ ;
 : cmORm DUP 99 > IF cm2m . THEN . ." cm" ELSE CR CR ;

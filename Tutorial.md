@@ -8,6 +8,7 @@ A modern Forth tailored for my needs – IoT and command-line scripting.
 	* [Strings](#strings)
 * [Under the hood](#under-the-hood)
 * [Heterogenous but unified stack](#heterogenous-but-unified-stack)
+* [Stack Operations in the wild!](#stack-operations-in-the-wild)
 * [Recursive user words](#recursive-user-words)
 * [Control flow statement](#control-flow-statement)
 * [Strings](#strings)
@@ -310,6 +311,272 @@ OK
 * `!+`: ( ad -- ) Increments variable at address ad. myvar +!
 * `@`: ( ad -- ) Puts contents of variable at address ad on top of the stack. myvar @
 * `.S`: ( -- ) Displays the stack.
+
+### Stack Operations in the wild!
+
+Here is code that exchanges the contents of two cells on the stack. Say we have 30 numbers on the stack, with that count on top:
+
+```
+30 0 DO i -1 * 1 - LOOP 30 .S
+
++------------------------+
+| 30   	| INT. 	| 30     |
+| 29   	| INT. 	| -30    |
+| 28   	| INT. 	| -29    |
+| 27   	| INT. 	| -28    |
+| 26   	| INT. 	| -27    |
+| 25   	| INT. 	| -26    |
+| 24   	| INT. 	| -25    |
+| 23   	| INT. 	| -24    |
+| 22   	| INT. 	| -23    |
+| 21   	| INT. 	| -22    |
+| 20   	| INT. 	| -21    |
+| 19   	| INT. 	| -20    |
+| 18   	| INT. 	| -19    |
+| 17   	| INT. 	| -18    |
+| 16   	| INT. 	| -17    |
+| 15   	| INT. 	| -16    |
+| 14   	| INT. 	| -15    |
+| 13   	| INT. 	| -14    |
+| 12   	| INT. 	| -13    |
+| 11   	| INT. 	| -12    |
+| 10   	| INT. 	| -11    |
+| 9    	| INT. 	| -10    |
+| 8    	| INT. 	| -9     |
+| 7    	| INT. 	| -8     |
+| 6    	| INT. 	| -7     |
+| 5    	| INT. 	| -6     |
+| 4    	| INT. 	| -5     |
+| 3    	| INT. 	| -4     |
+| 2    	| INT. 	| -3     |
+| 1    	| INT. 	| -2     |
+| 0    	| INT. 	| -1     |
++------------------------+
+```
+Having the values as negative numbers will help when Looking at the stack: positives numbers = index (or count), negative numbers = values.
+
+We need to generate 2 random numbers between 0 and (count - 1). Which is achieved by `RANDOM <count> MOD`. So we need to get a fresh copy of `30`, and put it over the random number.
+
+```
+DUP 
++--------------------------------------------------------+
+| 31       | INT.     | 30 The count is duplicated       |
+| 30       | INT.     | 30                               |
+| 29       | INT.     | -30                              |
+[...]
++--------------------------------------------------------+
+random 
++--------------------------------------------------------+
+| 32       | INT.     | 88 Random number                 |
+| 31       | INT.     | 30                               |
+| 30       | INT.     | 30                               |
+| 29       | INT.     | -30                              |
++--------------------------------------------------------+
+swap 
++--------------------------------------------------------+
+| 32       | INT.     | 30 MOD needs the limit on top    |
+| 31       | INT.     | 88                               |
+| 30       | INT.     | 30                               |
+| 29       | INT.     | -30                              |
++--------------------------------------------------------+
+mod 
++--------------------------------------------------------+
+| 31       | INT.     | 28 Result of 88 % 30: cell 28    |
+| 30       | INT.     | 30                               |
+| 29       | INT.     | -30                              |
++--------------------------------------------------------+
+```
+In order to proceed with a second round of random number generation, we need to bring the count on top:
+
+```
+swap 
++--------------------------------------------------------------+
+| 31       | INT.     | 30 Put the number of cells back on top |
+| 30       | INT.     | 28                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+```
+So now we can do again `DUP RANDOM SWAP MOD` and we now have 2 random numbers.
+
+```
++--------------------------------------------------------+
+| 32       | INT.     | 14 Result: cell 14               |
+| 31       | INT.     | 30                               |
+| 30       | INT.     | 28                               |
+| 29       | INT.     | -30                              |
++--------------------------------------------------------+
+```
+
+So now we do to pick the values from these cells and store them back again, in reverse. This will involve:
+
+* Keeping a copy of the indexes for the storage operation
+* Rotating and swapping stuff around to position them properly.
+
+`14 30 28` is not what we want right now. We want `30`, the count, at the bottom of the 3, so that we have easy access to the indexes:
+
+```
+rot 
++---------------------------------------------------------+
+| 32       | INT.     | 30 rot works on the top 3 elements|
+| 31       | INT.     | 28                                |
+| 30       | INT.     | 14                                |
+| 29       | INT.     | -30                               |
++---------------------------------------------------------+
+rot 
++--------------------------------------------------------------+
+| 32       | INT.     | 28 ROT x2 we have the 2 indexes on top |
+| 31       | INT.     | 14                                     |
+| 30       | INT.     | 30                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+```
+There we go, 28 and 14 on top. Now we pick cell 28's content, move things around, and pick cell 14's content.
+
+```
+dup 
++--------------------------------------------------------+
+| 33       | INT.     | 28 Duplicate so we can use it    |
+| 32       | INT.     | 28                               |
+| 31       | INT.     | 14                               |
+| 30       | INT.     | 30                               |
+| 29       | INT.     | -30                              |
++--------------------------------------------------------+
+pick 
++--------------------------------------------------------------+
+| 33       | INT.     | -29 Replaces cell index with content   |
+| 32       | INT.     | 28                                     |
+| 31       | INT.     | 14                                     |
+| 30       | INT.     | 30                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+rot 
++--------------------------------------------------------+
+| 33       | INT.     | 28                               |
+| 32       | INT.     | 14                               |
+| 31       | INT.     | -29                              |
+| 30       | INT.     | 30                               |
++--------------------------------------------------------+
+rot 
++--------------------------------------------------------------+
+| 33       | INT.     | 14 ROT x 2 again to reposition elements|
+| 32       | INT.     | -29                                    |
+| 31       | INT.     | 28                                     |
+| 30       | INT.     | 30                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+```
+We can now pick the second cell's value:
+
+```
+dup 
++--------------------------------------------------------+
+| 34       | INT.     | 14 Duplicate so we can use it    |
+| 33       | INT.     | 14                               |
+| 32       | INT.     | -29                              |
+| 31       | INT.     | 28                               |
+| 30       | INT.     | 30                               |
++--------------------------------------------------------+
+pick 
++--------------------------------------------------------------+
+| 34       | INT.     | -15 Replaces cell index with content   |
+| 33       | INT.     | 14                                     |
+| 32       | INT.     | -29                                    |
+| 31       | INT.     | 28                                     |
+| 30       | INT.     | 30                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+```
+The last task is to reposition values so that they are for each other's index.
+
+```
+rot 
++--------------------------------------------------------------+
+| 34       | INT.     | 14  We want to position the contents   |
+| 33       | INT.     | -29 with the opposite cell indexes     |
+| 32       | INT.     | -15                                    |
+| 31       | INT.     | 28                                     |
+| 30       | INT.     | 30                                     |
+| 29       | INT.     | -30                                    |
++--------------------------------------------------------------+
+```
+Magically, one `ROT` is all we need. `PLACE` needs `( value address -- )` so they're properly positioned too.
+
+```
+place 
++--------------------------------+
+| 32       | INT.     | -15      |
+| 31       | INT.     | 28       |
+| 30       | INT.     | 30       |
+| 29       | INT.     | -30      |
++--------------------------------+
+```
+The second set is in reverse, we need to swap them first:
+
+```
+swap 
++------------------------------------------------+
+| 32       | INT.     | 28                       |
+| 31       | INT.     | -15                      |
+| 30       | INT.     | 30                       |
+| 29       | INT.     | -30                      |
++--------------------------------------------------------------+
+place
++------------------------------------------------+
+| 30       | INT.     | 30                       |
+| 29       | INT.     | -30                      |
+| 28       | INT.     | -15                      |
+| 27       | INT.     | -28                      |
++------------------------------------------------+
+```
+
+![Shuffle](assets/Shuffle.png)
+
+So you can run this a bunch of times and you will get a deck of cards pretty well shuffled. And store that in a `VARRAY` for example.
+
+```
+30 0 DO i -1 * 1 - LOOP 30 .S
+
+: shuffle DUP random swap mod swap DUP random swap mod rot rot dup pick rot rot dup pick rot place swap place ;
+
+1000 0 do shuffle loop s" MyArray" VARRAY
+s" MyArray" DUP LEN> 0 DO
+  ." Cell " DUP I I . ." = " swap IX> . CR
+loop
+
+Cell 0 = -9 
+Cell 1 = -30 
+Cell 2 = -23 
+Cell 3 = -6 
+Cell 4 = -4 
+Cell 5 = -26 
+Cell 6 = -13 
+Cell 7 = -25 
+Cell 8 = -11 
+Cell 9 = -12 
+Cell 10 = -3 
+Cell 11 = -16 
+Cell 12 = -10 
+Cell 13 = -22 
+Cell 14 = -15 
+Cell 15 = -7 
+Cell 16 = -2 
+Cell 17 = -1 
+Cell 18 = -24 
+Cell 19 = -29 
+Cell 20 = -18 
+Cell 21 = -17 
+Cell 22 = -8 
+Cell 23 = -27 
+Cell 24 = -21 
+Cell 25 = -14 
+Cell 26 = -19 
+Cell 27 = -28 
+Cell 28 = -20 
+Cell 29 = -5 
+```
+
+OK ddforth -e tests/test32.fs  0.03s user 0.05s system 96% cpu 0.081 total
+
 
 ### Recursive user words
 
