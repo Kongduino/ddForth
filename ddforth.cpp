@@ -2,6 +2,7 @@
 bool insideString = false;
 bool isHelping = false;
 bool usedForget = false;
+bool needsReverse = false;
 
 using namespace std;
 
@@ -343,6 +344,62 @@ bool handleVARRAY() {
     }
   }
   return false;
+}
+
+bool handleSortVARRAY() {
+  // "name" SORTV
+  // it must be an existing array
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"handleSortVARRAY/0");
+    return false;
+  }
+  // now let's check that the array does exist...
+  std::map<string, vector<int>>::iterator it;
+  it = myIntArrays.find(name);
+  if (it != myIntArrays.end()) {
+    vector<int> tmp = it->second;
+    sort(tmp.begin(), tmp.end());
+    if (needsReverse) {
+      needsReverse = false;
+      reverse(tmp.begin(), tmp.end());
+    }
+    myIntArrays[name] = tmp;
+    return true;
+  }
+  std::map<string, vector<float>>::iterator itF;
+  itF = myFloatArrays.find(name);
+  if (itF != myFloatArrays.end()) {
+    vector<float> tmpF = itF->second;
+    sort(tmpF.begin(), tmpF.end());
+    if (needsReverse) {
+      needsReverse = false;
+      reverse(tmpF.begin(), tmpF.end());
+    }
+    myFloatArrays[name] = tmpF;
+    return true;
+  }
+  // cout << " STRING VARRAY ";
+  std::map<string, vector<string>>::iterator itS;
+  itS = myStringArrays.find(name);
+  if (itS == myStringArrays.end()) {
+    xxxxxx = snprintf((char *)msg, 255, "handleSortVARRAY %s doesn't exist!\n", name.c_str());
+    logThis();
+    return false;
+  }
+  vector<string> tmpS = itS->second;
+  sort(tmpS.begin(), tmpS.end());
+  if (needsReverse) {
+    needsReverse = false;
+    reverse(tmpS.begin(), tmpS.end());
+  }
+  myStringArrays[name] = tmpS;
+  return true;
+}
+
+bool handleSortReverseVARRAY() {
+  needsReverse = true;
+  return handleSortVARRAY();
 }
 
 bool handleRput() {
