@@ -3,6 +3,12 @@ bool insideString = false;
 bool isHelping = false;
 bool usedForget = false;
 bool needsReverse = false;
+bool isExiting = false;
+bool isInsideParens = false;
+bool isUNTIL = true;
+bool isInsideIF = false;
+bool isTrueIF = false;
+bool skipElse = false;
 
 using namespace std;
 
@@ -673,7 +679,6 @@ bool handleBEGIN() {
   return true;
 }
 
-bool isUNTIL = true;
 bool handleUNTILWHILE() {
   xxxxxx = snprintf((char *)msg, 255, "\n--> UNTILWHILE at %d. JumpStack size: %zu\n", executionPointer, jumpStack.size());
   logThis();
@@ -1282,9 +1287,6 @@ bool handleEXEC() {
   return true;
 }
 
-bool isInsideIF = false;
-bool isTrueIF = false;
-bool skipElse = false;
 bool handleIF() {
   int i0;
   if (popIntegerFromStack((int *)&i0) == false) {
@@ -1314,15 +1316,8 @@ bool handleELSE() {
   return true;
 }
 
-bool isExiting = false;
 bool handleEXIT() {
   isExiting = true;
-  return true;
-}
-
-bool isInsideParens = false;
-bool handleParens() {
-  isInsideParens = true;
   return true;
 }
 
@@ -1989,6 +1984,11 @@ void evaluate(vector<string> chunks) {
   showStack();
 #endif
   executionPointer = 0;
+#if defined(DEBUG)
+  for (std::vector<string>::iterator it = chunks.begin() ; it != chunks.end(); ++it)
+    cout << *it << " ";
+  cout << endl;
+#endif
   while (executionPointer < chunks.size()) {
     // executionPointer is global so that BEGIN – and later others – can change it.
     string c = chunks.at(executionPointer);
@@ -2019,12 +2019,6 @@ void evaluate(vector<string> chunks) {
         executionPointer += 1;
       }
       isInsideIF = false;
-    } else if (isInsideParens) {
-      executionPointer += 1;
-      isInsideParens = false;
-      while (chunks.at(executionPointer) != ")")
-        executionPointer += 1;
-      executionPointer += 1;
     } else if (cl == "var" || cl == "const") {
       // creation of a variable
       executionPointer += 1;
@@ -2327,10 +2321,17 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
       chunks.push_back(ss);
       memset(buffer, 0, 256);
       buffIndex = 0;
+    } else if (c == '(') {
+      // Do not tokenize comments!
+      isInsideParens = true;
+    } else if (c == ')') {
+      // Do not tokenize comments!
+      isInsideParens = false;
     } else {
       xxxxxx = snprintf((char *)msg, 255, "%c", c);
       logThis();
-      buffer[buffIndex++] = c;
+      if (!isInsideParens)
+        buffer[buffIndex++] = c;
     }
   }
  if (buffIndex > 0) {

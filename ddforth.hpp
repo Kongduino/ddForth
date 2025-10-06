@@ -442,7 +442,6 @@ nativeCommand nativeCommands[] = {
   { handleTHEN, "THEN", "( words -- ? ) words between IF and THEN are executed if true." },
   { handleELSE, "ELSE", "( words -- ? ) words between THEN and ELSE are executed if false." },
   { handleEXIT, "EXIT", "( -- ) Exits ddForth" },
-  { handleParens, "(", "(a b c d ) -- ) Comment" },
   { handleCELLS, "ARRAY", "( a b name -- ) Creates array name with b rows containing a." },
   { handleARRAYLIST, "ARRAYS", "( -- ) Lists existing arrays by type." },
   { handleCELLSTORE, ">IX", "( a b name -- ) Stores a into row b of array name." },
