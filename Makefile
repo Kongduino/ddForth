@@ -1,12 +1,19 @@
 CPP=g++
 CFLAGS=-O3
-
+CFLAGSMALL=-Oz
+LDFLAGS=-Wl
 TEST="-10 BEGIN DUP . 1 + DUP 0 <> WHILE . CR 10 DUP U. FACT U."
 
 ddforth: ddforth.cpp
 	mkdir -p bin
-	$(CPP) $(CFLAGS) -g -c ddforth.cpp -o bin/ddforth.o
-	$(CPP) -o bin/ddforth bin/ddforth.o $(LDLAGS)
+	$(CPP) $(CFLAGS) -c ddforth.cpp -o bin/ddforth.o
+	$(CPP) -o bin/ddforth bin/ddforth.o $(LDFLAGS)
+	rm -f bin/*.o
+
+small: ddforth.cpp
+	mkdir -p bin
+	$(CPP) $(CFLAGSMALL) -c ddforth.cpp -o bin/ddforth.o
+	$(CPP) -o bin/ddforth_z bin/ddforth.o $(LDFLAGS)
 	rm -f bin/*.o
 
 test: ddforth
@@ -34,7 +41,7 @@ sdl: ddforth.cpp
 	./in.sh
 	rm -f bin/*.o
 
-all: ddforth debug sdl
+all: ddforth debug sdl small
 
 install: ddforth
 	sudo cp bin/ddforth /usr/local/bin/

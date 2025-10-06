@@ -1023,4 +1023,24 @@ I need to be able to talk to external devices (current use cases are GPS and UWB
 
 This is nowhere near finished, but it should give you enough to start poking around.
 
+### Compiling
+
+There is a Makefile that supplies options, and seems to work well. I have added an option, `small`, which uses `-Oz`. The current size savings of `ddforth_z` aren't bad, about 12% vs `ddforth`:
+
+```
+**292392**  6 Oct 10:52 ddforth
+308896  6 Oct 10:52 ddforth_debug
+334008  6 Oct 10:52 ddforth_SDL
+350528  6 Oct 10:52 ddforth_SDL_debug
+**257656**  6 Oct 10:52 ddforth_z
+```
+Speed-wise, the impact isn't too bad, a little higher: 15%. So if you're looking to compile a binary for a smaller device, `make small` is your friend.
+
+```
+50000 shuffles
+OK ./bin/ddforth -e tests/test32.fs  1.07s user 1.41s system 94% cpu 2.622 total
+OK ./bin/ddforth_z -e tests/test32.fs  1.34s user 1.42s system 89% cpu 3.067 total
+```
+
+
 VAZY TITI !!!
