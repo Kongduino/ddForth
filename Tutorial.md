@@ -13,9 +13,10 @@ A modern Forth tailored for my needs – IoT and command-line scripting.
 * [Control flow statement](#control-flow-statement)
 * [Strings](#strings)
 * [Numbers and maths](#numbers-and-maths)
-* [Perfect segue variables!](#perfect-segue-variables!)
+* [Perfect segue: variables!](#perfect-segue-variables!)
 * [U(ART|SB)](#uartsb)
 * [Keyboard, files & automatic execution](#keyboard-files--automatic-execution)
+* [Compiling](#compiling)
 
 ## Background
 

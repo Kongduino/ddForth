@@ -6,6 +6,8 @@ Surprisingly, it went well, beyond expectations, and I can run quite a few of th
 
 This README itself is outdated. Run `./ddforth "WORDS"` to get the list of words that have been implemented. See below. It's a huge update compared to the last time I edited this README. Among other things, string manipulations are now quite advanced. The stack operations by and large support all 3 types of data seamlessly. USB basic functions work – I focused so far on reading.
 
+--- THIS README WILL BE COMPLETELY REWRITTEN SOON ---
+
 When code fails, the interpreter tries to be helpful, and shows context (a couple of words before and after the culprit) and the stack – before nuking it. Example:
 
 ```
