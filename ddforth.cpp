@@ -653,7 +653,6 @@ bool handlePlusLoop() {
   return handleLOOP();
 }
 
-
 bool handleI() {
   if (!checkDOLOOPconditions((char *)"handleI")) return false;
   putIntegerOnStack(loopStack.at(loopStack.size() - 1));

@@ -542,5 +542,47 @@ bool handleHEX2NUM() {
   return true;
 }
 
+bool handleSFILL() {
+  // ( s c -- s )
+  string s, d;
+  if (popStringFromStack(&d) == false) {
+    logStackOverflow((char *)"handleSFILL/0");
+    return false;
+  }
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleSFILL/1");
+    return false;
+  }
+  int ix = 0, ln = s.size();
+  s = "";
+  while (ix < ln) {
+    s.append(d);
+    ix += d.size();
+  }
+  s.resize(ln);
+  putStringOnStack(s);
+  return true;
+}
+
+bool handleCFILL() {
+  // ( s c -- s )
+  string s;
+  int i0;
+  if (popIntegerFromStack(&i0) == false) {
+    logStackOverflow((char *)"handleCFILL/i0");
+    return false;
+  }
+  if (popStringFromStack(&s) == false) {
+    logStackOverflow((char *)"handleCFILL/s");
+    return false;
+  }
+  int ix, ln = s.size();
+  char c = i0;
+  for (ix = 0; ix < ln; ix++) {
+    s.at(ix) = c;
+  }
+  putStringOnStack(s);
+  return true;
+}
 
 // end

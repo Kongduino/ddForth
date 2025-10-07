@@ -163,6 +163,9 @@ bool handleSPLITDELIM();
 bool handleStringReverse();
 bool handleDINSERT();
 bool handleStringReplace();
+bool handleSFILL();
+bool handleCFILL();
+
 bool handleVARRAY();
 bool handleSortVARRAY();
 bool handleSortReverseVARRAY();
@@ -358,6 +361,8 @@ nativeCommand nativeCommands[] = {
   { handleStringReverse, "SREVERSE", "( s0 s1 s2 s3 s4... n -- sx... s4 s3 s2 s1 n ) Reverses a stack of strings prefixed by count." },
   { handleDINSERT, "DINSERT", "( s1 s0 n -- s ) Inserts s0 into s1 every n chars." },
   { handleStringReplace, "STRREPLACE", "( s0 s1 s2 -- s ) Replaces instances of s1 by s2 in s0." },
+  { handleSFILL, "SFILL", "( s v -- s ) Fills string s with string v." },
+  { handleCFILL, "CFILL", "( s c -- s ) Fills string s with char c." },
 
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces." },
   { handleSortVARRAY, "SORTV", "( name -- ) Sorts varray name." },
