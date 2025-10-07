@@ -131,7 +131,6 @@ bool handleWORDS();
 bool handleFLOAD();
 bool handleFSAVE();
 
-bool handleParens();
 bool handleCELLS();
 bool handleARRAYLIST();
 bool handleCELLSTORE();
@@ -611,6 +610,5 @@ bool handleHexDump() {
   hexDump((unsigned char *)mySTRING.c_str(), mySTRING.length());
   return true;
 }
-
 
 // end

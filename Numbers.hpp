@@ -51,6 +51,10 @@ enum mathTypes {
 };
 
 bool handle2Nums(unsigned char X) {
+  if (dataStack.size() < 2) {
+    logStackOverflow((char *)"handle2Nums/0");
+    return false;
+  }
   unsigned char type1 = dataStack.at(dataStack.size() - 1);
   unsigned char type0 = dataStack.at(dataStack.size() - 2);
   if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {

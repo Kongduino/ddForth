@@ -9,6 +9,11 @@ bool isUNTIL = true;
 bool isInsideIF = false;
 bool isTrueIF = false;
 bool skipElse = false;
+vector<int> indexIF;
+vector<int> indexELSE;
+vector<int> indexTHEN;
+int ifLevels = -1;
+int thenStep, elseStep;
 
 using namespace std;
 
@@ -1181,9 +1186,29 @@ bool lookupUC(string name) {
       xxxxxx = snprintf((char *)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
       logThis();
       int savedExecutionPointer = executionPointer;
+      // preserve the IF/THEN/ELSE index
+      vector<int> indexIFsave;
+      vector<int> indexELSEsave;
+      vector<int> indexTHENsave;
+      for (vector<int>::iterator it = indexIF.begin() ; it != indexIF.end(); ++it)
+        indexIFsave.push_back(*it);
+      for (vector<int>::iterator it = indexELSE.begin() ; it != indexELSE.end(); ++it)
+        indexELSEsave.push_back(*it);
+      for (vector<int>::iterator it = indexTHEN.begin() ; it != indexTHEN.end(); ++it)
+        indexTHENsave.push_back(*it);
       vector<string> myChunks;
       myChunks = tokenize(cc, myChunks);
       evaluate(myChunks);
+      // Restore the IF/THEN/ELSE index
+      indexIF.clear();
+      indexELSE.clear();
+      indexTHEN.clear();
+      for (vector<int>::iterator it = indexIFsave.begin() ; it != indexIFsave.end(); ++it)
+        indexIF.push_back(*it);
+      for (vector<int>::iterator it = indexELSEsave.begin() ; it != indexELSEsave.end(); ++it)
+        indexELSE.push_back(*it);
+      for (vector<int>::iterator it = indexTHENsave.begin() ; it != indexTHENsave.end(); ++it)
+        indexTHEN.push_back(*it);
       executionPointer = savedExecutionPointer;
       return true;
     }
@@ -1293,26 +1318,34 @@ bool handleIF() {
     logStackOverflow((char *)"handleIF");
     return false;
   }
+  ifLevels += 1;
+  // cout << "ifLevels = " << ifLevels << endl;
+  thenStep = indexTHEN.at(ifLevels);
+  elseStep = indexELSE.at(ifLevels);
+  // cout << "\n\thandleIF: " << ifLevels << indexIF.at(ifLevels) << "\t" << thenStep << "\t" << elseStep << "\n";
   isInsideIF = true;
   if (i0 == 0) {
     isTrueIF = false;
-    skipElse = false;
+    executionPointer = thenStep;
+    // We skip to after THEN
   } else {
     isTrueIF = true;
-    skipElse = false;
   }
   return true;
 }
 
 bool handleTHEN() {
-  skipElse = true;
+  // we need to skip to after ELSE
+  executionPointer = indexELSE.at(ifLevels);
+  ifLevels -= 1;
   return true;
 }
 
 bool handleELSE() {
+  // we're done
   isInsideIF = false;
   isTrueIF = false;
-  skipElse = false;
+  ifLevels -= 1;
   return true;
 }
 
@@ -2007,18 +2040,18 @@ void evaluate(vector<string> chunks) {
     if (isExiting) {
       isExiting = false;
       executionPointer = chunks.size();
-    } else if (isInsideIF && !isTrueIF) {
-      // Skip to after then
-      while (chunks.at(executionPointer) != "THEN" && chunks.at(executionPointer) != "then") {
-        executionPointer += 1;
-      }
-      executionPointer += 1;
-      isInsideIF = false;
-    } else if (isInsideIF && isTrueIF && skipElse) {
-      while (chunks.at(executionPointer) != "ELSE" && chunks.at(executionPointer) != "else") {
-        executionPointer += 1;
-      }
-      isInsideIF = false;
+//     } else if (isInsideIF && !isTrueIF) {
+//       // Skip to after then
+//       while (chunks.at(executionPointer) != "THEN" && chunks.at(executionPointer) != "then") {
+//         executionPointer += 1;
+//       }
+//       executionPointer += 1;
+//       isInsideIF = false;
+//     } else if (isInsideIF && isTrueIF && skipElse) {
+//       while (chunks.at(executionPointer) != "ELSE" && chunks.at(executionPointer) != "else") {
+//         executionPointer += 1;
+//       }
+//       isInsideIF = false;
     } else if (cl == "var" || cl == "const") {
       // creation of a variable
       executionPointer += 1;
@@ -2325,7 +2358,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
       // Do not tokenize comments!
       isInsideParens = true;
     } else if (c == ')') {
-      // Do not tokenize comments!
+      // End of comment!
       isInsideParens = false;
     } else {
       xxxxxx = snprintf((char *)msg, 255, "%c", c);
@@ -2340,6 +2373,75 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
     logThis();
     chunks.push_back(buffer);
   }
+  // Now we index the IF THEN ELSE instances
+  ln = chunks.size();
+  string d, s;
+  int ifCount = -1, backStart, bx, elseNum, thenNum;
+  indexIF.clear();
+  indexTHEN.clear();
+  indexELSE.clear();
+  bool insideDotDot = false;
+  for (ix = 0; ix < ln; ix++) {
+    d = chunks.at(ix);
+    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    if (d == ":")
+      insideDotDot = true;
+    else if (d == ";")
+      insideDotDot = false;
+    else if (d == "if" && !insideDotDot) {
+      // Don't tokenize inside :...;
+      // Let's find the (ifCount+1)'th instance of ELSE, and then... well, THEN
+      // cout << "\tFound IF at position " << ix << endl;
+      if (ifCount == -1)
+        backStart = ln - 1;
+      else
+        backStart = elseNum - 1;
+      indexIF.push_back(ix);
+      // cout << "\tLooking backwards for ELSE from position " << backStart << ", ie " << chunks.at(backStart) << endl;
+      bool foundElse = false;
+      for(bx = backStart; bx > ix; bx--) {
+        s = chunks.at(bx);
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        if (s == "else") {
+          // cout << "\tFound ELSE at position " << bx << endl;
+          elseNum = bx;
+          indexELSE.push_back(elseNum);
+          foundElse = true;
+          bx = ix - 1;
+        }
+      }
+      if(!foundElse) {
+        cout << "\tERROR! Couldn't find ELSE! Aborting!\n";
+        chunks.clear();
+        return chunks;
+      }
+      // cout << "\tLooking forwards for THEN from position " << (ix + 1) << ", ie " << chunks.at(ix + 1) << endl;
+      foundElse = false;
+      for(bx = ix + 1; bx < elseNum; bx++) {
+        s = chunks.at(bx);
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        // cout << "\t\t" << s << endl;
+        if (s == "then") {
+          // cout << "\tFound THEN at position " << bx << endl;
+          thenNum = bx;
+          indexTHEN.push_back(thenNum);
+          foundElse = true;
+          bx = elseNum + 1;
+        }
+      }
+      if(!foundElse) {
+        cout << "\tERROR! Couldn't find THEN! Aborting!\n";
+        chunks.clear();
+        return chunks;
+      }
+      ifCount = indexIF.size();
+    }
+  }
+  ln = indexIF.size();
+#if defined(DEBUG)
+  for (ix = 0; ix < ln; ix++)
+    cout << "\t• " << ix << ": " << indexIF.at(ix) << " / " << indexTHEN.at(ix) << " / " << indexELSE.at(ix) << endl;
+#endif
   return chunks;
 }
 
