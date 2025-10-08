@@ -213,10 +213,11 @@ bool handleROLL() {
     logStackOverflow((char *)"handleROLL");
     return false;
   }
-  unsigned char type0;
+  unsigned char type0, type1;
+  type1 = dataStack.at(dataStack.size() - 1);
   for(ix = 0; ix < levels; ix++) {
     type0 = dataStack.at(dataStack.size() - ix - 1);
-    if (type0 != xINTEGER && type0 != xFLOAT) {
+    if (type0 != type1) {
       logInconsistent((char *)"handleROLL");
       return false;
     }
@@ -229,6 +230,11 @@ bool handleROLL() {
     ix = userFloats.at(userFloats.size() - 1);
     userFloats.insert(userFloats.end() - levels, ix);
     userFloats.pop_back();
+  } else if (type0 == xSTRING) {
+    string sx;
+    sx = userStrings.at(userStrings.size() - 1);
+    userStrings.insert(userStrings.end() - levels, sx);
+    userStrings.pop_back();
   }
   return true;
 }
