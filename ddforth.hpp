@@ -118,7 +118,7 @@ bool handleAPPENDSTACKSTRING();
 bool handlePREPENDSTACKSTRING();
 bool handleRetrieve();
 bool handleRget();
-bool handleROT();
+// bool handleROT();
 bool handleROLL();
 bool handleRput();
 bool handleSQR();
@@ -378,7 +378,7 @@ nativeCommand nativeCommands[] = {
   { handleSWAP, "SWAP", "( a b -- b a ) Swaps the 2 values on top of the stack." },
   { handleDEPTH, "DEPTH", "( a b c d... -- a b c d... x ) Puts the length of the stack on top of the stack." },
   { handleCLEAR, "CLEAR", "( a b c d... -- ) Removes everything from the stack." },
-  { handleROT, "ROT", "(a b c -- c a b) Rotates the 3 values on top of the stack." },
+  // { handleROT, "ROT", "(a b c -- c a b) Rotates the 3 values on top of the stack." },
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
   { handleOVER, "OVER", "( a b -- a b a) Places a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },

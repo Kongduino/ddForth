@@ -77,8 +77,7 @@ void StoreSTRING(string name, string value) {
     xxxxxx = snprintf(
       (char *)msg, 255,
       "Updating STR VAR name: %s at position %d to %s\n",
-      name.c_str(), (it->second - 512), value.c_str()
-    );
+      name.c_str(), (it->second - 512), value.c_str());
     logThis();
     mySTRVARs.at(it->second - 512) = value;
     xxxxxx = snprintf((char *)msg, 255, "STR VAR name: %s updated to %s\n", name.c_str(), value.c_str());
@@ -96,26 +95,26 @@ void StoreSTRING(string name, string value) {
         if (n != (lastID + 1)) {
           // hole!
           missing.push_back(n - 1);
-          cout << (n - 1) << " is missing!\n";
+          // cout << (n - 1) << " is missing!\n";
           strvarAddresses[it->first] = n - 1;
           mySTRVARs.at(n - 512 - 1) = mySTRVARs.at(n - 512);
           n = n - 1;
         } else {
-          cout << "ok!\n";
+          // cout << "ok!\n";
         }
         it++;
         lastID = n;
       }
-      cout << "Size of missing: " << missing.size() << endl;
+      // cout << "Size of missing: " << missing.size() << endl;
       if (missing.size() > 0) {
-        std::map<string, int>::iterator it = strvarAddresses.begin();
-        while (it != strvarAddresses.end()) {
-          cout << it->first << ": " << it->second << ": " << mySTRVARs.at(it->second - 512) << endl;
-          it++;
-        }
+        // std::map<string, int>::iterator it = strvarAddresses.begin();
+        // while (it != strvarAddresses.end()) {
+        // cout << it->first << ": " << it->second << ": " << mySTRVARs.at(it->second - 512) << endl;
+        // it++;
+        // }
+        for (ix = 0; ix < missing.size(); ix++)
+          mySTRVARs.pop_back();
       }
-      for (ix = 0; ix < missing.size(); ix++)
-        mySTRVARs.pop_back();
     }
     mySTRVARs.push_back(value);
     strvarAddresses[name] = mySTRVARs.size() - 1 + 512;
@@ -154,16 +153,16 @@ void StoreFLOAT(string name, float value) {
         it++;
         lastID = n;
       }
-      cout << "Size of missing: " << missing.size() << endl;
+      // cout << "Size of missing: " << missing.size() << endl;
       if (missing.size() > 0) {
-        std::map<string, int>::iterator it = fvarAddresses.begin();
-        while (it != fvarAddresses.end()) {
-          cout << it->first << ": " << it->second << ": " << myFVARs.at(it->second - 128) << endl;
-          it++;
-        }
+        // std::map<string, int>::iterator it = fvarAddresses.begin();
+        // while (it != fvarAddresses.end()) {
+          // cout << it->first << ": " << it->second << ": " << myFVARs.at(it->second - 128) << endl;
+          // it++;
+        // }
+        for (ix = 0; ix < missing.size(); ix++)
+          myFVARs.pop_back();
       }
-      for (ix = 0; ix < missing.size(); ix++)
-        myFVARs.pop_back();
     }
     myFVARs.push_back(value);
     fvarAddresses[name] = myFVARs.size() - 1 + 128;
@@ -204,16 +203,16 @@ void StoreINT(string name, int value) {
         it++;
         lastID = n;
       }
-      cout << "Size of missing: " << missing.size() << endl;
+      // cout << "Size of missing: " << missing.size() << endl;
       if(missing.size() > 0) {
-        std::map<string, int>::iterator it = varAddresses.begin();
-        while (it != varAddresses.end()) {
-          cout << it->first << ": " << it->second << ": " << myVARs.at(it->second) << endl;
-          it++;
-        }
+        // std::map<string, int>::iterator it = varAddresses.begin();
+        // while (it != varAddresses.end()) {
+          // cout << it->first << ": " << it->second << ": " << myVARs.at(it->second) << endl;
+          // it++;
+        // }
+        for(ix = 0; ix < missing.size(); ix++)
+          myVARs.pop_back();
       }
-      for(ix = 0; ix < missing.size(); ix++)
-        myVARs.pop_back();
     }
     myVARs.push_back(value);
     varAddresses[name] = myVARs.size() - 1;

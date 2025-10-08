@@ -239,10 +239,10 @@ bool handleROLL() {
   return true;
 }
 
-bool handleROT() {
-  putIntegerOnStack(3);
-  return handleROLL();
-}
+// bool handleROT() {
+//   putIntegerOnStack(3);
+//   return handleROLL();
+// }
 
 bool handleSWAP() {
   logStack((char *)"handleROT");
@@ -307,6 +307,7 @@ bool handleSWAP() {
     }
   } else {
     if (type0 == xINTEGER && type1 == xFLOAT) {
+      // cout << "	type0 == xINTEGER && type1 == xFLOAT\n";
       if (popIntegerFromStack(&i0) == false) {
         logStackOverflow((char *)"handleSWAP10");
         return false;
@@ -320,6 +321,7 @@ bool handleSWAP() {
       return true;
     }
     if (type0 == xINTEGER && type1 == xSTRING) {
+      // cout << "	type0 == xINTEGER && type1 == xSTRING\n";
       if (popIntegerFromStack(&i0) == false) {
         logStackOverflow((char *)"handleSWAP12");
         return false;
@@ -333,6 +335,7 @@ bool handleSWAP() {
       return true;
     }
     if (type1 == xINTEGER && type0 == xFLOAT) {
+      // cout << "	type0 == xFLOAT && type1 == xINTEGER\n";
       if (popFloatFromStack(&f0) == false) {
         logStackOverflow((char *)"handleSWAP11");
         return false;
@@ -346,6 +349,7 @@ bool handleSWAP() {
       return true;
     }
     if (type1 == xINTEGER && type0 == xSTRING) {
+      // cout << "	type0 == xSTRING && type1 == xINTEGER\n";
       if (popStringFromStack(&s0) == false) {
         logStackOverflow((char *)"handleSWAP13");
         return false;
@@ -359,6 +363,7 @@ bool handleSWAP() {
       return true;
     }
     if (type0 == xSTRING && type1 == xFLOAT) {
+      // cout << "	type0 == xSTRING && type1 == xFLOAT\n";
       if (popStringFromStack(&s0) == false) {
         logStackOverflow((char *)"handleSWAP10");
         return false;
@@ -367,11 +372,12 @@ bool handleSWAP() {
         logStackOverflow((char *)"handleSWAP11");
         return false;
       }
-      putFloatOnStack(f0);
       putStringOnStack(s0);
+      putFloatOnStack(f0);
       return true;
     }
-    if (type0 == xFLOAT && type1 == xSTRING) {
+    if (type1 == xSTRING && type0 == xFLOAT) {
+      // cout << "	type0 == xFLOAT && type1 == xSTRING\n";
       if (popFloatFromStack(&f0) == false) {
         logStackOverflow((char *)"handleSWAP12");
         return false;
@@ -380,8 +386,8 @@ bool handleSWAP() {
         logStackOverflow((char *)"handleSWAP13");
         return false;
       }
-      putStringOnStack(s0);
       putFloatOnStack(f0);
+      putStringOnStack(s0);
       return true;
     }
   }
