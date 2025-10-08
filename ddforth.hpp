@@ -97,6 +97,7 @@ bool handleI();
 bool handleIprime();
 bool handleJ();
 bool handleKEY();
+bool handleQuietKEY();
 bool handleLINE();
 bool handleLOOP();
 bool handleOVER();
@@ -331,7 +332,8 @@ nativeCommand nativeCommands[] = {
   { handleSETINT, "INT", "( a -- x ) Converts a to an integer" },
   { handleEMIT, "EMIT", "( a -- ) printf(\"%c\", a);" },
   { handleASC2CHR, "CHR", "( a -- s ) Converts an ASCII code to a string and puts it on the stack." },
-  { handleKEY, "KEY", "( -- x) Waits for a key and puts it on the stack." },
+  { handleKEY, "KEY", "( -- x) Waits for a key, prints it on screen, and puts it on the stack." },
+  { handleQuietKEY, "QKEY", "( -- x) Waits for a key and puts it on the stack." },
   { handleLINE, "LINE", "( -- x ) Waits for a line, and puts it on the stack." },
   { handleUPRINT, "U.", "( a -- ) Prints a numerical value as a UINT" },
   { handlePRINTSTRING, ".\"", "( -- ) Print a string following that command. .\" print this.\"" },

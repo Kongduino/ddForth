@@ -34,7 +34,7 @@ bool checkTypes(int levels, unsigned char n) {
 bool showStack() {
   int count = 0;
   if (dataStack.size() == 0) {
-    cout << "Stack empty! ";
+    cout << "Stack empty!\n";
     return true;
   }
   cout << endl; // << "showStack " << dataStack.size();

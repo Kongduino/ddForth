@@ -824,6 +824,7 @@ bool handleStore() {
   // ie 0-127, 256-383 = int, else float
   int ad, x;
   float fx;
+  string s;
   if (dataStack.at(dataStack.size() - 1) == xINTEGER) {
     if (popIntegerFromStack(&x) == false) {
       xxxxxx = snprintf((char *)msg, 255, "handleStore on top!\n");
@@ -835,6 +836,14 @@ bool handleStore() {
   } else if (dataStack.at(dataStack.size() - 1) == xFLOAT) {
     if (popFloatFromStack(&fx) == false) {
       xxxxxx = snprintf((char *)msg, 255, "handleStore No Float on top!\n");
+      logThis();
+      return false;
+    }
+    xxxxxx = snprintf((char *)msg, 255, "handleStore pop Float successful!\n");
+    logThis();
+  } else if (dataStack.at(dataStack.size() - 1) == xSTRING) {
+    if (popStringFromStack(&s) == false) {
+      xxxxxx = snprintf((char *)msg, 255, "handleStore No String on top!\n");
       logThis();
       return false;
     }
@@ -868,10 +877,14 @@ bool handleStore() {
     xxxxxx = snprintf((char *)msg, 255, "storing %d into myCONSTs[%d].\n", x, ad);
     logThis();
     myCONSTs.at(ad - 256) = x;
-  } else {
+  } else if (ad < 512) {
     xxxxxx = snprintf((char *)msg, 255, "storing %f into myFCONSTs[%d].\n", fx, ad);
     logThis();
     myFCONSTs.at(ad - 384) = fx;
+  } else if (ad < 640) {
+    xxxxxx = snprintf((char *)msg, 255, "storing %s into mySTRVARs[%d].\n", s.c_str(), ad);
+    logThis();
+    mySTRVARs.at(ad - 512) = s;
   }
   return true;
 }
@@ -967,6 +980,19 @@ bool printOtherBases(int number, unsigned int base) {
     n += 1;
   }
   printf("%s ", buffer);
+  return true;
+}
+
+bool handleQuietKEY() {
+  struct termios oldt, newt;
+  tcgetattr(STDIN_FILENO, &oldt); // Get current terminal settings
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echoing
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt); // Apply new settings
+  char key;
+  read(STDIN_FILENO, &key, 1); // Read a single character
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore original settings
+  putIntegerOnStack(key);
   return true;
 }
 
