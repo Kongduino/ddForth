@@ -38,6 +38,9 @@ vector<userCommand> userCommands {
   {"ssplit", "32 csplit"},
   {"SSPLIT", "32 CSPLIT"},
   {"ROT", "swap var tagada swap tagada @ s\" tagada\" forget "},
+  {"rot", "swap var tagada swap tagada @ s\" tagada\" forget "},
+  {"OVER", "SWAP DUP ROT"},
+  {"over", "SWAP DUP ROT"},
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc3.hpp"
 #endif

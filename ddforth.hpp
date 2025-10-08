@@ -380,7 +380,6 @@ nativeCommand nativeCommands[] = {
   { handleCLEAR, "CLEAR", "( a b c d... -- ) Removes everything from the stack." },
   // { handleROT, "ROT", "(a b c -- c a b) Rotates the 3 values on top of the stack." },
   { handleROLL, "ROLL", "( a b c d... u -- x y z t... ) Rotates u items. SWAP = 1 ROLL. ROT = 2 ROLL" },
-  { handleOVER, "OVER", "( a b -- a b a) Places a copy of a on top of the stack." },
   { handleSPICK, "STRPICK", "( s0 s s2 s3... n x -- s0 s s2 s3... n sx ) Copies string x among the n strings on top of the stack." },
   { handleSSTORE, "STRSTORE", "( s0 s s2 s3... n S x -- s0 s s2 s3... n ) Takes string S and stores it at index x." },
   { handleSJOIN, "STRJOIN", "( s0 s s2 s3... n S -- s ) Joins strings on stack with S." },

@@ -79,55 +79,6 @@ bool showStack() {
   return true;
 }
 
-bool handleOVER() {
-  logStack((char *)"handleOVER");
-  unsigned char type0 = dataStack.at(dataStack.size() - 1);
-  unsigned char type1 = dataStack.at(dataStack.size() - 2);
-  if (type0 == xSTRING || type0 == xINVALID || type1 == xSTRING || type1 == xINVALID) {
-    logInconsistent((char *)"handleOVER");
-    return false;
-  }
-  if (type0 == type1) {
-    if (type0 == xINTEGER) {
-      int i0, i1;
-      if (popIntegerFromStack(&i0) == false) {
-        logStackOverflow((char *)"handleOVER1");
-        return false;
-      }
-      if (popIntegerFromStack(&i1) == false) {
-        logStackOverflow((char *)"handleOVER2");
-        return false;
-      }
-      putIntegerOnStack(i1);
-      putIntegerOnStack(i0);
-      putIntegerOnStack(i1);
-      return true;
-    } else {
-      float f0, f1;
-      if (popFloatFromStack(&f0) == false) {
-        logStackOverflow((char *)"handleOVER3");
-        return false;
-      }
-      if (popFloatFromStack(&f1) == false) {
-        logStackOverflow((char *)"handleOVER4");
-        return false;
-      }
-      xxxxxx = snprintf((char *)msg, 255, "2 FLOATs ");
-      logThis();
-      putFloatOnStack(f1);
-      putFloatOnStack(f0);
-      putFloatOnStack(f1);
-      return true;
-    }
-  } else {
-    // one int one float
-    xxxxxx = snprintf((char *)msg, 255, "OVER requires 2 ints or 2 floats!\n");
-    logThis();
-    return false;
-  }
-  return false;
-}
-
 bool handleDROP() {
   if (dataStack.size() == 0) {
     logStackOverflow((char *)"handleDROP");
