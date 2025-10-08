@@ -9,6 +9,7 @@ bool isUNTIL = true;
 bool isInsideIF = false;
 bool isTrueIF = false;
 bool skipElse = false;
+
 vector<int> indexIF;
 vector<int> indexELSE;
 vector<int> indexTHEN;
@@ -1043,7 +1044,7 @@ bool handleKEY() {
 bool handleLINE() {
   string s;
   // cin.ignore(numeric_limits<streamsize>::max(), '\n');
-  getline(cin, s);  // Reads the entire line
+  getline(cin, s); // Reads the entire line
   return putStringOnStack(s);
 }
 
@@ -2070,7 +2071,12 @@ void evaluate(vector<string> chunks) {
   cout << endl;
   showStack();
 #endif
-  executionPointer = 0;
+  if (isRestarting) {
+    executionPointer = restartExecutionPointer;
+    // cout << "Setting executionPointer to " << executionPointer << endl;
+    isRestarting = false;
+  } else
+    executionPointer = 0;
 #if defined(DEBUG)
   for (std::vector<string>::iterator it = chunks.begin() ; it != chunks.end(); ++it)
     cout << *it << " ";
@@ -2327,6 +2333,36 @@ void evaluate(vector<string> chunks) {
           cleanup();
           return;
         }
+        if (stopHere) {
+          // we hit a breakpoint
+          stopHere = false;
+          restartExecutionPointer = executionPointer + 1;
+          int executionStart = executionPointer - 2;
+          if (executionStart < 0) executionStart = 0;
+          int limit = executionStart + 5;
+          if (limit >= chunks.size()) limit = chunks.size();
+          cout << "\nCONTEXT: " << executionStart << " to " << limit << "\n        ";
+          for(int xx = executionStart; xx < limit; xx++) {
+            if (xx == executionPointer)
+              cout << "*";
+            cout << chunks.at(xx) << " ";
+          }
+          cout << "        " << endl;
+          restartChunks.clear();
+          // save the chunks
+          for (vector<string>::iterator it = chunks.begin() ; it != chunks.end(); ++it)
+            restartChunks.push_back(*it);
+          restartIFsave.clear();
+          restartELSEsave.clear();
+          restartTHENsave.clear();
+          for (vector<int>::iterator it = indexIF.begin() ; it != indexIF.end(); ++it)
+            restartIFsave.push_back(*it);
+          for (vector<int>::iterator it = indexELSE.begin() ; it != indexELSE.end(); ++it)
+            restartELSEsave.push_back(*it);
+          for (vector<int>::iterator it = indexTHEN.begin() ; it != indexTHEN.end(); ++it)
+            restartTHENsave.push_back(*it);
+          return;
+        }
         executionPointer += 1;
       } else if (lookupUC(c)) {
         xxxxxx = snprintf((char *)msg, 255, "%s lookupUC\n", c.c_str());
@@ -2573,14 +2609,13 @@ int main(int argc, char **argv) {
   while (true) {
     std::cin.getline(code, 256);
     if (std::cin.eof()) {
-      std::cin.clear();  // Clear error flags (eofbit, failbit, badbit)
+      std::cin.clear(); // Clear error flags (eofbit, failbit, badbit)
       handleClosePort();
       handleClearTerminal();
       cout << " the end\n\n\n";
       return 0;
     }
-    if (code[0] == 0) {
-    } else {
+    if (code[0] != 0) {
       chunks = tokenize(code, chunks);
       evaluate(chunks);
       memset(code, 0, 256);

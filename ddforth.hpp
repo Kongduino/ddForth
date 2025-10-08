@@ -8,9 +8,10 @@
 #include <termios.h>
 #include <unistd.h>
 #include <vector>
+#include <iterator> // std::distance
 #include <algorithm> // std::transform
 #include "random.hpp"
-#include <iterator> // Required for std::distance
+#include "Debugger.hpp"
 
 using namespace std;
 
@@ -463,7 +464,10 @@ nativeCommand nativeCommands[] = {
   { handleClearTerminal, "CLEAN", "( -- ) Clears the screen (terminal/UNIX-like) and sets cursor to 1:1." },
   { handleSleep, "SLEEP", "( n -- ) Sleeps for n seconds." },
   { handleDelay, "DELAY", "( n -- ) Sleeps for n microseconds." },
-// #include "lowercase.hpp"
+
+  { handleBP, "BP", "( -- ) Sets a breakpoint." },
+  { handleDebugMode, "DEBUG", "( n -- ) Sets debug mode to TRUE of FALSE." },
+  { handleRestart, "CONTINUE", "( n -- ) Restarts the execution where it left off." },
 
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc1.hpp"
