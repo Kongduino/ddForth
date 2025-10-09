@@ -27,6 +27,7 @@ void logStackOverflow(char *who);
 bool showStack();
 bool showVars();
 void evaluate(vector<string>);
+bool showJumpStack();
 
 extern vector<int> dataStack;
 extern int executionPointer;
@@ -74,6 +75,7 @@ bool handleBP() {
   cout << "\nBREAKPOINT!\n";
   showStack();
   showVars();
+  showJumpStack();
   stopHere = true;
   return true;
 }

@@ -188,6 +188,8 @@ bool putIntegerOnStack(int);
 bool putStringOnStack(string);
 bool showStack();
 bool showVars();
+bool showJumpStack();
+
 void initForth();
 void logJumpStackOverflow(char *);
 void logLoopStackOverflow(char *);

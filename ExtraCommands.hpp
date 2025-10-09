@@ -18,7 +18,6 @@ vector<userCommand> userCommands {
   {"2-", "2 -"},
   {"2*", "2 *"},
   {"2/", "2 /"},
-  {"pi", "PI @"},
   {"++", "+ +"},
   {"NIP", "SWAP DROP"},
   {"TUCK", "SWAP OVER"},

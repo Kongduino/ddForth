@@ -837,6 +837,33 @@ bool showVars() {
   return true;
 }
 
+bool showJumpStack() {
+  int ix, n;
+  cout << "Jump Stack\n";
+  cout << "+===============================+\n";
+  for (ix = 0; ix < jumpStack.size(); ix++) {
+    cout << "\t" << ix << ": ";
+    n = jumpStackType.at(ix);
+    switch (n) {
+      case xBEGIN:
+      {
+        cout << "BEGIN";
+        break;
+      }
+      case xDO:
+      {
+        cout << "DO...LOOP";
+        break;
+      }
+    }
+    cout << ", position: " << jumpStack.at(ix) << endl;
+    if (n == xDO)
+      cout << "\t\t min: " << loopStack.at(n * 2) << ", max: " << loopStack.at(n * 2 + 1) << endl;
+  }
+  cout << "+===============================+\n";
+  return true;
+}
+
 bool handleCR() {
   cout << endl;
   return true;
@@ -1143,25 +1170,27 @@ bool lookupVAR(string name) {
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putIntegerOnStack(it->second - 128);
     return true;
   }
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putIntegerOnStack(it->second - 512);
     return true;
   }
   it = strconstAddresses.find(name);
   if (it != strconstAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putStringOnStack(mySTRCONSTs.at(it->second - 640));
+    // putIntegerOnStack(it->second);
     return true;
   }
   it = constAddresses.find(name);
   if (it != constAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putIntegerOnStack(myCONSTs.at(it->second - 256));
+    // putIntegerOnStack(it->second);
     // 0 --> 255 = var
     // 256 --> xxx = const
     return true;
@@ -1169,7 +1198,8 @@ bool lookupVAR(string name) {
   it = fconstAddresses.find(name);
   if (it != fconstAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second);
+    putFloatOnStack(myFCONSTs.at(it->second - 384));
+    // putIntegerOnStack(it->second);
     // 0 --> 255 = var
     // 256 --> xxx = const
     return true;
@@ -2337,15 +2367,18 @@ void evaluate(vector<string> chunks) {
           // we hit a breakpoint
           stopHere = false;
           restartExecutionPointer = executionPointer + 1;
-          int executionStart = executionPointer - 2;
+          int executionStart = executionPointer - 10;
           if (executionStart < 0) executionStart = 0;
-          int limit = executionStart + 5;
+          int limit = executionStart + 10;
           if (limit >= chunks.size()) limit = chunks.size();
-          cout << "\nCONTEXT: " << executionStart << " to " << limit << "\n        ";
+          cout << "\nCONTEXT: " << executionStart << " to " << (limit - 1) << "\n";
           for(int xx = executionStart; xx < limit; xx++) {
+            cout << "\t" << xx << ": ";
             if (xx == executionPointer)
               cout << "*";
-            cout << chunks.at(xx) << " ";
+            else
+              cout << " ";
+            cout << chunks.at(xx) << endl;
           }
           cout << "        " << endl;
           restartChunks.clear();
@@ -2459,9 +2492,16 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
   }
  if (buffIndex > 0) {
     buffer[buffIndex] = 0;
-    xxxxxx = snprintf((char *)msg, 255, "\n** Adding `%s`\n", buffer);
+    string lwc = buffer;
+    std::transform(lwc.begin(), lwc.end(), lwc.begin(), ::tolower);
+    // no point adding BP if debugger is off
+    if (lwc == "bp" && debuggerOn)
+      xxxxxx = snprintf((char *)msg, 255, "\n** Not adding BP. Debbugger off!\n");
+    else {
+      xxxxxx = snprintf((char *)msg, 255, "\n** Adding `%s`\n", buffer);
+      chunks.push_back(buffer);
+    }
     logThis();
-    chunks.push_back(buffer);
   }
   // Now we index the IF THEN ELSE instances
   ln = chunks.size();
