@@ -839,8 +839,11 @@ bool showVars() {
 
 bool showJumpStack() {
   int ix, n;
-  cout << "Jump Stack\n";
-  cout << "+===============================+\n";
+  cout << "Jump Stack";
+  if(jumpStackType.size() == 0) {
+    cout << ": Empty\n";
+  }
+  cout << "\n+===============================+\n";
   for (ix = 0; ix < jumpStack.size(); ix++) {
     cout << "\t" << ix << ": ";
     n = jumpStackType.at(ix);
@@ -1286,6 +1289,17 @@ bool lookupUC(string name) {
         indexELSEsave.push_back(*it);
       for (vector<int>::iterator it = indexTHEN.begin(); it != indexTHEN.end(); ++it)
         indexTHENsave.push_back(*it);
+
+      vector<int> jumpStackSave;
+      vector<int> jumpStackTypeSave;
+      vector<int> loopStackSave;
+      for (vector<int>::iterator it = jumpStack.begin(); it != jumpStack.end(); ++it)
+        jumpStackSave.push_back(*it);
+      for (vector<int>::iterator it = jumpStackType.begin(); it != jumpStackType.end(); ++it)
+        jumpStackTypeSave.push_back(*it);
+      for (vector<int>::iterator it = loopStack.begin(); it != loopStack.end(); ++it)
+        loopStackSave.push_back(*it);
+
       vector<string> myChunks;
       myChunks = tokenize(tmp, myChunks);
       evaluate(myChunks);
@@ -1306,6 +1320,15 @@ bool lookupUC(string name) {
         for (vector<int>::iterator it = indexTHENsave.begin(); it != indexTHENsave.end(); ++it)
           indexTHEN.push_back(*it);
       }
+      jumpStack.clear();
+      jumpStackType.clear();
+      loopStack.clear();
+      for (vector<int>::iterator it = jumpStackSave.begin(); it != jumpStackSave.end(); ++it)
+        jumpStack.push_back(*it);
+      for (vector<int>::iterator it = jumpStackTypeSave.begin(); it != jumpStackTypeSave.end(); ++it)
+        jumpStackType.push_back(*it);
+      for (vector<int>::iterator it = loopStackSave.begin(); it != loopStackSave.end(); ++it)
+        loopStack.push_back(*it);
       executionPointer = savedExecutionPointer;
       return true;
     }
@@ -2367,7 +2390,7 @@ void evaluate(vector<string> chunks) {
           if (executionPointer < 0) executionPointer = 0;
           int limit = executionPointer + 5;
           if (limit >= chunks.size()) limit = chunks.size();
-          cout << "\nCONTEXT: " << executionPointer << " to " << limit << "\n        ";
+          cout << "\nCONTEXT: Steps " << executionPointer << " to " << limit << "\n        ";
           for(int xx = executionPointer; xx < limit; xx++)
             cout << chunks.at(xx) << " ";
           cout << "        " << endl;
@@ -2383,7 +2406,7 @@ void evaluate(vector<string> chunks) {
           if (executionStart < 0) executionStart = 0;
           int limit = executionStart + 10;
           if (limit >= chunks.size()) limit = chunks.size();
-          cout << "\nCONTEXT: " << executionStart << " to " << (limit - 1) << "\n";
+          cout << "\nCONTEXT: Steps " << executionStart << " to " << (limit - 1) << "\n";
           for(int xx = executionStart; xx < limit; xx++) {
             cout << "\t" << xx << ": ";
             if (xx == executionPointer)
