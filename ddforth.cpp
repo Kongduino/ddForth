@@ -1260,40 +1260,52 @@ bool forgetVAR() {
 }
 
 bool lookupUC(string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::toupper);
   xxxxxx = snprintf((char *)msg, 255, "lookupUC %s ", name.c_str());
   logThis();
-  for (int ix = 0; ix < userCommands.size(); ix++) {
-    xxxxxx = snprintf((char *)msg, 255, "%s ", userCommands[ix].name.c_str());
+  for (std::vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+    string cc = it->name;
+    std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
+    xxxxxx = snprintf((char *)msg, 255, "%s ", cc.c_str());
     logThis();
-    if (name == userCommands[ix].name) {
-      char cc[256];
-      strcpy(cc, userCommands[ix].command.c_str());
-      xxxxxx = snprintf((char *)msg, 255, "tokenize %s ", userCommands[ix].command.c_str());
+    if (name == cc) {
+      char tmp[256];
+      strcpy(tmp, it->command.c_str());
+      xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
       logThis();
       int savedExecutionPointer = executionPointer;
       // preserve the IF/THEN/ELSE index
       vector<int> indexIFsave;
       vector<int> indexELSEsave;
       vector<int> indexTHENsave;
-      for (vector<int>::iterator it = indexIF.begin() ; it != indexIF.end(); ++it)
+      int ifLevelsSave = ifLevels;
+      ifLevels = -1;
+      for (vector<int>::iterator it = indexIF.begin(); it != indexIF.end(); ++it)
         indexIFsave.push_back(*it);
-      for (vector<int>::iterator it = indexELSE.begin() ; it != indexELSE.end(); ++it)
+      for (vector<int>::iterator it = indexELSE.begin(); it != indexELSE.end(); ++it)
         indexELSEsave.push_back(*it);
-      for (vector<int>::iterator it = indexTHEN.begin() ; it != indexTHEN.end(); ++it)
+      for (vector<int>::iterator it = indexTHEN.begin(); it != indexTHEN.end(); ++it)
         indexTHENsave.push_back(*it);
       vector<string> myChunks;
-      myChunks = tokenize(cc, myChunks);
+      myChunks = tokenize(tmp, myChunks);
       evaluate(myChunks);
       // Restore the IF/THEN/ELSE index
+      ifLevels = ifLevelsSave;
       indexIF.clear();
       indexELSE.clear();
       indexTHEN.clear();
-      for (vector<int>::iterator it = indexIFsave.begin() ; it != indexIFsave.end(); ++it)
-        indexIF.push_back(*it);
-      for (vector<int>::iterator it = indexELSEsave.begin() ; it != indexELSEsave.end(); ++it)
-        indexELSE.push_back(*it);
-      for (vector<int>::iterator it = indexTHENsave.begin() ; it != indexTHENsave.end(); ++it)
-        indexTHEN.push_back(*it);
+      if (indexIFsave.size() > 0) {
+        for (vector<int>::iterator it = indexIFsave.begin(); it != indexIFsave.end(); ++it)
+          indexIF.push_back(*it);
+      }
+      if (indexELSEsave.size() > 0) {
+        for (vector<int>::iterator it = indexELSEsave.begin(); it != indexELSEsave.end(); ++it)
+          indexELSE.push_back(*it);
+      }
+      if (indexTHENsave.size() > 0) {
+        for (vector<int>::iterator it = indexTHENsave.begin(); it != indexTHENsave.end(); ++it)
+          indexTHEN.push_back(*it);
+      }
       executionPointer = savedExecutionPointer;
       return true;
     }

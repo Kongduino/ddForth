@@ -30,16 +30,11 @@ vector<userCommand> userCommands {
   {"2SWAP", "4 roll 4 roll"},
   {"2OVER", "depth 4 - pick depth 4 - pick"},
   {"-rot", "rot rot"},
-  {"true", "1 ="},
-  {"false", "0 ="},
   {"nROT>", "0 DO DUP ROT> LOOP CLEAR"},
   {"n<ROT", "0 DO DUP <ROT LOOP CLEAR"},
-  {"ssplit", "32 csplit"},
   {"SSPLIT", "32 CSPLIT"},
   {"ROT", "swap var tagada swap tagada @ s\" tagada\" forget "},
-  {"rot", "swap var tagada swap tagada @ s\" tagada\" forget "},
   {"OVER", "SWAP DUP ROT"},
-  {"over", "SWAP DUP ROT"},
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc3.hpp"
 #endif
