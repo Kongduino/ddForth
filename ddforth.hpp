@@ -271,6 +271,28 @@ char code[256] = { 0 };
 int xxxxxx;
 char msg[256];
 
+vector<int> indexIF;
+vector<int> indexELSE;
+vector<int> indexTHEN;
+int ifLevels = -1;
+int thenStep, elseStep;
+vector<int> jumpStackSave;
+vector<int> jumpStackTypeSave;
+vector<int> loopStackSave;
+bool debuggerOn;
+bool stopHere;
+bool isRestarting;
+int restartExecutionPointer;
+vector<string> restartChunks;
+vector<int> restartIFsave;
+vector<int> restartELSEsave;
+vector<int> restartTHENsave;
+vector<int> restartIF;
+vector<int> restartELSE;
+vector<int> restartTHEN;
+bool handleRestart();
+void saveForBreak();
+
 enum dataType {
   xINVALID,
   xINTEGER,

@@ -10,12 +10,6 @@ bool isInsideIF = false;
 bool isTrueIF = false;
 bool skipElse = false;
 
-vector<int> indexIF;
-vector<int> indexELSE;
-vector<int> indexTHEN;
-int ifLevels = -1;
-int thenStep, elseStep;
-
 using namespace std;
 
 /*
@@ -841,11 +835,12 @@ bool showJumpStack() {
   int ix, n;
   cout << "Jump Stack";
   if(jumpStackType.size() == 0) {
-    cout << ": Empty\n";
+    cout << ": jumpStackType Empty\n";
+    return true;
   }
   cout << "\n+===============================+\n";
   for (ix = 0; ix < jumpStack.size(); ix++) {
-    cout << "\t" << ix << ": ";
+    cout << "  " << ix << ": ";
     n = jumpStackType.at(ix);
     switch (n) {
       case xBEGIN:
@@ -861,7 +856,7 @@ bool showJumpStack() {
     }
     cout << ", position: " << jumpStack.at(ix) << endl;
     if (n == xDO)
-      cout << "\t\t min: " << loopStack.at(n * 2) << ", max: " << loopStack.at(n * 2 + 1) << endl;
+      cout << "    index: " << loopStack.at(ix * 2 + 1) << ", max: " << loopStack.at(ix * 2) << endl;
   }
   cout << "+===============================+\n";
   return true;
@@ -1262,7 +1257,7 @@ bool forgetVAR() {
   return false;
 }
 
-bool lookupUC(string name) {
+bool lookupUC(string name, vector<string> chunks) {
   std::transform(name.begin(), name.end(), name.begin(), ::toupper);
   xxxxxx = snprintf((char *)msg, 255, "lookupUC %s ", name.c_str());
   logThis();
@@ -1277,58 +1272,14 @@ bool lookupUC(string name) {
       xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
       logThis();
       int savedExecutionPointer = executionPointer;
-      // preserve the IF/THEN/ELSE index
-      vector<int> indexIFsave;
-      vector<int> indexELSEsave;
-      vector<int> indexTHENsave;
       int ifLevelsSave = ifLevels;
       ifLevels = -1;
-      for (vector<int>::iterator it = indexIF.begin(); it != indexIF.end(); ++it)
-        indexIFsave.push_back(*it);
-      for (vector<int>::iterator it = indexELSE.begin(); it != indexELSE.end(); ++it)
-        indexELSEsave.push_back(*it);
-      for (vector<int>::iterator it = indexTHEN.begin(); it != indexTHEN.end(); ++it)
-        indexTHENsave.push_back(*it);
-
-      vector<int> jumpStackSave;
-      vector<int> jumpStackTypeSave;
-      vector<int> loopStackSave;
-      for (vector<int>::iterator it = jumpStack.begin(); it != jumpStack.end(); ++it)
-        jumpStackSave.push_back(*it);
-      for (vector<int>::iterator it = jumpStackType.begin(); it != jumpStackType.end(); ++it)
-        jumpStackTypeSave.push_back(*it);
-      for (vector<int>::iterator it = loopStack.begin(); it != loopStack.end(); ++it)
-        loopStackSave.push_back(*it);
-
+      saveForBreak(chunks);
       vector<string> myChunks;
       myChunks = tokenize(tmp, myChunks);
       evaluate(myChunks);
       // Restore the IF/THEN/ELSE index
-      ifLevels = ifLevelsSave;
-      indexIF.clear();
-      indexELSE.clear();
-      indexTHEN.clear();
-      if (indexIFsave.size() > 0) {
-        for (vector<int>::iterator it = indexIFsave.begin(); it != indexIFsave.end(); ++it)
-          indexIF.push_back(*it);
-      }
-      if (indexELSEsave.size() > 0) {
-        for (vector<int>::iterator it = indexELSEsave.begin(); it != indexELSEsave.end(); ++it)
-          indexELSE.push_back(*it);
-      }
-      if (indexTHENsave.size() > 0) {
-        for (vector<int>::iterator it = indexTHENsave.begin(); it != indexTHENsave.end(); ++it)
-          indexTHEN.push_back(*it);
-      }
-      jumpStack.clear();
-      jumpStackType.clear();
-      loopStack.clear();
-      for (vector<int>::iterator it = jumpStackSave.begin(); it != jumpStackSave.end(); ++it)
-        jumpStack.push_back(*it);
-      for (vector<int>::iterator it = jumpStackTypeSave.begin(); it != jumpStackTypeSave.end(); ++it)
-        jumpStackType.push_back(*it);
-      for (vector<int>::iterator it = loopStackSave.begin(); it != loopStackSave.end(); ++it)
-        loopStack.push_back(*it);
+      restoreFromBreak();
       executionPointer = savedExecutionPointer;
       return true;
     }
@@ -2138,7 +2089,7 @@ void evaluate(vector<string> chunks) {
 #endif
   if (isRestarting) {
     executionPointer = restartExecutionPointer;
-    // cout << "Setting executionPointer to " << executionPointer << endl;
+    cout << "Setting executionPointer to " << executionPointer << endl;
     isRestarting = false;
   } else
     executionPointer = 0;
@@ -2416,23 +2367,11 @@ void evaluate(vector<string> chunks) {
             cout << chunks.at(xx) << endl;
           }
           cout << "        " << endl;
-          restartChunks.clear();
-          // save the chunks
-          for (vector<string>::iterator it = chunks.begin() ; it != chunks.end(); ++it)
-            restartChunks.push_back(*it);
-          restartIFsave.clear();
-          restartELSEsave.clear();
-          restartTHENsave.clear();
-          for (vector<int>::iterator it = indexIF.begin() ; it != indexIF.end(); ++it)
-            restartIFsave.push_back(*it);
-          for (vector<int>::iterator it = indexELSE.begin() ; it != indexELSE.end(); ++it)
-            restartELSEsave.push_back(*it);
-          for (vector<int>::iterator it = indexTHEN.begin() ; it != indexTHEN.end(); ++it)
-            restartTHENsave.push_back(*it);
+          saveForBreak(chunks);
           return;
         }
         executionPointer += 1;
-      } else if (lookupUC(c)) {
+      } else if (lookupUC(c, chunks)) {
         xxxxxx = snprintf((char *)msg, 255, "%s lookupUC\n", c.c_str());
         logThis();
         executionPointer += 1;
