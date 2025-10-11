@@ -1,27 +1,4 @@
 #include <cmath> // For sin, cos, tan
-extern vector<int> dataStack;
-extern int executionPointer;
-extern vector<int> jumpStack;
-extern vector<int> jumpStackType;
-extern vector<int> loopStack;
-extern vector<string> userStrings;
-extern vector<int> userIntegers;
-extern vector<string> blocks;
-extern vector<float> userFloats;
-extern unsigned char myRAM[64 * 1024];
-extern bool isPrinting;
-extern std::map<string, int> varAddresses;
-extern std::map<string, int> fvarAddresses;
-extern std::map<string, int> constAddresses;
-extern std::map<string, int> fconstAddresses;
-extern vector<int> myVARs;
-extern vector<float> myFVARs;
-extern vector<int> myCONSTs;
-extern vector<float> myFCONSTs;
-extern vector<string> computedWords;
-extern char code[256];
-extern int xxxxxx;
-extern char msg[256];
 
 enum mathTypes {
   math_PLUS,

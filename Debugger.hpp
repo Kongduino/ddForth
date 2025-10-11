@@ -1,72 +1,5 @@
 using namespace std;
 
-extern bool debuggerOn;
-extern bool stopHere;
-extern bool isRestarting;
-extern int restartExecutionPointer;
-extern vector<string> restartChunks;
-extern vector<int> restartIF;
-extern vector<int> restartELSE;
-extern vector<int> restartTHEN;
-extern vector<int> restartIFsave;
-extern vector<int> restartELSEsave;
-extern vector<int> restartTHENsave;
-bool handleRestart();
-
-extern vector<int> indexIF;
-extern vector<int> indexELSE;
-extern vector<int> indexTHEN;
-extern int ifLevels;
-extern int thenStep, elseStep;
-extern vector<int> jumpStackSave;
-extern vector<int> jumpStackTypeSave;
-extern vector<int> loopStackSave;
-
-
-bool popFloatFromStack(float *);
-bool popFromLoopStack(int *);
-bool popIntegerFromJumpStack(int *);
-bool popIntegerFromStack(int *);
-bool popStringFromStack(string *);
-bool putFloatOnStack(float);
-bool putIntegerOnJumpStack(int);
-bool putIntegerOnStack(int);
-bool putStringOnStack(string);
-void logStack(char *);
-void logInconsistent(char *who);
-void logStackOverflow(char *who);
-bool showStack();
-bool showVars();
-void evaluate(vector<string>);
-bool showJumpStack();
-
-extern vector<int> dataStack;
-extern int executionPointer;
-extern vector<int> jumpStack;
-extern vector<int> jumpStackType;
-extern vector<int> loopStack;
-extern vector<string> userStrings;
-extern vector<int> userIntegers;
-extern vector<string> blocks;
-extern vector<float> userFloats;
-extern unsigned char myRAM[64 * 1024];
-extern bool isPrinting;
-extern std::map<string, int> varAddresses;
-extern std::map<string, int> fvarAddresses;
-extern std::map<string, int> constAddresses;
-extern std::map<string, int> fconstAddresses;
-extern vector<int> myVARs;
-extern vector<float> myFVARs;
-extern vector<int> myCONSTs;
-extern vector<float> myFCONSTs;
-extern vector<string> computedWords;
-extern char code[256];
-extern int xxxxxx;
-extern char msg[256];
-extern vector<int> indexIF;
-extern vector<int> indexELSE;
-extern vector<int> indexTHEN;
-
 void saveForBreak(vector<string> chunks) {
   // cout << "saveForBreak: " << chunks.size() << " ops.\n";
   // save the chunks
@@ -204,9 +137,11 @@ bool handleDebugMode() {
 
 bool handleBP() {
   if (!debuggerOn) return true;
+  handleClearTerminal();
+  // In case the BP hasn't been excised from the chunks during tokenization
   cout << "\nBREAKPOINT!\n";
-  showStack();
-  showVars();
+  showStack(70, 1);
+  showVars(70, dataStack.size() + 5);
   showJumpStack();
   stopHere = true;
   return true;

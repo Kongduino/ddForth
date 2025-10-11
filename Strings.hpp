@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include <vector>
 
-extern bool insideString;
-extern bool isHelping;
 string hexDigits = "0123456789abcdef";
 
 bool handleEMIT() {
@@ -583,6 +581,22 @@ bool handleCFILL() {
   }
   putStringOnStack(s);
   return true;
+}
+
+// Function to split a string by a delimiter
+vector<string> splitString(const string& str, char delimiter) {
+  vector<string> tokens;
+  string token;
+  for (char c : str) {
+    if (c == delimiter) {
+      tokens.push_back(token);
+      token.clear();
+    } else {
+      token += c;
+    }
+  }
+  tokens.push_back(token);
+  return tokens;
 }
 
 // end

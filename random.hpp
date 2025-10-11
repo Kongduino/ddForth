@@ -10,9 +10,6 @@ using namespace std;
 #include <unistd.h>
 #include <vector>
 
-bool putIntegerOnStack(int);
-unsigned char getRND();
-
 unsigned char randomBuffer[256];
 int randomIndex = 0;
 

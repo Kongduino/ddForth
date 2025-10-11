@@ -1,14 +1,4 @@
 #include "ddforth.hpp"
-bool insideString = false;
-bool isHelping = false;
-bool usedForget = false;
-bool needsReverse = false;
-bool isExiting = false;
-bool isInsideParens = false;
-bool isUNTIL = true;
-bool isInsideIF = false;
-bool isTrueIF = false;
-bool skipElse = false;
 
 using namespace std;
 
@@ -727,108 +717,6 @@ bool handleUNTIL() {
 bool handleWHILE() {
   isUNTIL = false;
   return handleUNTILWHILE();
-}
-
-bool showVars() {
-#if defined(DEBUG)
-  cout << endl << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
-       << " varAddresses.size: " << varAddresses.size()
-       << " fvarAddresses.size: " << fvarAddresses.size() << endl;
-  cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
-       << " constAddresses.size: " << constAddresses.size()
-       << " fconstAddresses.size: " << fconstAddresses.size();
-#endif
-  if (myVARs.size() > 0) {
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     |  VAR Name   | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = varAddresses.begin();
-    int ix = 0;
-    while (it != varAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d | %-30d |\n",
-        (ix++), myVARs.size(), n.c_str(), it->second, myVARs.at(it->second));
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  if (myFVARs.size() > 0) {
-    cout << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     |  FVAR Name  | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = fvarAddresses.begin();
-    int ix = 0;
-    while (it != fvarAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d | %-30f |\n",
-        (ix++), myFVARs.size(), n.c_str(), it->second, myFVARs.at(it->second - 128));
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  if (myCONSTs.size() > 0) {
-    cout << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     |  CONST Name | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = constAddresses.begin();
-    int ix = 0;
-    while (it != constAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d | %-30d |\n",
-        (ix++), myCONSTs.size(), n.c_str(), it->second, myCONSTs.at(it->second - 256));
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  if (myFCONSTs.size() > 0) {
-    cout << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     | FCONST Name | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = fconstAddresses.begin();
-    int ix = 0;
-    while (it != fconstAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d | %-30f |\n",
-        (ix++), myFCONSTs.size(), n.c_str(), it->second, myFCONSTs.at(it->second - 384));
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  if (mySTRVARs.size() > 0) {
-    cout << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     |  STR Name   | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = strvarAddresses.begin();
-    int ix = 0;
-    while (it != strvarAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d |`%-29s` |\n",
-        (ix++), mySTRVARs.size(), n.c_str(), it->second, mySTRVARs.at(it->second - 512).c_str());
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  if (mySTRCONSTs.size() > 0) {
-    cout << "+---------------------------------------------------------------+" << endl;
-    cout << "| Num     | SCONST Name | Addr | Value                          |";
-    cout << endl << "+---------------------------------------------------------------+" << endl;
-    std::map<string, int>::iterator it = strconstAddresses.begin();
-    int ix = 0;
-    while (it != strconstAddresses.end()) {
-      string n = it->first;
-      printf(
-        "| %3d/%-3zu | %-11s | %4d |`%-29s` |\n",
-        (ix++), mySTRCONSTs.size(), n.c_str(), it->second, mySTRCONSTs.at(it->second - 640).c_str());
-      it++;
-    }
-    cout << "+---------------------------------------------------------------+" << endl;
-  }
-  return true;
 }
 
 bool showJumpStack() {
@@ -2345,7 +2233,7 @@ void evaluate(vector<string> chunks) {
           for(int xx = executionPointer; xx < limit; xx++)
             cout << chunks.at(xx) << " ";
           cout << "        " << endl;
-          showStack();
+          bool r = showStack();
           cleanup();
           return;
         }

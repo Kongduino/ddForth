@@ -10,14 +10,13 @@
 #include <vector>
 #include <iterator> // std::distance
 #include <algorithm> // std::transform
-#include "random.hpp"
-#include "Debugger.hpp"
 
 using namespace std;
 
 #include "myversion.hpp"
 
 bool getRandomBuffer();
+unsigned char getRND();
 void hexDump(unsigned char *, int);
 bool handleHexDump();
 unsigned char getRandomByte();
@@ -117,6 +116,7 @@ bool handleSTACKSTRING();
 bool handlePRINTSTACKSTRING();
 bool handleAPPENDSTACKSTRING();
 bool handlePREPENDSTACKSTRING();
+vector<string> splitString(const string&, char);
 bool handleRetrieve();
 bool handleRget();
 // bool handleROT();
@@ -185,9 +185,12 @@ bool popStringFromStack(string *);
 bool putFloatOnStack(float);
 bool putIntegerOnJumpStack(int);
 bool putIntegerOnStack(int);
+bool putRandomUIntOnStack();
 bool putStringOnStack(string);
-bool showStack();
-bool showVars();
+bool showStack(int posx = 1, int posy = -1);
+bool handleShowStack();
+bool handleShowVars();
+bool showVars(int posx = 1, int posy = -1);
 bool showJumpStack();
 
 void initForth();
@@ -204,6 +207,12 @@ bool handleClearTerminal();
 bool handleIF();
 bool handleTHEN();
 bool handleELSE();
+bool handleBP();
+bool handleRestart();
+void saveForBreak(vector<string>);
+void restoreFromBreak();
+bool handleDebugMode();
+
 
 vector<string> tokenize(char *, vector<string>);
 void evaluate(vector<string>);
@@ -270,6 +279,17 @@ vector<string> computedWords;
 char code[256] = { 0 };
 int xxxxxx;
 char msg[256];
+
+bool insideString = false;
+bool isHelping = false;
+bool usedForget = false;
+bool needsReverse = false;
+bool isExiting = false;
+bool isInsideParens = false;
+bool isUNTIL = true;
+bool isInsideIF = false;
+bool isTrueIF = false;
+bool skipElse = false;
 
 vector<int> indexIF;
 vector<int> indexELSE;
@@ -421,8 +441,8 @@ nativeCommand nativeCommands[] = {
   { handleStorePlus, "!+", "( ad -- ) Increments variable at address ad. myvar +!" },
   { handleRetrieve, "@", "( ad -- ) Puts contents of variable at address ad on top of the stack. myvar @" },
   { handleCR, "CR", "( -- ) Prints a Carriage Return" },
-  { showStack, ".S", "( -- ) Displays the stack." },
-  { showVars, ".V", "( -- ) Shows existing vars by type" },
+  { handleShowStack, ".S", "( -- ) Displays the stack." },
+  { handleShowVars, ".V", "( -- ) Shows existing vars by type" },
   { handleWITHIN, "WITHIN", "( n0 n1 n2 -- [01] ) Puts the result of (n0 >= n1 && n0 <= n2) on top of the stack." },
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
   { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
@@ -501,6 +521,10 @@ nativeCommand nativeCommands[] = {
 int nativeCmdCount = 0;
 
 char numerics[] = "0123456789abcdef";
+
+#include "random.hpp"
+#include "Terminal.hpp"
+#include "Debugger.hpp"
 
 #include "Files.hpp"
 #include "Strings.hpp"
@@ -613,36 +637,5 @@ bool handleHELP() {
   return true;
 }
 
-bool handleGotoXY() {
-  // ANSI escape code for cursor positioning: \033[<line>;<column>H
-  int x, y;
-  if (popIntegerFromStack(&y) == false) {
-    logStackOverflow((char *)"handleGotoXY/0");
-    return false;
-  }
-  if (popIntegerFromStack(&x) == false) {
-    logStackOverflow((char *)"handleGotoXY/1");
-    return false;
-  }
-  cout << "\033[" << y << ";" << x << "H";
-  flush(cout); // Ensure the escape code is sent immediately
-  return true;
-}
-
-bool handleClearTerminal() {
-  cout << "\033[2J\033[1;1H";
-  // Clears screen and moves cursor to top-left
-  return true;
-}
-
-bool handleHexDump() {
-  string mySTRING;
-  if (popStringFromStack(&mySTRING) == false) {
-    logStackOverflow((char *)"handleHexDump/0");
-    return false;
-  }
-  hexDump((unsigned char *)mySTRING.c_str(), mySTRING.length());
-  return true;
-}
 
 // end

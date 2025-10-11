@@ -8,19 +8,6 @@
 #include <sys/ioctl.h>
 
 using namespace std;
-bool popFloatFromStack(float *);
-bool popFromLoopStack(int *);
-bool popIntegerFromJumpStack(int *);
-bool popIntegerFromStack(int *);
-bool popStringFromStack(string *);
-bool putFloatOnStack(float);
-bool putIntegerOnJumpStack(int);
-bool putIntegerOnStack(int);
-bool putStringOnStack(string);
-void logStack(char *);
-void logInconsistent(char *who);
-void logStackOverflow(char *who);
-void logThis();
 
 int serial_port = -1;
 bool needHEX = false;

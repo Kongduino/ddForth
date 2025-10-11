@@ -1,27 +1,4 @@
 using namespace std;
-extern vector<int> dataStack;
-extern int executionPointer;
-extern vector<int> jumpStack;
-extern vector<int> jumpStackType;
-extern vector<int> loopStack;
-extern vector<string> userStrings;
-extern vector<int> userIntegers;
-extern vector<string> blocks;
-extern vector<float> userFloats;
-extern unsigned char myRAM[64 * 1024];
-extern bool isPrinting;
-extern std::map<string, int> varAddresses;
-extern std::map<string, int> fvarAddresses;
-extern std::map<string, int> constAddresses;
-extern std::map<string, int> fconstAddresses;
-extern vector<int> myVARs;
-extern vector<float> myFVARs;
-extern vector<int> myCONSTs;
-extern vector<float> myFCONSTs;
-extern vector<string> computedWords;
-extern char code[256];
-extern int xxxxxx;
-extern char msg[256];
 
 bool checkTypes(int levels, unsigned char n) {
   if (dataStack.size() < levels) return false;
@@ -31,30 +8,41 @@ bool checkTypes(int levels, unsigned char n) {
   return true;
 }
 
-bool showStack() {
+bool handleShowStack() {
+  return showStack(1, -1);
+}
+
+bool showStack(int posx, int posy) {
   int count = 0;
+  if (posy == -1) {
+    CursorPosition xy = getCursorPosition();
+    posy = xy.col;
+  }
+    gotoXY(1, 50);
+    cout << "posx = " << posx << ", posy = " << posy ;
+  gotoXY(posx, posy++);
   if (dataStack.size() == 0) {
     cout << "Stack empty!\n";
     return true;
   }
-  cout << endl; // << "showStack " << dataStack.size();
   int x = dataStack.size() - 1;
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
   int myStrings = userStrings.size() - 1;
 #if defined(DEBUG)
+  gotoXY(posx, posy++);
   cout << "\tdataStack.size()\t" << (x + 1);
   cout << "\tmyInts\t" << (myInts + 1);
   cout << "\tmyFloats\t" << (myFloats + 1);
   cout << "\tmyStrings\t" << (myStrings + 1) << endl;
 #endif
-  cout << "+--------------------------------------------------------+" << endl;
+  gotoXY(posx, posy++);
+  cout << "+--------------------------------------------------------+";
   while (x > -1) {
     int type0 = dataStack.at(x);
     xxxxxx = snprintf((char *)msg, 255, "| %-5zu\t", (dataStack.size() - count++ - 1));
+    gotoXY(posx, posy++);
     cout << msg;
-
-    // cout << "| " << (count++) << "\t| ";
     switch (type0) {
       case xINTEGER:
         xxxxxx = snprintf((char *)msg, 255, "| %-5s\t| %-38d |\n", "INT.", userIntegers.at(myInts--));
@@ -75,6 +63,7 @@ bool showStack() {
     }
     x -= 1;
   }
+  gotoXY(posx, posy++);
   cout << "+--------------------------------------------------------+" << endl;
   return true;
 }
