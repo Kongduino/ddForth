@@ -8,6 +8,9 @@ void logThis();
 
 using namespace std;
 
+vector<string> includeChunks;
+bool includeON = false;
+
 vector<string> loadFile(char *);
 
 vector<string> loadAndTokenize(char *fn) {
@@ -60,6 +63,17 @@ bool handleFLOAD() {
   evaluate(tempChunks);
   tempChunks.clear();
   executionPointer = savedExecutionPointer;
+  return true;
+}
+
+bool handleIncludeFile() {
+  string name;
+  if (popStringFromStack(&name) == false) {
+    logStackOverflow((char *)"handleIncludeFile/0");
+    return false;
+  }
+  includeChunks = loadAndTokenize((char *)name.c_str());
+  includeON = true;
   return true;
 }
 

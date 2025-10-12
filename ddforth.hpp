@@ -131,6 +131,7 @@ bool handleUPRINT();
 bool handleWHILE();
 bool handleWORDS();
 bool handleFLOAD();
+bool handleIncludeFile();
 bool handleFSAVE();
 
 bool handleCELLS();
@@ -476,6 +477,7 @@ nativeCommand nativeCommands[] = {
   { handleRget, "R>", "( -- a ) Puts top of the return stack onto the stack." },
   { handleEXEC, "EXEC", "( s -- ?) Executes string on the stack. Can be used in conjunction with LINE." },
   { handleFLOAD, "FLOAD", "( s -- ?) Loads file named 'name' and executes it." },
+  { handleIncludeFile, "INCLUDE", "( s -- ?) Loads file named 'name' and inserts its contents into the chunks being executed." },
   { handleFSAVE, "FSAVE", "( cd fn -- ?) Saves string cd to file 'fn'." },
 
   { handleOpenPort, "UOPEN", "( 9600 s\" /dev/tty.usb...\" -- n ) Open ports at designated baud rate. Puts TRUE/FALSE on top of the stack." },

@@ -2243,6 +2243,16 @@ void evaluate(vector<string> chunks) {
           cleanup();
           return;
         }
+        if (includeON) {
+          chunks.erase(chunks.begin() + executionPointer - 2, chunks.begin() + executionPointer + 1);
+          cout << endl;
+          executionPointer -= 2;
+          for (int xx = 0; xx < includeChunks.size(); xx++) {
+            chunks.insert(chunks.begin() + xx + executionPointer, includeChunks.at(xx));
+          }
+          includeON = false;
+          executionPointer -= 1;
+        }
         if (stopHere) {
           // we hit a breakpoint
           stopHere = false;
