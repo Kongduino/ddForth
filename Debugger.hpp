@@ -130,8 +130,8 @@ bool handleDebugMode() {
   debuggerOn = ((i0 & 1) == 1);
   if (debuggerOn)
     cout << " debugger ON ";
-    else
-      cout << " debugger OFF ";
+  else
+    cout << " debugger OFF ";
   return true;
 }
 
@@ -156,7 +156,6 @@ bool handleRestart() {
   showJumpStack();
   isRestarting = true;
   evaluate(restartChunks);
-  // restartChunks.clear();
   restartIFsave.clear();
   restartELSEsave.clear();
   restartTHENsave.clear();
@@ -164,8 +163,10 @@ bool handleRestart() {
   return true;
 }
 
-
-
-
+bool handleStep() {
+  stopHere = false;
+  requestStop = true;
+  return handleRestart();
+}
 
 // end

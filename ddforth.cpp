@@ -195,7 +195,7 @@ void StoreINT(string name, int value) {
           // cout << it->first << ": " << it->second << ": " << myVARs.at(it->second) << endl;
           // it++;
         // }
-        for(ix = 0; ix < missing.size(); ix++)
+        for (ix = 0; ix < missing.size(); ix++)
           myVARs.pop_back();
       }
     }
@@ -2230,13 +2230,13 @@ void evaluate(vector<string> chunks) {
     } else {
       if (lookup(c, &r)) {
         if (r == false) {
-          cout << c << " returned false. Aborting!" << endl;
+          cout << "ERROR! " << c << " returned false. Aborting!" << endl;
           executionPointer -= 2;
           if (executionPointer < 0) executionPointer = 0;
           int limit = executionPointer + 5;
           if (limit >= chunks.size()) limit = chunks.size();
           cout << "\nCONTEXT: Steps " << executionPointer << " to " << limit << "\n        ";
-          for(int xx = executionPointer; xx < limit; xx++)
+          for (int xx = executionPointer; xx < limit; xx++)
             cout << chunks.at(xx) << " ";
           cout << "        " << endl;
           bool r = showStack();
@@ -2246,13 +2246,20 @@ void evaluate(vector<string> chunks) {
         if (stopHere) {
           // we hit a breakpoint
           stopHere = false;
+          requestStop = false;
+          if (removeBP) {
+            // this is a STEP breakpoint
+            chunks.erase(chunks.begin() + executionPointer);
+            removeBP = false;
+            executionPointer -= 1;
+          }
           restartExecutionPointer = executionPointer + 1;
           int executionStart = executionPointer - 10;
           if (executionStart < 0) executionStart = 0;
-          int limit = executionStart + 10;
+          int limit = executionPointer + 10;
           if (limit >= chunks.size()) limit = chunks.size();
           cout << "\nCONTEXT: Steps " << executionStart << " to " << (limit - 1) << "\n";
-          for(int xx = executionStart; xx < limit; xx++) {
+          for (int xx = executionStart; xx < limit; xx++) {
             cout << "\t" << xx << ": ";
             if (xx == executionPointer)
               cout << "*";
@@ -2263,6 +2270,10 @@ void evaluate(vector<string> chunks) {
           cout << "        " << endl;
           saveForBreak(chunks);
           return;
+        } else if (requestStop) {
+          chunks.insert(chunks.begin() + executionPointer + 1, "BP");
+          requestStop = false;
+          removeBP = true;
         }
         executionPointer += 1;
       } else if (lookupUC(c, chunks)) {
@@ -2397,7 +2408,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
       indexIF.push_back(ix);
       // cout << "\tLooking backwards for ELSE from position " << backStart << ", ie " << chunks.at(backStart) << endl;
       bool foundElse = false;
-      for(bx = backStart; bx > ix; bx--) {
+      for (bx = backStart; bx > ix; bx--) {
         s = chunks.at(bx);
         std::transform(s.begin(), s.end(), s.begin(), ::tolower);
         if (s == "else") {
@@ -2415,7 +2426,7 @@ vector<string> tokenize(char *cc, vector<string> chunks) {
       }
       // cout << "\tLooking forwards for THEN from position " << (ix + 1) << ", ie " << chunks.at(ix + 1) << endl;
       foundElse = false;
-      for(bx = ix + 1; bx < elseNum; bx++) {
+      for (bx = ix + 1; bx < elseNum; bx++) {
         s = chunks.at(bx);
         std::transform(s.begin(), s.end(), s.begin(), ::tolower);
         // cout << "\t\t" << s << endl;

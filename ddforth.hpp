@@ -210,6 +210,7 @@ bool handleTHEN();
 bool handleELSE();
 bool handleBP();
 bool handleRestart();
+bool handleStep();
 void saveForBreak(vector<string>);
 void restoreFromBreak();
 bool handleDebugMode();
@@ -304,6 +305,9 @@ bool debuggerOn;
 bool stopHere;
 bool isRestarting;
 bool bpStop = false;
+bool requestStop = false;
+bool removeBP = false;
+
 int restartExecutionPointer = 65535;
 vector<string> restartChunks;
 vector<int> restartIFsave;
@@ -516,6 +520,7 @@ nativeCommand nativeCommands[] = {
   { handleBP, "BP", "( -- ) Sets a breakpoint." },
   { handleDebugMode, "DEBUG", "( n -- ) Sets debug mode to TRUE of FALSE." },
   { handleRestart, "CONTINUE", "( n -- ) Restarts the execution where it left off." },
+  { handleStep, "STEP", "( n -- ) Restarts the execution where it left off, for 1 instruction." },
 
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc1.hpp"
