@@ -79,6 +79,7 @@ bool handleGotoXY() {
     logStackOverflow((char *)"handleGotoXY/1");
     return false;
   }
+  gotoXY(x, y);
   return true;
 }
 
@@ -95,7 +96,8 @@ bool handleHexDump() {
     logStackOverflow((char *)"handleHexDump/0");
     return false;
   }
-  hexDump((unsigned char *)mySTRING.c_str(), mySTRING.length());
+  CursorPosition pos = getCursorPosition();
+  hexDump((unsigned char *)mySTRING.c_str(), mySTRING.length(), pos.posx, pos.posy);
   return true;
 }
 

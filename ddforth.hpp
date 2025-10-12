@@ -17,7 +17,7 @@ using namespace std;
 
 bool getRandomBuffer();
 unsigned char getRND();
-void hexDump(unsigned char *, int);
+void hexDump(unsigned char *buf, int len, int posx = 1, int posy = -1);
 bool handleHexDump();
 unsigned char getRandomByte();
 bool putRandomByteOnStack();
@@ -303,7 +303,8 @@ vector<int> loopStackSave;
 bool debuggerOn;
 bool stopHere;
 bool isRestarting;
-int restartExecutionPointer;
+bool bpStop = false;
+int restartExecutionPointer = 65535;
 vector<string> restartChunks;
 vector<int> restartIFsave;
 vector<int> restartELSEsave;
@@ -525,8 +526,8 @@ int nativeCmdCount = 0;
 
 char numerics[] = "0123456789abcdef";
 
-#include "random.hpp"
 #include "Terminal.hpp"
+#include "random.hpp"
 #include "Debugger.hpp"
 
 #include "Files.hpp"

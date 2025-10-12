@@ -1160,9 +1160,12 @@ bool lookupUC(string name, vector<string> chunks) {
       xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
       logThis();
       int savedExecutionPointer = executionPointer;
-      int ifLevelsSave = ifLevels;
-      ifLevels = -1;
-      saveForBreak(chunks);
+      cout << "restartExecutionPointer = " << restartExecutionPointer << endl;
+      if(restartExecutionPointer == 65535) {
+        int ifLevelsSave = ifLevels;
+        ifLevels = -1;
+        saveForBreak(chunks);
+      }
       vector<string> myChunks;
       myChunks = tokenize(tmp, myChunks);
       evaluate(myChunks);
@@ -1979,8 +1982,12 @@ void evaluate(vector<string> chunks) {
     executionPointer = restartExecutionPointer;
     cout << "Setting executionPointer to " << executionPointer << endl;
     isRestarting = false;
-  } else
+  } else {
     executionPointer = 0;
+  }
+  if(!bpStop) {
+    restartExecutionPointer = 65535;
+  }
 #if defined(DEBUG)
   for (std::vector<string>::iterator it = chunks.begin() ; it != chunks.end(); ++it)
     cout << *it << " ";

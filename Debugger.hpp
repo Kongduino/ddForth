@@ -145,6 +145,7 @@ bool handleBP() {
   gotoXY(1, 3);
   showJumpStack();
   stopHere = true;
+  bpStop = true;
   return true;
 }
 
