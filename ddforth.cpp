@@ -1160,7 +1160,6 @@ bool lookupUC(string name, vector<string> chunks) {
       xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
       logThis();
       int savedExecutionPointer = executionPointer;
-      cout << "restartExecutionPointer = " << restartExecutionPointer << endl;
       if(restartExecutionPointer == 65535) {
         int ifLevelsSave = ifLevels;
         ifLevels = -1;
