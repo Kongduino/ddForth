@@ -10,8 +10,8 @@
 #include <vector>
 
 struct CursorPosition {
-  int row;
-  int col;
+  int posy;
+  int posx;
 };
 
 CursorPosition getCursorPosition() {
@@ -43,8 +43,8 @@ CursorPosition getCursorPosition() {
         std::string coords_str = response.substr(bracket_pos + 1, r_pos - (bracket_pos + 1));
         std::vector<std::string> coords = splitString(coords_str, ';');
         if (coords.size() == 2) {
-          pos.row = std::stoi(coords[0]);
-          pos.col = std::stoi(coords[1]);
+          pos.posy = std::stoi(coords[0]);
+          pos.posx = std::stoi(coords[1]);
         }
       }
     }
@@ -54,6 +54,13 @@ CursorPosition getCursorPosition() {
   // Restore original terminal settings
   tcsetattr(STDIN_FILENO, TCSANOW, &old_tio);
   return pos;
+}
+
+bool handleGetPosXY() {
+  CursorPosition pos = getCursorPosition();
+  putIntegerOnStack(pos.posy);
+  putIntegerOnStack(pos.posx);
+  return true;
 }
 
 void gotoXY(int x, int y) {
@@ -99,16 +106,20 @@ bool handleShowVars() {
 bool showVars(int posx, int posy) {
   if (posy == -1) {
     CursorPosition xy = getCursorPosition();
-    posy = xy.col;
+    posy = xy.posx;
   }
 #if defined(DEBUG)
-  cout << endl << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
+  gotoXY(posx, posy++);
+  cout << "myVARs.size: " << myVARs.size() << " myFVARs.size: " << myFVARs.size()
        << " varAddresses.size: " << varAddresses.size()
-       << " fvarAddresses.size: " << fvarAddresses.size() << endl;
+       << " fvarAddresses.size: " << fvarAddresses.size();
+  gotoXY(posx, posy++);
   cout << "myCONSTs.size: " << myCONSTs.size() << " myFCONSTs.size: " << myFCONSTs.size()
        << " constAddresses.size: " << constAddresses.size()
        << " fconstAddresses.size: " << fconstAddresses.size();
 #endif
+  gotoXY(posx, posy++);
+  cout << "Variables & Constants";
   if (myVARs.size() > 0) {
     gotoXY(posx, posy++);
     cout << "+---------------------------------------------------------------+";

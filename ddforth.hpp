@@ -203,6 +203,7 @@ int GetINTaddress(string);
 bool handleEXIT();
 bool handleGotoXY();
 bool handleClearTerminal();
+bool handleGetPosXY();
 
 bool handleIF();
 bool handleTHEN();
@@ -505,7 +506,9 @@ nativeCommand nativeCommands[] = {
   { handleARRAYSUM, "ASUM", "( name -- a ) Puts the sum of all elements of array name on top of the stack." },
 
   { handleGotoXY, "POSXY", "( x y -- ) Positions cursor (terminal/UNIX-like) to x:y." },
+  { handleGetPosXY, "GETXY", "( -- x y ) Gets cursor position (terminal/UNIX-like) to x:y." },
   { handleClearTerminal, "CLEAN", "( -- ) Clears the screen (terminal/UNIX-like) and sets cursor to 1:1." },
+
   { handleSleep, "SLEEP", "( n -- ) Sleeps for n seconds." },
   { handleDelay, "DELAY", "( n -- ) Sleeps for n microseconds." },
 

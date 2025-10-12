@@ -142,6 +142,7 @@ bool handleBP() {
   cout << "\nBREAKPOINT!\n";
   showStack(70, 1);
   showVars(70, dataStack.size() + 5);
+  gotoXY(1, 3);
   showJumpStack();
   stopHere = true;
   return true;

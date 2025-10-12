@@ -16,25 +16,26 @@ bool showStack(int posx, int posy) {
   int count = 0;
   if (posy == -1) {
     CursorPosition xy = getCursorPosition();
-    posy = xy.col;
+    posy = xy.posy;
   }
-    gotoXY(1, 50);
-    cout << "posx = " << posx << ", posy = " << posy ;
+  // gotoXY(1, 50);
+  // cout << "posx = " << posx << ", posy = " << posy ;
   gotoXY(posx, posy++);
   if (dataStack.size() == 0) {
     cout << "Stack empty!\n";
     return true;
   }
+  cout << "STACK" ;
   int x = dataStack.size() - 1;
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
   int myStrings = userStrings.size() - 1;
 #if defined(DEBUG)
   gotoXY(posx, posy++);
-  cout << "\tdataStack.size()\t" << (x + 1);
+  cout << "dataStack.size()\t" << (x + 1);
   cout << "\tmyInts\t" << (myInts + 1);
   cout << "\tmyFloats\t" << (myFloats + 1);
-  cout << "\tmyStrings\t" << (myStrings + 1) << endl;
+  cout << "\tmyStrings\t" << (myStrings + 1);
 #endif
   gotoXY(posx, posy++);
   cout << "+--------------------------------------------------------+";
