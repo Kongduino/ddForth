@@ -17,6 +17,7 @@ A modern Forth tailored for my needs – IoT and command-line scripting.
 * [U(ART|SB)](#uartsb)
 * [Keyboard, files & automatic execution](#keyboard-files--automatic-execution)
 * [Compiling](#compiling)
+* [Debugger](#debugger)
 
 ## Background
 
@@ -1042,6 +1043,22 @@ Speed-wise, the impact isn't too bad, a little higher: 15%. So if you're looking
 OK ./bin/ddforth -e tests/test32.fs  1.07s user 1.41s system 94% cpu 2.622 total
 OK ./bin/ddforth_z -e tests/test32.fs  1.34s user 1.42s system 89% cpu 3.067 total
 ```
+
+### Debugger
+
+There's a very basic debugger – still a bit fragile – that is activated with `1 DEBUG`. You add breakpoints by adding `BP` before the word you want to interrupt the code at. [test38](tests/test38.fs) is a quick example of how it works. Use `CONTINUE` to, well, continue execution.
+
+```
+1 debug
+
+10 0 do
+  i dup . bp
+loop cr
+```
+
+![Debugger_Demo](assets/Debugger_Demo.gif)
+
+
 
 
 VAZY TITI !!!
