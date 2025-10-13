@@ -144,6 +144,7 @@ bool handleBP() {
   showVars(70, dataStack.size() + 5);
   gotoXY(1, 3);
   showJumpStack();
+  handleARRAYLIST();
   stopHere = true;
   bpStop = true;
   return true;
