@@ -1,0 +1,2 @@
+Temp	32.5
+Humidity	88
