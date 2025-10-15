@@ -1,7 +1,7 @@
 CPP=g++
 CFLAGS=-O3
 CFLAGSMALL=-Oz
-LDFLAGS=-Wl
+LDFLAGS=-Wl -lcurl
 TEST="-10 BEGIN DUP . 1 + DUP 0 <> WHILE . CR 10 DUP U. FACT U."
 
 ddforth: ddforth.cpp

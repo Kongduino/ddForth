@@ -1046,7 +1046,7 @@ OK ./bin/ddforth_z -e tests/test32.fs  1.34s user 1.42s system 89% cpu 3.067 tot
 
 ### Debugger
 
-There's a very basic debugger – still a bit fragile – that is activated with `1 DEBUG`. You add breakpoints by adding `BP` before the word you want to interrupt the code at. [test38](tests/test38.fs) is a quick example of how it works. Use `CONTINUE` to, well, continue execution. There's now a `STEP` that continues execution for just one word. The breakpoint display lists the data stack, variables, and the jump stack, as well as the list of VARRAYs, and context, 10 steps (max) before and after execution.
+There's a very basic debugger – still a bit fragile – that is activated with `1 DEBUG`. You add breakpoints by adding `BP` before the word you want to interrupt the code at. [test38](tests/test38.fs) is a quick example of how it works. Use `CONTINUE` to, well, continue execution. There's now also a `STEP` command that continues execution for just one word. The breakpoint display lists the data stack, variables, and the jump stack, as well as the list of VARRAYs, and context, 10 steps (max) before and after execution. Ths gives you a better sense of what is happening.
 
 ![Debugger](assets/Debugger.png)
 

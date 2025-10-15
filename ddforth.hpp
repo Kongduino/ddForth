@@ -249,6 +249,8 @@ bool handleWritePort();
 bool handleSleep();
 bool handleDelay();
 
+bool handleGetURLinMemory();
+
 int executionPointer = -1;
 vector<int> jumpStack;
 vector<int> jumpStackType;
@@ -524,6 +526,9 @@ nativeCommand nativeCommands[] = {
   { handleRestart, "CONTINUE", "( n -- ) Restarts the execution where it left off." },
   { handleStep, "STEP", "( n -- ) Restarts the execution where it left off, for 1 instruction." },
 
+  { handleGetURLinMemory, "CURLGETM", "( U -- s ) Uses curl to get a string from URL U onto the stack." },
+
+
 #if defined(NEED_SDL)
 #include "sdl_helpers/sdl_inc1.hpp"
 #endif
@@ -536,6 +541,7 @@ char numerics[] = "0123456789abcdef";
 #include "Terminal.hpp"
 #include "random.hpp"
 #include "Debugger.hpp"
+#include "getinmemory.hpp"
 
 #include "Files.hpp"
 #include "Strings.hpp"
