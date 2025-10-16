@@ -657,7 +657,7 @@ bool handleJ() {
 }
 
 bool handleBEGIN() {
-  // BEGIN ... <condition> UNTIL
+  // BEGIN ... <condition> UNTIL/WHILE/AGAIN
   xxxxxx = snprintf((char *)msg, 255, "\n\n--> BEGIN at ");
   logThis();
   jumpStack.push_back(executionPointer);
@@ -668,7 +668,10 @@ bool handleBEGIN() {
 }
 
 bool handleUNTILWHILE() {
-  xxxxxx = snprintf((char *)msg, 255, "\n--> UNTILWHILE at %d. JumpStack size: %zu\n", executionPointer, jumpStack.size());
+  xxxxxx = snprintf(
+    (char *)msg, 255,
+    "\n--> UNTILWHILE at %d. JumpStack size: %zu\n",
+    executionPointer, jumpStack.size());
   logThis();
   int i0, type0;
   if (jumpStack.size() == 0) {
@@ -706,6 +709,27 @@ bool handleUNTILWHILE() {
     xxxxxx = snprintf((char *)msg, 255, " Ending BEGIN. Condition: %d.\n", i0);
     logThis();
   }
+  return true;
+}
+
+bool handleAGAIN() {
+  xxxxxx = snprintf((char *)msg, 255, "\n--> handleAGAIN at %d. JumpStack size: %zu\n", executionPointer, jumpStack.size());
+  logThis();
+  int i0, type0;
+  if (jumpStack.size() == 0) {
+    xxxxxx = snprintf((char *)msg, 255, "handleAGAIN JumpStack overflow!\n");
+    logThis();
+    return false;
+  }
+  type0 = jumpStackType.at(jumpStackType.size() - 1);
+  if (type0 != xBEGIN) {
+    xxxxxx = snprintf((char *)msg, 255, "handleAGAIN xBEGIN not on JumpStack!\n");
+    logThis();
+    return false;
+  }
+  executionPointer = jumpStack.at(jumpStack.size() - 1);
+  xxxxxx = snprintf((char *)msg, 255, " looping back to %d.\n", executionPointer);
+  logThis();
   return true;
 }
 
@@ -1145,7 +1169,40 @@ bool forgetVAR() {
   return false;
 }
 
-bool lookupUC(string name, vector<string> chunks) {
+// bool lookupUC(string name, vector<string> chunks) {
+//   std::transform(name.begin(), name.end(), name.begin(), ::toupper);
+//   xxxxxx = snprintf((char *)msg, 255, "lookupUC %s ", name.c_str());
+//   logThis();
+//   for (std::vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
+//     string cc = it->name;
+//     std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
+//     xxxxxx = snprintf((char *)msg, 255, "%s ", cc.c_str());
+//     logThis();
+//     if (name == cc) {
+//       char tmp[256];
+//       strcpy(tmp, it->command.c_str());
+//       xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
+//       logThis();
+//       int savedExecutionPointer = executionPointer;
+//       if(restartExecutionPointer == 65535) {
+//         int ifLevelsSave = ifLevels;
+//         ifLevels = -1;
+//         saveForBreak(chunks);
+//       }
+//       vector<string> myChunks;
+//       myChunks = tokenize(tmp, myChunks);
+//       evaluate(myChunks);
+//       // Restore the IF/THEN/ELSE index
+//       restoreFromBreak();
+//       executionPointer = savedExecutionPointer;
+//       return true;
+//     }
+//   }
+//   xxxxxx = snprintf((char *)msg, 255, "No user word called: %s\n", name.c_str());
+//   logThis();
+//   return false;
+vector<string> myChunks;
+bool lookupUC(string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::toupper);
   xxxxxx = snprintf((char *)msg, 255, "lookupUC %s ", name.c_str());
   logThis();
@@ -1159,18 +1216,7 @@ bool lookupUC(string name, vector<string> chunks) {
       strcpy(tmp, it->command.c_str());
       xxxxxx = snprintf((char *)msg, 255, "tokenize `%s` ", tmp);
       logThis();
-      int savedExecutionPointer = executionPointer;
-      if(restartExecutionPointer == 65535) {
-        int ifLevelsSave = ifLevels;
-        ifLevels = -1;
-        saveForBreak(chunks);
-      }
-      vector<string> myChunks;
       myChunks = tokenize(tmp, myChunks);
-      evaluate(myChunks);
-      // Restore the IF/THEN/ELSE index
-      restoreFromBreak();
-      executionPointer = savedExecutionPointer;
       return true;
     }
   }
@@ -2286,10 +2332,18 @@ void evaluate(vector<string> chunks) {
           removeBP = true;
         }
         executionPointer += 1;
-      } else if (lookupUC(c, chunks)) {
+      } else if (lookupUC(c)) {
         xxxxxx = snprintf((char *)msg, 255, "%s lookupUC\n", c.c_str());
         logThis();
-        executionPointer += 1;
+        // remove the word itself
+        chunks.erase(chunks.begin() + executionPointer);
+        // in its place insert the chunks we got from lookupUC
+        std::vector<string>::iterator it0 = chunks.begin();
+        chunks.insert(it0 + executionPointer, myChunks.begin(), myChunks.end());
+        // delete myChunks
+        myChunks.clear();
+        // Do not increment executionPointer: we are on the right cell for next step
+        //executionPointer += 1;
       } else if (isInteger(c, &i0)) {
         putIntegerOnStack(i0);
         executionPointer += 1;

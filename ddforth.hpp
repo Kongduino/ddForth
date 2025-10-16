@@ -129,6 +129,7 @@ bool handleSWAP();
 bool handleUNTIL();
 bool handleUPRINT();
 bool handleWHILE();
+bool handleAGAIN();
 bool handleWORDS();
 bool handleFLOAD();
 bool handleIncludeFile();
@@ -467,8 +468,9 @@ nativeCommand nativeCommands[] = {
   { handleGreaterEqualQ, ">=?", "( a b -- a [01] ) Same as >= but preserves a." },
   { handleDifferentQ, "<>?", "( a b -- a [01] ) Same as <> but preserves a." },
   { handleBEGIN, "BEGIN", "( -- ) Start of BEGIN...WHILE/UNTIL" },
-  { handleUNTIL, "UNTIL", "(cond -- ) tests condition and loops, or not" },
-  { handleWHILE, "WHILE", "(cond -- ) tests condition and loops, or not" },
+  { handleUNTIL, "UNTIL", "( cond -- ) tests condition and loops, or not" },
+  { handleWHILE, "WHILE", "( cond -- ) tests condition and loops, or not" },
+  { handleAGAIN, "AGAIN", "( -- ) Loops unconditionally." },
   { handleDO, "DO", "( -- ) Start of DO...LOOP" },
   { handleLOOP, "LOOP", "( -- ) Increments loop index by 1 and loops or not." },
   { handlePlusLoop, "+LOOP", "( a -- ) Increments loop index by a instead of 1 and loops or not." },
