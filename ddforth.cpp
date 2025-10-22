@@ -1276,8 +1276,12 @@ bool isFloat(string c, float *f0) {
   if (c.length() == 0) return false;
   xxxxxx = snprintf((char *)msg, 255, "isFloat: %s?\n", c.c_str());
   logThis();
-  int sign = 1;
   int base = GetINT("BASE");
+  float sign = 1.0;
+  if (base == 10 && c.at(0) == '-') {
+    sign = -1.0;
+    c.erase(0, 1);
+  }
   if (base == 10) {
     string nums("0123456789.");
     string::const_iterator it = c.begin();
@@ -1288,7 +1292,7 @@ bool isFloat(string c, float *f0) {
       return false;
     }
     try {
-      *f0 = stof(c);
+      *f0 = stof(c) * sign;
       return true;
     } catch (const invalid_argument &e) {
       xxxxxx = snprintf((char *)msg, 255, "Invalid argument for '%s': %s\n", c.c_str(), e.what());
@@ -1310,7 +1314,7 @@ bool handleEXEC() {
     logStackOverflow((char *)"handleEXEC");
     return false;
   }
-  //cout << "handleEXEC(" << s << ")" << endl;
+  // cout << "handleEXEC(" << s << ")" << endl;
   int savedExecutionPointer = executionPointer;
   vector<string> myChunks;
   myChunks = tokenize((char *)s.c_str(), myChunks);

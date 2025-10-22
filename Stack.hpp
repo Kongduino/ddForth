@@ -12,12 +12,13 @@ bool handleShowStack() {
   return showStack(1, -1);
 }
 
-bool showStack(int posx, int posy) {
+bool showStack(int posx, int py) {
   int count = 0;
-  if (posy == -1) {
+  int posy;
+  if (py == -1) {
     CursorPosition xy = getCursorPosition();
     posy = xy.posy;
-  }
+  } else posy = py;
   // gotoXY(1, 50);
   // cout << "posx = " << posx << ", posy = " << posy ;
   gotoXY(posx, posy++);

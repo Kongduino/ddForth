@@ -5,6 +5,85 @@
 #include <iostream>
 #include <cstring>
 
+class MyGUI {
+public:
+  MyGUI(int);
+  void CreateButton(char *, char *, int, int, int, int);
+  void CreateListbox(char *, int, int, int, int, int);
+  void CreatePopupMenu(char *, int, int, int, int);
+  void AddLBrow(char *, char *);
+  void AddPMrow(char *, char *);
+  void Alert(char *);
+
+private:
+  int myClient_fd;
+  char myBuffer[255];
+};
+
+MyGUI::MyGUI(int fd) {
+  myClient_fd = fd;
+}
+
+void MyGUI::CreateButton(char *name, char *caption, int posx, int posy, int width, int height) {
+  // "BT|TAGADA|Caption|20|320|-1|-1\n"
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "BT|%s|%s|%d|%d|%d|%d\n",
+    name, caption, posx, posy, width, height
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
+
+void MyGUI::CreateListbox(char *name, int posx, int posy, int width, int height, int rows) {
+  // "LB|TOGODO|20|20|400|300|3\n"
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "LB|%s|%d|%d|%d|%d|%d\n",
+    name, posx, posy, width, height, rows
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
+
+void MyGUI::CreatePopupMenu(char *name, int posx, int posy, int width, int height) {
+  // "PM|PM00|120|320|120|-1\n";
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "PM|%s|%d|%d|%d|%d\n",
+    name, posx, posy, width, height
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
+
+void MyGUI::AddLBrow(char *name, char *row) {
+  // "ADDLB|TOGODO|Three|Columns|Total\n";
+  // Last %s is %s|%s etc...
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "ADDLB|%s|%s\n",
+    name, row
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
+
+void MyGUI::AddPMrow(char *name, char *row) {
+  // "ADDPM|PM00|Choice 0\n";
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "ADDPM|%s|%s\n",
+    name, row
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
+
+void MyGUI::Alert(char *msg) {
+  // "MSG|Ok Thanks!\n";
+  int xxxxxx = snprintf(
+    myBuffer, 255,
+    "MSG|%s\n",
+    msg
+  );
+  int n = send(myClient_fd, myBuffer, strlen(myBuffer), 0);
+}
 
 int main() {
   int server_fd, client_fd;
@@ -34,10 +113,8 @@ int main() {
   }
 
   // Listen for connections
-  // if (listen(server_fd, 5) == -1) {
-  if (connect(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-    // perror("listen");
-    perror("connect");
+  if (listen(server_fd, 5) == -1) {
+    perror("listen");
     close(server_fd);
     return 1;
   }
@@ -50,22 +127,29 @@ int main() {
     close(server_fd);
     return 1;
   }
+
   std::cout << "Client connected." << std::endl;
-  char btnCreate[] = "BT|TAGADA|Caption|20|320|-1|-1\n";
-  char lbCreate[] = "LB|TOGODO|20|20|400|300|3\n";
-  char lbAdd[] = "ADDLB|TOGODO|Three|Columns|Total\n";
-  int n = send(client_fd, btnCreate, strlen(btnCreate), 0);
-  std::cout << "Sending " << btnCreate << std::endl;
-  n = send(client_fd, lbCreate, strlen(lbCreate), 0);
-  std::cout << "Sending " << lbCreate << std::endl;
-  n = send(client_fd, lbAdd, strlen(lbAdd), 0);
-  std::cout << "Sending " << lbAdd << std::endl;
+  MyGUI gui(client_fd);
+  gui.CreateButton((char *)"TAGADA", (char *)"Click me!", 20, 320, -1, -1);
+  std::cout << "Creating button." << std::endl;
+  gui.CreateListbox((char *)"TOGODO", 20, 20, 400, 300, 3);
+  std::cout << "Creating ListBox." << std::endl;
+  gui.CreatePopupMenu((char *)"PM00", 120, 320, 120, -1);
+  std::cout << "Creating Popup Menu." << std::endl;
+
+  for (int ix = 0; ix < 5; ix++) {
+    char test[32];
+    int xx = snprintf(test, 32, "Choice %d", ix);
+    gui.AddPMrow((char *)"PM00", test);
+    std::cout << "Adding Choice " << ix << " to Popup Menu." << std::endl;
+  }
   struct pollfd pfd;
   pfd.fd = client_fd;
-  pfd.events = POLLIN | POLLHUP | POLLERR;  // Monitor for input, hangup, and errors
+  pfd.events = POLLIN | POLLHUP | POLLERR; // Monitor for input, hangup, and errors
+  int rowIndex = 4;
   while (true) {
     // Receive data
-    int ret = poll(&pfd, 1, 1000);  // timeout_ms can be -1 for infinite wait
+    int ret = poll(&pfd, 1, 1000); // timeout_ms can be -1 for infinite wait
     if (ret > 0) {
       if (pfd.revents & POLLHUP) {
         std::cout << "Peer disconnected (POLLHUP)." << std::endl;
@@ -82,10 +166,14 @@ int main() {
           buffer[bytes_received] = '\0';
           std::cout << "Received: " << buffer << std::endl;
           if (strcmp(buffer, "BT|TAGADA|PUSH") == 0) {
-            n = send(client_fd, lbAdd, strlen(lbAdd), 0);
-            n = send(client_fd, "MSG|Ok Thanks!\n", 15, 0);
-            std::cout << "Sending " << lbAdd << std::endl;
+            gui.AddLBrow((char *)"TOGODO", (char *)"Three|Columns|Total");
+            gui.Alert((char *)"Ok Thanks!");
+            std::cout << "Adding row to LB" << std::endl;
             std::cout << "Sending MSG|Ok Thanks!\n" << std::endl;
+          } else if (strncmp(buffer, "PM|PM00|SELECT|", 15) == 0) {
+            char row[32];
+            int xxxxxx = snprintf(row, 32, "Selected|Row|%s\n", buffer+15);
+            gui.AddLBrow((char *)"TOGODO", row);
           }
         }
       }
