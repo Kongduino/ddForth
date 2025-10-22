@@ -34,8 +34,10 @@ int main() {
   }
 
   // Listen for connections
-  if (listen(server_fd, 5) == -1) {
-    perror("listen");
+  // if (listen(server_fd, 5) == -1) {
+  if (connect(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    // perror("listen");
+    perror("connect");
     close(server_fd);
     return 1;
   }
