@@ -7,18 +7,17 @@
 using namespace std;
 
 struct nativeCommand {
-  bool (*ptr)(void);  // Function pointer
+  bool (*ptr)(void); // Function pointer
   string name;
   string help;
 };
+// This definition comes from ddForth
 
 nativeCommand *shared_nativeCommand_ptr;
 int *nativeCmdCount_ptr;
 
-
 int main(int argc, char **argv) {
   void *handle;
-  char *error;
 
   handle = dlopen("plugin.dylib", RTLD_LAZY);
   if (!handle) {
@@ -40,16 +39,12 @@ int main(int argc, char **argv) {
     dlclose(handle);
     return 1;
   }
-  // nativeCommand pluginCommands[nativeCmdCount];
   nativeCommand *pluginCommands;
   pluginCommands = shared_nativeCommand_ptr;
   for (int ix = 0; ix < nativeCmdCount; ix++) {
     cout << " • " << pluginCommands[ix].name << ":\t" << pluginCommands[ix].help << endl;
     bool rslt = pluginCommands[ix].ptr();
   }
-
-
-
 
   dlclose(handle);
   exit(EXIT_SUCCESS);
