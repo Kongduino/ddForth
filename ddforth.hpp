@@ -335,7 +335,7 @@ enum JumpType {
 };
 
 struct nativeCommand {
-  bool (*ptr)(void);  // Function pointer
+  bool (*ptr)(void); // Function pointer
   string name;
   string help;
 };
@@ -347,7 +347,7 @@ void logThis() {
 }
 
 nativeCommand nativeCommands[] = {
-  { handleWORDS, "WORDS", "( --  Displays vocabulary." },
+  { handleWORDS, "WORDS", "( -- ) Displays vocabulary." },
   { handleHELP, "HELP", "( -- ) Displays this help." },
   { handleSuppArgs, "SUPP_ARGS", "( -- a b c d... n) Puts the supplementary arguments, if any, on the stack and the count on top." },
   { handleHexDump, "HEXDUMP", "( s -- Displays as string in hexadecimal as a table. )" },
