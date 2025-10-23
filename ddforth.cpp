@@ -1240,6 +1240,21 @@ bool lookup(string c, bool *r) {
   return false;
 }
 
+bool lookupPlugin(string c, bool *r) {
+  string cc, d;
+  cc = c;
+  std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
+  for (int ix = 0; ix < pluginCmdCount; ix++) {
+    d = pluginCommands[ix].name;
+    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    if (cc == d) {
+      *r = pluginCommands[ix].ptr();
+      return true;
+    }
+  }
+  return false;
+}
+
 bool isInteger(string c, int *i0) {
   int sign = 1;
   if (c.length() == 0) return false;
@@ -2279,6 +2294,64 @@ void evaluate(vector<string> chunks) {
       }
     } else {
       if (lookup(c, &r)) {
+        if (r == false) {
+          cout << "ERROR! " << c << " returned false. Aborting!" << endl;
+          executionPointer -= 2;
+          if (executionPointer < 0) executionPointer = 0;
+          int limit = executionPointer + 5;
+          if (limit >= chunks.size()) limit = chunks.size();
+          cout << "\nCONTEXT: Steps " << executionPointer << " to " << limit << "\n        ";
+          for (int xx = executionPointer; xx < limit; xx++)
+            cout << chunks.at(xx) << " ";
+          cout << "        " << endl;
+          bool r = showStack();
+          cleanup();
+          return;
+        }
+        if (includeON) {
+          chunks.erase(chunks.begin() + executionPointer - 2, chunks.begin() + executionPointer + 1);
+          cout << endl;
+          executionPointer -= 2;
+          for (int xx = 0; xx < includeChunks.size(); xx++) {
+            chunks.insert(chunks.begin() + xx + executionPointer, includeChunks.at(xx));
+          }
+          includeON = false;
+          executionPointer -= 1;
+        }
+        if (stopHere) {
+          // we hit a breakpoint
+          stopHere = false;
+          requestStop = false;
+          if (removeBP) {
+            // this is a STEP breakpoint
+            chunks.erase(chunks.begin() + executionPointer);
+            removeBP = false;
+            executionPointer -= 1;
+          }
+          restartExecutionPointer = executionPointer + 1;
+          int executionStart = executionPointer - 10;
+          if (executionStart < 0) executionStart = 0;
+          int limit = executionPointer + 10;
+          if (limit >= chunks.size()) limit = chunks.size();
+          cout << "\nCONTEXT: Steps " << executionStart << " to " << (limit - 1) << "\n";
+          for (int xx = executionStart; xx < limit; xx++) {
+            cout << "\t" << xx << ": ";
+            if (xx == executionPointer)
+              cout << "*";
+            else
+              cout << " ";
+            cout << chunks.at(xx) << endl;
+          }
+          cout << "        " << endl;
+          saveForBreak(chunks);
+          return;
+        } else if (requestStop) {
+          chunks.insert(chunks.begin() + executionPointer + 1, "BP");
+          requestStop = false;
+          removeBP = true;
+        }
+        executionPointer += 1;
+      } else if (lookupPlugin(c, &r)) {
         if (r == false) {
           cout << "ERROR! " << c << " returned false. Aborting!" << endl;
           executionPointer -= 2;

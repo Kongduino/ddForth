@@ -251,6 +251,7 @@ bool handleSleep();
 bool handleDelay();
 
 bool handleGetURLinMemory();
+bool handleLoadPlugin();
 
 int executionPointer = -1;
 vector<int> jumpStack;
@@ -345,6 +346,9 @@ void logThis() {
   cout << msg;
 #endif
 }
+
+extern nativeCommand *pluginCommands;
+extern int pluginCmdCount;
 
 nativeCommand nativeCommands[] = {
   { handleWORDS, "WORDS", "( -- ) Displays vocabulary." },
@@ -529,6 +533,7 @@ nativeCommand nativeCommands[] = {
   { handleStep, "STEP", "( n -- ) Restarts the execution where it left off, for 1 instruction." },
 
   { handleGetURLinMemory, "CURLGETM", "( U -- s ) Uses curl to get a string from URL U onto the stack." },
+  { handleLoadPlugin, "PLUGIN", "( s -- ) Loads plugin at location s." },
 
 
 #if defined(NEED_SDL)
@@ -544,6 +549,7 @@ char numerics[] = "0123456789abcdef";
 #include "random.hpp"
 #include "Debugger.hpp"
 #include "getinmemory.hpp"
+#include "plugin.hpp"
 
 #include "Files.hpp"
 #include "Strings.hpp"
@@ -643,6 +649,11 @@ bool handleWORDS() {
   for (vector<userCommand>::iterator it = userCommands.begin(); it != userCommands.end(); ++it) {
     printf(" • %-11s %s\n", it->name.c_str(), it->command.c_str());
   }
+  cout << endl << endl << "Plugin Commands:" << endl << "--------------" << endl;
+  for (int ix = 0; ix < pluginCmdCount; ix++) {
+    cout << pluginCommands[ix].name << " ";
+  }
+  cout << endl;
   return true;
 }
 
