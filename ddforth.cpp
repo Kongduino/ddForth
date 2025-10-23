@@ -1248,7 +1248,56 @@ bool lookupPlugin(string c, bool *r) {
     d = pluginCommands[ix].name;
     std::transform(d.begin(), d.end(), d.begin(), ::tolower);
     if (cc == d) {
-      *r = pluginCommands[ix].ptr();
+      // We need to check the stack for the proper parameters
+      // and prepare a vector
+      vector<string>params;
+      char V = pluginCommands[ix].help.at(0);
+      int argc = V - 48;
+      // cout << "   - Arg count: " << argc << endl;
+      for (int jx = 0; jx < argc; jx++) {
+        char argType = pluginCommands[ix].help.at(jx + 1);
+        // cout << "   - Arg #" << jx << ": " << argType;
+        string P;
+        int I;
+        float F;
+        switch(argType) {
+          case 'S':
+            {
+              if (popStringFromStack(&P) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/STR");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(P);
+              break;
+            }
+          case 'I':
+            {
+              if (popIntegerFromStack(&I) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/INT");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(std::to_string(I));
+              break;
+            }
+          case 'F':
+            {
+              if (popFloatFromStack(&F) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/FLOAT");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(std::to_string(F));
+              break;
+            }
+        }
+      }
+      // cout << "calling " << pluginCommands[ix].name << endl;
+      *r = pluginCommands[ix].ptr(params);
       return true;
     }
   }

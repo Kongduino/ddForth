@@ -8,7 +8,7 @@ ddforth: ddforth.cpp
 	mkdir -p bin
 	$(CPP) $(CFLAGS) -c ddforth.cpp -o bin/ddforth.o
 	$(CPP) -o bin/ddforth bin/ddforth.o $(LDFLAGS)
-	rm -f bin/*.o
+	#rm -f bin/*.o
 
 small: ddforth.cpp
 	mkdir -p bin

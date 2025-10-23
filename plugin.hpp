@@ -6,9 +6,15 @@
 
 using namespace std;
 
-nativeCommand *shared_nativeCommand_ptr;
+struct pluginCommand {
+  bool (*ptr)(vector<string>); // Function pointer
+  string name;
+  string help;
+};
+
+pluginCommand *shared_pluginCommand_ptr;
 int *pluginCmdCount_ptr;
-nativeCommand *pluginCommands;
+pluginCommand *pluginCommands;
 int pluginCmdCount;
 bool pluginLoaded = false;
 void *pluginHandle;
@@ -34,18 +40,23 @@ bool handleLoadPlugin() {
     return false;
   }
   pluginCmdCount = *pluginCmdCount_ptr;
-  cout << "Command count: " << pluginCmdCount << endl;
-  shared_nativeCommand_ptr = (nativeCommand *)dlsym(pluginHandle, "pluginCommands");
-  if (!shared_nativeCommand_ptr) {
+  // cout << "Command count: " << pluginCmdCount << endl;
+  shared_pluginCommand_ptr = (pluginCommand *)dlsym(pluginHandle, "pluginCommands");
+  if (!shared_pluginCommand_ptr) {
     fprintf(stderr, "handleLoadPlugin: Error finding symbol 'pluginCommands': %s\n", dlerror());
     dlclose(pluginHandle);
     return false;
   }
   pluginLoaded = true;
-  pluginCommands = shared_nativeCommand_ptr;
+  pluginCommands = shared_pluginCommand_ptr;
   for (int ix = 0; ix < pluginCmdCount; ix++) {
     cout << " • " << pluginCommands[ix].name << ":\t" << pluginCommands[ix].help << endl;
-    // bool rslt = pluginCommands[ix].ptr();
+    char V = pluginCommands[ix].help.at(0);
+    int argc = V - 48;
+    cout << "   - Arg count: " << argc << endl;
+    for (int jx = 0; jx < argc; jx++) {
+      cout << "   - Arg #" << jx << ": " << pluginCommands[ix].help.at(jx + 1) << endl;
+    }
   }
   return true;
 }

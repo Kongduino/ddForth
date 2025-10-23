@@ -347,9 +347,6 @@ void logThis() {
 #endif
 }
 
-extern nativeCommand *pluginCommands;
-extern int pluginCmdCount;
-
 nativeCommand nativeCommands[] = {
   { handleWORDS, "WORDS", "( -- ) Displays vocabulary." },
   { handleHELP, "HELP", "( -- ) Displays this help." },
