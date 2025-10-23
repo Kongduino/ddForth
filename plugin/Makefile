@@ -1,12 +1,12 @@
 CPP=g++
 CFLAGS=-O3 -rdynamic
-LDFLAGS=-Wl -ldl
+LDFLAGS=-ldl
 
 plugin: foo.cpp plugin.cpp
-	g++ -g -c plugin.cpp
-	g++ -dynamiclib plugin.o -o plugin.dylib
-	g++ -o foo foo.cpp
+	g++ -O3 -g -c encode.cpp
+	g++ -dynamiclib encode.o lodepng/lodepng.o -o encode.dylib
+	g++ -O3 $(CFLAGS) foo.cpp -o foo $(LDFLAGS)
 	rm *.o
 
 clean:
-	rm *.o *.dylib foo
+	rm -f *.o *.dylib foo

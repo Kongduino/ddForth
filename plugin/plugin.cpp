@@ -24,14 +24,5 @@ nativeCommand nativeCommands[] = {
 };
 int nativeCmdCount = sizeof(nativeCommands) / sizeof(nativeCommand);
 
-int numFunc() {
-  return nativeCmdCount;
-}
-
-nativeCommand commandX(int x) {
-  return nativeCommands[x];
-}
-
-
 
 // end

@@ -19,7 +19,7 @@ int *nativeCmdCount_ptr;
 int main(int argc, char **argv) {
   void *handle;
 
-  handle = dlopen("plugin.dylib", RTLD_LAZY);
+  handle = dlopen("encode.dylib", RTLD_LAZY);
   if (!handle) {
     fprintf(stderr, "%s\n", dlerror());
     exit(EXIT_FAILURE);
