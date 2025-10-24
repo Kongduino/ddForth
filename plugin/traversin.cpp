@@ -1,4 +1,4 @@
-#include <cmath> // For sin, cos, tan
+#include <cmath>  // For sin, cos, tan
 #include "lodepng/lodepng.h"
 #include <cstdio>
 #include <cstring>
@@ -18,7 +18,7 @@ bool decodeOneStep(string filename, string name) {
   vector<unsigned char> image; //the raw pixels
   vector<int> size;
   unsigned width, height;
-unsigned error = lodepng::decode(image, width, height, filename.c_str());
+  unsigned error = lodepng::decode(image, width, height, filename.c_str());
   if (error) {
     std::cout << "decodeOneStep: Error " << error << ": " << lodepng_error_text(error) << std::endl;
     return false;
@@ -31,7 +31,7 @@ unsigned error = lodepng::decode(image, width, height, filename.c_str());
   return true;
 }
 
-bool encodeOneStep(string filename, const unsigned char* image, unsigned width, unsigned height) {
+bool encodeOneStep(string filename, const unsigned char *image, unsigned width, unsigned height) {
   /*Encode the image*/
   unsigned error = lodepng_encode32_file(filename.c_str(), image, width, height);
   /*if there's an error, display it*/
@@ -42,7 +42,7 @@ bool encodeOneStep(string filename, const unsigned char* image, unsigned width, 
   return true;
 }
 
-bool handleCreateImage(vector<string>P) {
+bool handleCreateImage(vector<string> P) {
   if (P.size() != 3) {
     cout << "handleCreateImage: Invalid number of args!\n";
     return false;
@@ -70,11 +70,11 @@ bool handleCreateImage(vector<string>P) {
   return true;
 }
 
-bool handlePNGTest(vector<string>P) {
-  const char* filename = "test.png";
+bool handlePNGTest(vector<string> P) {
+  const char *filename = "test.png";
   /*generate some image*/
   unsigned width = 512, height = 512;
-  unsigned char* image = (unsigned char*)malloc(width * height * 4);
+  unsigned char *image = (unsigned char *)malloc(width * height * 4);
   unsigned x, y;
   for (y = 0; y < height; y++)
     for (x = 0; x < width; x++) {
@@ -88,7 +88,20 @@ bool handlePNGTest(vector<string>P) {
   return rslt;
 }
 
-bool handleDrawPixel(vector<string>P) {
+vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
+  int position = y * width * 4 + x * 4;
+  image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+  position += 1;
+  image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+  position += 1;
+  image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+  position += 1;
+  image[position] = (image[position] + a) / 2;
+  position += 1;
+  return image;
+}
+
+bool handleDrawPixel(vector<string> P) {
   // x y r g b a name PIXEL
   if (P.size() != 7) {
     cout << "handleDrawPixel: Invalid number of args!\n";
@@ -127,16 +140,68 @@ bool handleDrawPixel(vector<string>P) {
   vector<int> size = myImageSizes[name];
   int height = size.at(0);
   int width = size.at(1);
-  int position = y * width * 4 + x * 4;
-  image[position++] = r;
-  image[position++] = g;
-  image[position++] = b;
-  image[position++] = a;
+  image = putPixel(image, x, y, width, r, g, b, a);
   myImages[name] = image;
   return true;
 }
 
-bool handleDrawRect(vector<string>P) {
+bool handleFillRect(vector<string> P) {
+  // x y L H r g b a name FILLRECT
+  if (P.size() != 9) {
+    cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
+    return false;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  uint8_t a = std::atoi(P.at(1).c_str());
+  uint8_t b = std::atoi(P.at(2).c_str());
+  uint8_t g = std::atoi(P.at(3).c_str());
+  uint8_t r = std::atoi(P.at(4).c_str());
+  int H = std::atoi(P.at(5).c_str());
+  int L = std::atoi(P.at(6).c_str());
+  int y = std::atoi(P.at(7).c_str());
+  int x = std::atoi(P.at(8).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  if ((x + L) >= width) L = width - x;
+  if ((y + H) >= height) H = height - y;
+  cout << "L: " << L << ", H: " << H << endl;
+  for (int jx = 0; jx < H; jx++) {
+    // line by line, calculate the start position
+    int position = (y + jx) * width * 4 + x * 4;
+    for (int ix = 0; ix < L; ix++) {
+      // Draw a line
+      image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+      position += 1;
+      image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+      position += 1;
+      image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+      position += 1;
+      image[position] = (image[position] + a) / 2;
+      position += 1;
+    }
+  }
+  myImages[name] = image;
+  return true;
+}
+
+bool handleDrawRect(vector<string> P) {
   // x y L H r g b a name RECT
   if (P.size() != 9) {
     cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
@@ -171,38 +236,54 @@ bool handleDrawRect(vector<string>P) {
   int height = size.at(0);
   int width = size.at(1);
   int position;
-  position = (y) * width * 4 + x * 4;
+  position = y * width * 4 + x * 4;
   for (int ix = 0; ix < L; ix++) {
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+    position += 1;
     if ((x + ix) >= width)
       ix = L;
   }
   if ((y + H - 1) < height) {
     position = (y + H - 1) * width * 4 + x * 4;
     for (int ix = 0; ix < L; ix++) {
-      image[position++] = r;
-      image[position++] = g;
-      image[position++] = b;
-      image[position++] = a;
+      image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+      position += 1;
+      image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+      position += 1;
+      image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+      position += 1;
+      image[position] = (image[position] + a) / 2;
+      position += 1;
       if ((x + ix) >= width)
         ix = L;
     }
   }
   for (int jx = 1; jx < H - 1; jx++) {
     position = (y + jx) * width * 4 + x * 4;
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+    position += 1;
     if ((x + L - 1) < width) {
       position = (y + jx) * width * 4 + (x + L - 1) * 4;
-      image[position++] = r;
-      image[position++] = g;
-      image[position++] = b;
-      image[position++] = a;
+      image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+      position += 1;
+      image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+      position += 1;
+      image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+      position += 1;
+      image[position] = (image[position] + a) / 2;
+      position += 1;
     }
     if ((y + jx) >= height)
       jx = H;
@@ -211,7 +292,7 @@ bool handleDrawRect(vector<string>P) {
   return true;
 }
 
-bool handleDrawHLine(vector<string>P) {
+bool handleDrawHLine(vector<string> P) {
   // x y L r g b a name HLINE
   if (P.size() != 8) {
     cout << "handleDrawHLine: Invalid number of args!\n";
@@ -245,11 +326,15 @@ bool handleDrawHLine(vector<string>P) {
   int height = size.at(0);
   int width = size.at(1);
   int position = y * width * 4 + x * 4;
-  for (int ix = 0; ix < L; ix ++) {
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
+  for (int ix = 0; ix < L; ix++) {
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+    position += 1;
     if ((x + ix) >= width)
       ix = L;
   }
@@ -257,7 +342,7 @@ bool handleDrawHLine(vector<string>P) {
   return true;
 }
 
-bool handleDrawVLine(vector<string>P) {
+bool handleDrawVLine(vector<string> P) {
   // x y H r g b a name VLINE
   if (P.size() != 8) {
     cout << "handleDrawVLine: Invalid number of args!\n";
@@ -291,12 +376,16 @@ bool handleDrawVLine(vector<string>P) {
   int height = size.at(0);
   int width = size.at(1);
   int position;
-  for (int ix = 0; ix < H; ix ++) {
+  for (int ix = 0; ix < H; ix++) {
     position = (y + ix) * width * 4 + x * 4;
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+    position += 1;
     if ((y + ix) >= height)
       ix = H;
   }
@@ -304,7 +393,103 @@ bool handleDrawVLine(vector<string>P) {
   return true;
 }
 
-bool handleDrawCircle(vector<string>P) {
+bool handleDrawLine(vector<string> P) {
+  // x1 y1 x2 y2 r g b a name DLINE
+  if (P.size() != 9) {
+    cout << "handleDrawVLine: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  uint8_t a = std::atoi(P.at(1).c_str());
+  uint8_t b = std::atoi(P.at(2).c_str());
+  uint8_t g = std::atoi(P.at(3).c_str());
+  uint8_t r = std::atoi(P.at(4).c_str());
+  int y2 = std::atoi(P.at(5).c_str());
+  int x2 = std::atoi(P.at(6).c_str());
+  int y1 = std::atoi(P.at(7).c_str());
+  int x1 = std::atoi(P.at(8).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
+  dx = x2 - x1;
+  dy = y2 - y1;
+  dx1 = fabs(dx);
+  dy1 = fabs(dy);
+  px = 2 * dy1 - dx1;
+  py = 2 * dx1 - dy1;
+  if (dy1 <= dx1) {
+    if (dx >= 0) {
+      x = x1;
+      y = y1;
+      xe = x2;
+    } else {
+      x = x2;
+      y = y2;
+      xe = x1;
+    }
+    image = putPixel(image, x, y, width, r, g, b, a);
+    for (i = 0; x < xe; i++) {
+      x = x + 1;
+      if (px < 0) {
+        px = px + 2 * dy1;
+      } else {
+        if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
+          y = y + 1;
+        } else {
+          y = y - 1;
+        }
+        px = px + 2 * (dy1 - dx1);
+      }
+      image = putPixel(image, x, y, width, r, g, b, a);
+    }
+  } else {
+    if (dy >= 0) {
+      x = x1;
+      y = y1;
+      ye = y2;
+    } else {
+      x = x2;
+      y = y2;
+      ye = y1;
+    }
+    image = putPixel(image, x, y, width, r, g, b, a);
+    for (i = 0; y < ye; i++) {
+      y = y + 1;
+      if (py <= 0) {
+        py = py + 2 * dx1;
+      } else {
+        if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
+          x = x + 1;
+        } else {
+          x = x - 1;
+        }
+        py = py + 2 * (dx1 - dy1);
+      }
+      image = putPixel(image, x, y, width, r, g, b, a);
+    }
+  }
+  myImages[name] = image;
+  return true;
+}
+
+bool handleDrawCircle(vector<string> P) {
   // x y radius r g b a name CIRCLE
   if (P.size() != 8) {
     cout << "handleDrawCircle: Invalid number of args!\n";
@@ -338,25 +523,29 @@ bool handleDrawCircle(vector<string>P) {
   int height = size.at(0);
   int width = size.at(1);
   int position;
-  for (double angle=0; angle<=2*3.141592653; angle+=0.001) {
+  for (double angle = 0; angle <= 2 * 3.141592653; angle += 0.001) {
     //You are using radians so you will have to increase by a very small amount
     //This will have the coordinates you want to draw a point at
     int px = x + radius * std::cos(angle);
     int py = y + radius * std::sin(angle);
     if (py < height && px < width) {
       position = py * width * 4 + px * 4;
-      image[position++] = r;
-      image[position++] = g;
-      image[position++] = b;
-      image[position++] = a;
+      image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+      position += 1;
+      image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+      position += 1;
+      image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+      position += 1;
+      image[position] = (image[position] + a) / 2;
+      position += 1;
     }
   }
   myImages[name] = image;
   return true;
 }
 
-bool handleClearImage(vector<string>P) {
-  // w h r g b name FILL
+bool handleClearImage(vector<string> P) {
+  // r g b name FILL
   if (P.size() != 4) {
     cout << "handleClearImage: Invalid number of args!\n";
     return false;
@@ -403,7 +592,7 @@ bool handleClearImage(vector<string>P) {
   return true;
 }
 
-bool handleSavePNG(vector<string>P) {
+bool handleSavePNG(vector<string> P) {
   // name path SAVEPNG
   if (P.size() != 2) {
     cout << "handleSavePNG: Invalid number of args!\n";
@@ -434,7 +623,7 @@ bool handleSavePNG(vector<string>P) {
   return rslt;
 }
 
-bool handleLoadPNG(vector<string>P) {
+bool handleLoadPNG(vector<string> P) {
   // name path LOADPNG
   if (P.size() != 2) {
     cout << "handleLoadPNG: Invalid number of args!\n";
@@ -467,13 +656,15 @@ struct pluginCommand {
 pluginCommand pluginCommands[] = {
   { handlePNGTest, "PNGTest", "0( -- ) Creates a PNG." },
   { handleCreateImage, "IMAGE", "3SII( w h s -- ) Creates a blank image." },
-  { handleDrawPixel, "PIXEL", "7SIIIIII( w h x y r g b a s -- ) Draws an RGBA pixel." },
-  { handleDrawHLine, "HLINE", "8SIIIIIII( x y L H r g b a name -- ) Draws an RGBA horizontal line length L." },
-  { handleDrawVLine, "VLINE", "8SIIIIIII( L x y r g b a s -- ) Draws an RGBA horizontal line length L." },
-  { handleDrawCircle, "CIRCLE", "8SIIIIIII( w h x y radius r g b a s -- ) Draws an RGBA circle radius rad at x,y." },
-  { handleDrawRect, "RECT", "9SIIIIIIII( L H x y r g b a s -- ) Draws an RGBA Box width L height H." },
+  { handleClearImage, "FILLIMG", "4SIII( r g b s -- ) Fills Image s with rgb." },
+  { handleDrawPixel, "PIXEL", "7SIIIIII( x y r g b a s -- ) Draws an RGBA pixel." },
+  { handleDrawHLine, "HLINE", "8SIIIIIII( x y L r g b a s -- ) Draws an RGBA horizontal line length L." },
+  { handleDrawVLine, "VLINE", "8SIIIIIII( x y H r g b a s -- ) Draws an RGBA horizontal line length L." },
+  { handleDrawLine, "DLINE", "9SIIIIIIII( x1 y1 x2 y2 r g b a s -- ) Draws an RGBA line." },
+  { handleDrawCircle, "CIRCLE", "8SIIIIIII( x y rad r g b a s -- ) Draws an RGBA circle radius rad at x,y." },
+  { handleDrawRect, "RECT", "9SIIIIIIII( x y L H r g b a s -- ) Draws an RGBA Box width L height H." },
+  { handleFillRect, "FILLRECT", "9SIIIIIIII( x y L H r g b a s -- ) Fills an RGBA Box width L height H." },
   { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
   { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
-  { handleClearImage, "FILLIMG", "4SIII( r g b s -- ) Fills Image s with rgb." },
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);

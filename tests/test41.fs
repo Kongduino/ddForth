@@ -35,3 +35,18 @@ loop
 3 +loop
 
 s" IMG" s" tagada.png" savepng
+255 255 255 s" IMG" FILLIMG
+
+640 0 do I 0 640 I 0 0 255 255 s" IMG" dline 2 +LOOP
+
+s" IMG" s" test2.png" savepng
+
+
+
+
+
+
+
+
+
+
