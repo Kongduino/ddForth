@@ -11,12 +11,63 @@ using namespace std;
 
 char msg[256];
 std::map<string, vector<uint8_t>> myImages;
+std::map<string, vector<int>> myImageSizes;
 
-void encodeOneStep(const char* filename, const unsigned char* image, unsigned width, unsigned height) {
+//Decode from disk to raw pixels with a single function call
+bool decodeOneStep(string filename, string name) {
+  vector<unsigned char> image; //the raw pixels
+  vector<int> size;
+  unsigned width, height;
+unsigned error = lodepng::decode(image, width, height, filename.c_str());
+  if (error) {
+    std::cout << "decodeOneStep: Error " << error << ": " << lodepng_error_text(error) << std::endl;
+    return false;
+  }
+  //the pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA..., use it as texture, draw it, ...
+  myImages[name] = image;
+  size.push_back(height);
+  size.push_back(width);
+  myImageSizes[name] = size;
+  return true;
+}
+
+bool encodeOneStep(string filename, const unsigned char* image, unsigned width, unsigned height) {
   /*Encode the image*/
-  unsigned error = lodepng_encode32_file(filename, image, width, height);
+  unsigned error = lodepng_encode32_file(filename.c_str(), image, width, height);
   /*if there's an error, display it*/
-  if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
+  if (error) {
+    printf("error %u: %s\n", error, lodepng_error_text(error));
+    return false;
+  }
+  return true;
+}
+
+bool handleCreateImage(vector<string>P) {
+  if (P.size() != 3) {
+    cout << "handleCreateImage: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  int height = std::atoi(P.at(1).c_str());
+  int width = std::atoi(P.at(2).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    std::vector<uint8_t> blob(width * height * 4, 0);
+    myImages[name] = blob;
+    std::vector<int> blobSize;
+    blobSize.push_back(height);
+    blobSize.push_back(width);
+    myImageSizes[name] = blobSize;
+    // No need for the user to pass that info every time!
+    blob.clear();
+  } else {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s already exists!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  return true;
 }
 
 bool handlePNGTest(vector<string>P) {
@@ -32,46 +83,14 @@ bool handlePNGTest(vector<string>P) {
       image[4 * width * y + 4 * x + 0] = 255 * !(x & y);
       image[4 * width * y + 4 * x + 3] = 255;
     }
-  encodeOneStep(filename, image, width, height);
+  bool rslt = encodeOneStep(filename, image, width, height);
   free(image);
-  return true;
-}
-
-bool handleCreateImage(vector<string>P) {
-  if (P.size() != 3) {
-    cout << "handleCreateImage: Invalid number of args!\n";
-    return false;
-  }
-  int ix = 0;
-  // cout << "\t--------------------" << endl;
-  string name = P.at(0);
-  // cout << "\t. Name: " << name << endl;
-  int height = std::atoi(P.at(1).c_str());
-  // cout << "\t. Height: " << height << endl;
-  int width = std::atoi(P.at(2).c_str());
-  // cout << "\t. Width: " << height << endl;
-  // cout << "\t--------------------" << endl;
-  // cout << "Looking for image " << name << endl;
-  std::map<string, vector<uint8_t>>::iterator it;
-  it = myImages.find(name);
-  if (it == myImages.end()) {
-    // cout << "Image unknown! Perfect...\n";
-    std::vector<uint8_t> blob(width * height * 4, 0);
-    // cout << "Created blob...\n";
-    myImages[name] = blob;
-    // cout << "Saved blob...\n";
-    blob.clear();
-  } else {
-    int xxxxxx = snprintf((char *)msg, 255, "Image %s already exists!\n", name.c_str());
-    cout << msg;
-    return false;
-  }
-  return true;
+  return rslt;
 }
 
 bool handleDrawPixel(vector<string>P) {
-  // w h x y r g b a name PIXEL
-  if (P.size() != 9) {
+  // x y r g b a name PIXEL
+  if (P.size() != 7) {
     cout << "handleDrawPixel: Invalid number of args!\n";
     return false;
   }
@@ -85,8 +104,6 @@ bool handleDrawPixel(vector<string>P) {
   uint8_t r = std::atoi(P.at(4).c_str());
   int y = std::atoi(P.at(5).c_str());
   int x = std::atoi(P.at(6).c_str());
-  int height = std::atoi(P.at(7).c_str());
-  int width = std::atoi(P.at(8).c_str());
   // cout << "\t. RGB: " << (int)r << ", "  << (int)g << ", "  << (int)b << ", "  << (int)a << endl;
   // cout << "\t. XY: " << x << ", "  << y << endl;
   // cout << "\t. WH: " << width << ", "  << width << endl;
@@ -99,7 +116,17 @@ bool handleDrawPixel(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position = y * width * 4 + x * 4;
   image[position++] = r;
   image[position++] = g;
@@ -110,8 +137,8 @@ bool handleDrawPixel(vector<string>P) {
 }
 
 bool handleDrawRect(vector<string>P) {
-  // w h x y L H r g b a name HLINE
-  if (P.size() != 11) {
+  // x y L H r g b a name RECT
+  if (P.size() != 9) {
     cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
     return false;
   }
@@ -125,8 +152,6 @@ bool handleDrawRect(vector<string>P) {
   int L = std::atoi(P.at(6).c_str());
   int y = std::atoi(P.at(7).c_str());
   int x = std::atoi(P.at(8).c_str());
-  int height = std::atoi(P.at(9).c_str());
-  int width = std::atoi(P.at(10).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -134,7 +159,17 @@ bool handleDrawRect(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position;
   position = (y) * width * 4 + x * 4;
   for (int ix = 0; ix < L; ix++) {
@@ -177,8 +212,8 @@ bool handleDrawRect(vector<string>P) {
 }
 
 bool handleDrawHLine(vector<string>P) {
-  // w h x y L r g b a name HLINE
-  if (P.size() != 10) {
+  // x y L r g b a name HLINE
+  if (P.size() != 8) {
     cout << "handleDrawHLine: Invalid number of args!\n";
     return false;
   }
@@ -191,8 +226,6 @@ bool handleDrawHLine(vector<string>P) {
   int L = std::atoi(P.at(5).c_str());
   int y = std::atoi(P.at(6).c_str());
   int x = std::atoi(P.at(7).c_str());
-  int height = std::atoi(P.at(8).c_str());
-  int width = std::atoi(P.at(9).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -200,7 +233,17 @@ bool handleDrawHLine(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position = y * width * 4 + x * 4;
   for (int ix = 0; ix < L; ix ++) {
     image[position++] = r;
@@ -215,8 +258,8 @@ bool handleDrawHLine(vector<string>P) {
 }
 
 bool handleDrawVLine(vector<string>P) {
-  // w h x y H r g b a name VLINE
-  if (P.size() != 10) {
+  // x y H r g b a name VLINE
+  if (P.size() != 8) {
     cout << "handleDrawVLine: Invalid number of args!\n";
     return false;
   }
@@ -229,8 +272,6 @@ bool handleDrawVLine(vector<string>P) {
   int H = std::atoi(P.at(5).c_str());
   int y = std::atoi(P.at(6).c_str());
   int x = std::atoi(P.at(7).c_str());
-  int height = std::atoi(P.at(8).c_str());
-  int width = std::atoi(P.at(9).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -238,7 +279,17 @@ bool handleDrawVLine(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position;
   for (int ix = 0; ix < H; ix ++) {
     position = (y + ix) * width * 4 + x * 4;
@@ -254,8 +305,8 @@ bool handleDrawVLine(vector<string>P) {
 }
 
 bool handleDrawCircle(vector<string>P) {
-  // w h x y radius r g b a name CIRCLE
-  if (P.size() != 10) {
+  // x y radius r g b a name CIRCLE
+  if (P.size() != 8) {
     cout << "handleDrawCircle: Invalid number of args!\n";
     return false;
   }
@@ -268,8 +319,6 @@ bool handleDrawCircle(vector<string>P) {
   int radius = std::atoi(P.at(5).c_str());
   int y = std::atoi(P.at(6).c_str());
   int x = std::atoi(P.at(7).c_str());
-  int height = std::atoi(P.at(8).c_str());
-  int width = std::atoi(P.at(9).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -277,7 +326,17 @@ bool handleDrawCircle(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position;
   for (double angle=0; angle<=2*3.141592653; angle+=0.001) {
     //You are using radians so you will have to increase by a very small amount
@@ -298,7 +357,7 @@ bool handleDrawCircle(vector<string>P) {
 
 bool handleClearImage(vector<string>P) {
   // w h r g b name FILL
-  if (P.size() != 6) {
+  if (P.size() != 4) {
     cout << "handleClearImage: Invalid number of args!\n";
     return false;
   }
@@ -309,8 +368,6 @@ bool handleClearImage(vector<string>P) {
   uint8_t b = std::atoi(P.at(1).c_str());
   uint8_t g = std::atoi(P.at(2).c_str());
   uint8_t r = std::atoi(P.at(3).c_str());
-  int height = std::atoi(P.at(4).c_str());
-  int width = std::atoi(P.at(5).c_str());
   // cout << "\t. RGBA: " << (int)r << ", "  << (int)g << ", "  << (int)b << endl;
   // cout << "\t. WH: " << width << ", "  << width << endl;
   // cout << "\t--------------------" << endl;
@@ -322,7 +379,17 @@ bool handleClearImage(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
   int position = 0;
   for (int jx = 0; jx < height; jx++) {
     for (int ix = 0; ix < width; ix++) {
@@ -337,22 +404,14 @@ bool handleClearImage(vector<string>P) {
 }
 
 bool handleSavePNG(vector<string>P) {
-  // w h name path SAVEPNG
-  if (P.size() != 4) {
+  // name path SAVEPNG
+  if (P.size() != 2) {
     cout << "handleSavePNG: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
-  // cout << "\t--------------------" << endl;
   string path = P.at(0);
   string name = P.at(1);
-  // cout << "\t. Path: " << path << endl;
-  // cout << "\t. Name: " << name << endl;
-  int height = std::atoi(P.at(2).c_str());
-  int width = std::atoi(P.at(3).c_str());
-  // cout << "\t. WH: " << width << ", "  << width << endl;
-  // cout << "\t--------------------" << endl;
-  // cout << "Looking for image " << name << endl;
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -360,9 +419,43 @@ bool handleSavePNG(vector<string>P) {
     cout << msg;
     return false;
   }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
   vector<uint8_t> image = myImages[name];
-  encodeOneStep(path.c_str(), image.data(), width, height);
-  return true;
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  bool rslt = encodeOneStep(path, image.data(), width, height);
+  return rslt;
+}
+
+bool handleLoadPNG(vector<string>P) {
+  // name path LOADPNG
+  if (P.size() != 2) {
+    cout << "handleLoadPNG: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  string path = P.at(0);
+  string name = P.at(1);
+  bool rslt = decodeOneStep(path, name);
+  if (!rslt) return false;
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  return rslt;
 }
 
 struct pluginCommand {
@@ -374,12 +467,13 @@ struct pluginCommand {
 pluginCommand pluginCommands[] = {
   { handlePNGTest, "PNGTest", "0( -- ) Creates a PNG." },
   { handleCreateImage, "IMAGE", "3SII( w h s -- ) Creates a blank image." },
-  { handleDrawPixel, "PIXEL", "9SIIIIIIII( w h x y r g b a s -- ) Draws an RGBA pixel." },
-  { handleDrawHLine, "HLINE", ":SIIIIIIIII( w h L x y r g b a s -- ) Draws an RGBA horizontal line length L." }, // : = 10
-  { handleDrawVLine, "VLINE", ":SIIIIIIIII( w h L x y r g b a s -- ) Draws an RGBA horizontal line length L." }, // : = 10
-  { handleDrawCircle, "CIRCLE", ":SIIIIIIIII( w h x y radius r g b a s -- ) Draws an RGBA circle radius rad at x,y." }, // : = 10
-  { handleDrawRect, "RECT", ";SIIIIIIIIII( w h L H x y r g b a s -- ) Draws an RGBA Box width L height H." }, // ; = 11
-  { handleSavePNG, "SAVEPNG", "4SSII( w h s p -- ) Saves Image s to path p." },
-  { handleClearImage, "FILLIMG", "6SIIIII( w h r g b s -- ) Fills Image s with rgb." },
+  { handleDrawPixel, "PIXEL", "7SIIIIII( w h x y r g b a s -- ) Draws an RGBA pixel." },
+  { handleDrawHLine, "HLINE", "8SIIIIIII( x y L H r g b a name -- ) Draws an RGBA horizontal line length L." },
+  { handleDrawVLine, "VLINE", "8SIIIIIII( L x y r g b a s -- ) Draws an RGBA horizontal line length L." },
+  { handleDrawCircle, "CIRCLE", "8SIIIIIII( w h x y radius r g b a s -- ) Draws an RGBA circle radius rad at x,y." },
+  { handleDrawRect, "RECT", "9SIIIIIIII( L H x y r g b a s -- ) Draws an RGBA Box width L height H." },
+  { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
+  { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
+  { handleClearImage, "FILLIMG", "4SIII( r g b s -- ) Fills Image s with rgb." },
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);
