@@ -592,6 +592,95 @@ bool handleClearImage(vector<string> P) {
   return true;
 }
 
+bool handleNukeChannel(vector<string> P) {
+  // [RGB] name X_CHANNEL
+  if (P.size() != 2) {
+    cout << "handleNukeChannel: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  // cout << "\t--------------------" << endl;
+  string name = P.at(0);
+  string channel = P.at(1);
+  if (channel != "R" && channel != "G" && channel != "B") {
+    cout << "handleNukeChannel: Invalid Channel Name [RGB]!\n";
+    return false;
+  }
+  int channelIndex = 0;
+  if (channel == "G")
+    channelIndex = 1;
+  else if (channel == "B")
+    channelIndex = 2;
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  int position = 0;
+  for (int jx = 0; jx < height; jx++) {
+    for (int ix = 0; ix < width; ix++) {
+      image.at(position + channelIndex) = 0;
+      position += 4;
+    }
+  }
+  myImages[name] = image;
+  return true;
+}
+
+bool handleGreyscale(vector<string> P) {
+  // [RGB] name GREYSCALE
+  if (P.size() != 1) {
+    cout << "handleGreyscale: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  // cout << "\t--------------------" << endl;
+  string name = P.at(0);
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  int position = 0;
+  for (int jx = 0; jx < height; jx++) {
+    for (int ix = 0; ix < width; ix++) {
+      uint8_t col = 0.299 * image.at(position) + 0.587 * image.at(position + 1) + 0.114 * image.at(position + 2);
+      image.at(position++) = col;
+      image.at(position++) = col;
+      image.at(position) = col;
+      position += 2;
+    }
+  }
+  myImages[name] = image;
+  return true;
+}
+
 bool handleSavePNG(vector<string> P) {
   // name path SAVEPNG
   if (P.size() != 2) {
@@ -664,6 +753,9 @@ pluginCommand pluginCommands[] = {
   { handleDrawCircle, "CIRCLE", "8SIIIIIII( x y rad r g b a s -- ) Draws an RGBA circle radius rad at x,y." },
   { handleDrawRect, "RECT", "9SIIIIIIII( x y L H r g b a s -- ) Draws an RGBA Box width L height H." },
   { handleFillRect, "FILLRECT", "9SIIIIIIII( x y L H r g b a s -- ) Fills an RGBA Box width L height H." },
+  { handleNukeChannel, "X_CHANNEL", "2SS( [RGB] s -- ) Nukes channel R, G, or B." },
+  { handleGreyscale, "GREYSCALE", "1S( s -- ) Converts image to greyscale." },
+
   { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
   { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
 };
