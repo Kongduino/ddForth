@@ -1080,13 +1080,13 @@ bool lookupVAR(string name) {
   it = fvarAddresses.find(name);
   if (it != fvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second - 128);
+    putIntegerOnStack(it->second);
     return true;
   }
   it = strvarAddresses.find(name);
   if (it != strvarAddresses.end()) {
     // found it
-    putIntegerOnStack(it->second - 512);
+    putIntegerOnStack(it->second);
     return true;
   }
   it = strconstAddresses.find(name);

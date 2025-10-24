@@ -20,4 +20,8 @@ loop
 43 25 128 128
 s" IMG" FILLRECT
 
+260 280 100 100
+255 192 203 192
+s" IMG" FILLRECT
+
 s" IMG" s" test3.png" savepng

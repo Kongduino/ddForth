@@ -107,3 +107,77 @@ bool handleGetURLinMemory(void) {
   curl_global_cleanup();
   return true;
 }
+
+static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
+  size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
+  return written;
+}
+
+bool handleGetURLtoFile() {
+  CURL *curl_handle;
+  CURLcode res;
+  res = curl_global_init(CURL_GLOBAL_ALL);
+  if (res) {
+    logStackOverflow((char *)"handleGetURLtoFile/0");
+    putIntegerOnStack(-1);
+    return false;
+  }
+  string myURL;
+  if (popStringFromStack(&myURL) == false) {
+    logStackOverflow((char *)"handleGetURLtoFile/1");
+    putIntegerOnStack(-2);
+    return false;
+  }
+  string filename;
+  if (popStringFromStack(&filename) == false) {
+    logStackOverflow((char *)"handleGetURLtoFile/2");
+    putIntegerOnStack(-2);
+    return false;
+  }
+
+  /* init the curl session */
+  curl_handle = curl_easy_init();
+  FILE *pagefile;
+  pagefile = fopen(filename.c_str(), "wb");
+  if(!pagefile) {
+    xxxxxx = snprintf((char *)msg, 255, "handleGetURLtoFile: Couldn't open file %s", filename.c_str());
+    logThis();
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl_handle);
+    /* we are done with libcurl, so clean it up */
+    curl_global_cleanup();
+    putIntegerOnStack(-3);
+    return false;
+  }
+  cout << "Opened file " << filename << " for output.\n";
+
+  /* specify URL to get */
+  curl_easy_setopt(curl_handle, CURLOPT_URL, myURL.c_str());
+  /* Switch on full protocol/debug output while testing */
+  curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
+  /* disable progress meter, set to 0L to enable it */
+  curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
+  /* send all data to this function  */
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+  /* some servers do not like requests that are made without a user-agent
+     field, so we provide one */
+  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+  /* write the page body to this file handle */
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, pagefile);
+  /* get it! */
+  res = curl_easy_perform(curl_handle);
+  /* check for errors */
+  if (res != CURLE_OK) {
+    fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    putIntegerOnStack(-3);
+  } else {
+    /* close the header file */
+    fclose(pagefile);
+  }
+  /* cleanup curl stuff */
+  curl_easy_cleanup(curl_handle);
+  /* we are done with libcurl, so clean it up */
+  curl_global_cleanup();
+  putIntegerOnStack(1);
+  return true;
+}

@@ -251,6 +251,7 @@ bool handleSleep();
 bool handleDelay();
 
 bool handleGetURLinMemory();
+bool handleGetURLtoFile();
 bool handleLoadPlugin();
 
 int executionPointer = -1;
@@ -530,6 +531,8 @@ nativeCommand nativeCommands[] = {
   { handleStep, "STEP", "( n -- ) Restarts the execution where it left off, for 1 instruction." },
 
   { handleGetURLinMemory, "CURLGETM", "( U -- s ) Uses curl to get a string from URL U onto the stack." },
+  { handleGetURLtoFile, "CURLGETF", "( F U -- ) Uses curl to get the contents of URL U saved to file F." },
+
   { handleLoadPlugin, "PLUGIN", "( s -- ) Loads plugin at location s." },
 
 
