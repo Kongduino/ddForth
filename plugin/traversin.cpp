@@ -12,6 +12,8 @@
 // Remove ` PROGMEM`
 #include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
+#include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
+
 using namespace std;
 
 char msg[256];
@@ -742,6 +744,48 @@ bool handleLoadPNG(vector<string> P) {
   return rslt;
 }
 
+bool handleFontInfo(vector<string> P) {
+  // font FONTINFO
+  if (P.size() != 1) {
+    cout << "handleFontInfo: Invalid number of args!\n";
+    return false;
+  }
+  string font = P.at(0);
+  std::map<string, GFXfont>::iterator itF;
+  itF = myFonts.find(font);
+  if (itF == myFonts.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", font.c_str());
+    cout << msg;
+    return false;
+  }
+  GFXfont seoche = myFonts[font];
+  int xxxxxx = snprintf(
+    (char *)msg, 255,
+    " • First char: `%c` [0x%02x], last char: `%c` [0x%02x]\n • yAdvance: %d\n",
+    seoche.first, seoche.first, seoche.last, seoche.last, seoche.yAdvance
+  );
+  cout << msg;
+  uint16_t offset = 65 - seoche.first; // index to Glyph array for 'A'
+  int fWidth = (seoche.glyph + offset)->width;
+  int fHeight = (seoche.glyph + offset)->height;
+  int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
+  int xAdvance = (seoche.glyph + offset)->xAdvance;
+  int xOffset = (seoche.glyph + offset)->xOffset;
+  int yOffset = (seoche.glyph + offset)->yOffset;
+  int numBytes = (fWidth * fHeight) >> 3;
+  if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
+  xxxxxx = snprintf(
+    (char *)msg, 255, " # Info for `A`:\n • bitmapOffset: %d\n • Width: %d\n • height: %d\n • xAdvance: %d\n • xOffset: %d\n • yOffset: %d\n",
+    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset
+  );
+  cout << msg;
+  xxxxxx = snprintf(
+    (char *)msg, 255, " • Bytes required: %d\n", numBytes
+  );
+  cout << msg;
+  return true;
+}
+
 bool handleDrawChar(vector<string> P) {
   // x y r g b a s font name DRAWCHR
   if (P.size() != 9) {
@@ -843,6 +887,8 @@ bool handleInit(vector<string> P) {
   cout << "\t• FreeMono18pt7b" << endl;
   myFonts["FreeMonoBold18pt7b"] = FreeMonoBold18pt7b;
   cout << "\t• FreeMonoBold18pt7b" << endl;
+  myFonts["FreeSansBold12pt7b"] = FreeSansBold12pt7b;
+  cout << "\t• FreeSansBold12pt7b" << endl;
   return true;
 }
 
@@ -868,6 +914,7 @@ pluginCommand pluginCommands[] = {
   { handleNukeChannel, "X_CHANNEL", "2SS( [RGB] s -- ) Nukes channel R, G, or B." },
   { handleGreyscale, "GREYSCALE", "1S( s -- ) Converts image to greyscale." },
   { handleDrawChar, "DRAWCHR", "9SSSIIIIII( x y r g b a s font name -- ) Draws char s in RGBA at position x y, font font, image name." },
+  { handleFontInfo, "FONTINFO", "1S( font -- ) Shows info about font font." },
 
   { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
   { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
