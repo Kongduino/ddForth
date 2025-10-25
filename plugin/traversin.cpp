@@ -6,10 +6,16 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <map>
-
+#include "Adafruit-GFX-Library/gfxfont.h"
+// Include the fonts you want
+// comment out #include <Adafruit_GFX.h>
+// Remove ` PROGMEM`
+#include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
+#include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 using namespace std;
 
 char msg[256];
+std::map<string, GFXfont> myFonts;
 std::map<string, vector<uint8_t>> myImages;
 std::map<string, vector<int>> myImageSizes;
 
@@ -736,6 +742,110 @@ bool handleLoadPNG(vector<string> P) {
   return rslt;
 }
 
+bool handleDrawChar(vector<string> P) {
+  // x y r g b a s font name DRAWCHR
+  if (P.size() != 9) {
+    cout << "handleDrawChar: Invalid number of args!\n";
+    return false;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  string font = P.at(1);
+  string text = P.at(2);
+  uint8_t a = std::atoi(P.at(3).c_str());
+  uint8_t b = std::atoi(P.at(4).c_str());
+  uint8_t g = std::atoi(P.at(5).c_str());
+  uint8_t r = std::atoi(P.at(6).c_str());
+  int y = std::atoi(P.at(7).c_str());
+  int x = std::atoi(P.at(8).c_str());
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    cout << msg;
+    return false;
+  }
+  std::map<string, GFXfont>::iterator itF;
+  itF = myFonts.find(font);
+  if (itF == myFonts.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", font.c_str());
+    cout << msg;
+    return false;
+  }
+  GFXfont seoche = myFonts[font];
+  vector<int> size = myImageSizes[name];
+  vector<uint8_t> image = myImages[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  char C = text.at(0);
+  if (C < seoche.first || C > seoche.last) {
+    int xxxxxx = snprintf((char *)msg, 255, "Char %02x doesn't exist in this font!\n", C);
+    cout << msg;
+    return false;
+  }
+
+  cout << "Drawing " << C << " at " << x << ":" << y << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a <<
+  " with font " << font << endl;
+  uint16_t offset = C - seoche.first; // index to Glyph array
+  cout << "Offset: " << offset << endl;
+  int fWidth = (seoche.glyph + offset)->width;
+  int fHeight = (seoche.glyph + offset)->height;
+  int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
+  int xAdvance = (seoche.glyph + offset)->xAdvance;
+  int xOffset = (seoche.glyph + offset)->xOffset;
+  int yOffset = (seoche.glyph + offset)->yOffset;
+  int numBytes = (fWidth * fHeight) >> 3;
+  if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
+  int xxxxxx = snprintf(
+    (char *)msg, 255, "Data: %d %d %d %d %d %d\n",
+    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset
+  );
+  cout << msg;
+  xxxxxx = snprintf(
+    (char *)msg, 255, "Bytes required: %d\n", numBytes
+  );
+  cout << msg;
+  string output;
+  int count = 0;
+  uint8_t bit = 0;
+  unsigned char n;
+  for (int yy = 0; yy < fHeight; yy++) {
+    for (int xx = 0; xx < fWidth; xx++) {
+      if (!(bit++ & 7)) {
+        n = seoche.bitmap[bitmapOffset++];
+      }
+      if (n & 0b10000000) {
+        output.push_back('*');
+        image = putPixel(image, x + xx + xOffset, y + yy + yOffset, width, r, g, b, a);
+      } else output.push_back(' ');
+      n <<= 1;
+      count += 1;
+      if ((count % fWidth) == 0) {
+        output.push_back('\n');
+      }
+    }
+  }
+  cout << endl << output << endl;
+
+  myImages[name] = image;
+  myImageSizes[name] = size;
+  return true;
+}
+
+bool handleInit(vector<string> P) {
+  // INIT
+  if (P.size() != 0) {
+    cout << "handleInit: Invalid number of args!\n";
+    return false;
+  }
+  // Map the fonts that are being used.
+  myFonts["FreeMono18pt7b"] = FreeMono18pt7b;
+  cout << "\t• FreeMono18pt7b" << endl;
+  myFonts["FreeMonoBold18pt7b"] = FreeMonoBold18pt7b;
+  cout << "\t• FreeMonoBold18pt7b" << endl;
+  return true;
+}
+
 struct pluginCommand {
   bool (*ptr)(vector<string>); // Function pointer
   string name;
@@ -743,6 +853,8 @@ struct pluginCommand {
 };
 
 pluginCommand pluginCommands[] = {
+  // handleInit is compulsory, in position 0
+  { handleInit, "INIT", "0( -- ) Initializes the plugin, if required." },
   { handlePNGTest, "PNGTest", "0( -- ) Creates a PNG." },
   { handleCreateImage, "IMAGE", "3SII( w h s -- ) Creates a blank image." },
   { handleClearImage, "FILLIMG", "4SIII( r g b s -- ) Fills Image s with rgb." },
@@ -755,6 +867,7 @@ pluginCommand pluginCommands[] = {
   { handleFillRect, "FILLRECT", "9SIIIIIIII( x y L H r g b a s -- ) Fills an RGBA Box width L height H." },
   { handleNukeChannel, "X_CHANNEL", "2SS( [RGB] s -- ) Nukes channel R, G, or B." },
   { handleGreyscale, "GREYSCALE", "1S( s -- ) Converts image to greyscale." },
+  { handleDrawChar, "DRAWCHR", "9SSSIIIIII( x y r g b a s font name -- ) Draws char s in RGBA at position x y, font font, image name." },
 
   { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
   { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },

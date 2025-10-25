@@ -58,5 +58,10 @@ bool handleLoadPlugin() {
       cout << "   - Arg #" << jx << ": " << pluginCommands[ix].help.at(jx + 1) << endl;
     }
   }
+  cout << "Calling handleInit().\n";
+  bool r;
+  vector<string>params;
+  r = pluginCommands[0].ptr(params);
+
   return true;
 }
