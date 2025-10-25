@@ -831,7 +831,6 @@ bool handleDrawChar(vector<string> P) {
   cout << "Drawing " << C << " at " << x << ":" << y << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a <<
   " with font " << font << endl;
   uint16_t offset = C - seoche.first; // index to Glyph array
-  cout << "Offset: " << offset << endl;
   int fWidth = (seoche.glyph + offset)->width;
   int fHeight = (seoche.glyph + offset)->height;
   int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
@@ -840,16 +839,6 @@ bool handleDrawChar(vector<string> P) {
   int yOffset = (seoche.glyph + offset)->yOffset;
   int numBytes = (fWidth * fHeight) >> 3;
   if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
-  int xxxxxx = snprintf(
-    (char *)msg, 255, "Data: %d %d %d %d %d %d\n",
-    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset
-  );
-  cout << msg;
-  xxxxxx = snprintf(
-    (char *)msg, 255, "Bytes required: %d\n", numBytes
-  );
-  cout << msg;
-  string output;
   int count = 0;
   uint8_t bit = 0;
   unsigned char n;
@@ -859,17 +848,12 @@ bool handleDrawChar(vector<string> P) {
         n = seoche.bitmap[bitmapOffset++];
       }
       if (n & 0b10000000) {
-        output.push_back('*');
         image = putPixel(image, x + xx + xOffset, y + yy + yOffset, width, r, g, b, a);
-      } else output.push_back(' ');
+      }
       n <<= 1;
       count += 1;
-      if ((count % fWidth) == 0) {
-        output.push_back('\n');
-      }
     }
   }
-  cout << endl << output << endl;
 
   myImages[name] = image;
   myImageSizes[name] = size;
