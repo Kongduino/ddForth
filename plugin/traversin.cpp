@@ -24,7 +24,7 @@ std::map<string, vector<int>> myImageSizes;
 // Making px:py for text global, so we can draw characters without having to decide the position
 int textPX = 0, textPY = 0;
 vector<int> RGBA = { 0, 0, 0, 255 };
-
+string FontName;
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
@@ -90,6 +90,15 @@ bool handleSetRGBA(vector<string> P) {
   }
   for (int i = 0; i < 4; i++)
     RGBA.at(i) = std::atoi(P.at(i).c_str());
+  return true;
+}
+
+bool handleSetFont(vector<string> P) {
+  if (P.size() != 1) {
+    cout << "handleSetFont: Invalid number of args!\n";
+    return false;
+  }
+  FontName = P.at(0);
   return true;
 }
 
@@ -799,15 +808,14 @@ bool handleSetTextPXPY(vector<string> P) {
 
 
 bool handleDrawChar(vector<string> P) {
-  // s font name DRAWCHR
-  if (P.size() != 3) {
+  // s name DRAWCHR
+  if (P.size() != 2) {
     cout << "handleDrawChar: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  string font = P.at(1);
-  string text = P.at(2);
+  string text = P.at(1);
   uint8_t a = RGBA.at(3);
   uint8_t b = RGBA.at(2);
   uint8_t g = RGBA.at(1);
@@ -820,13 +828,13 @@ bool handleDrawChar(vector<string> P) {
     return false;
   }
   std::map<string, GFXfont>::iterator itF;
-  itF = myFonts.find(font);
+  itF = myFonts.find(FontName);
   if (itF == myFonts.end()) {
-    int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", font.c_str());
+    int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", FontName.c_str());
     cout << msg;
     return false;
   }
-  GFXfont seoche = myFonts[font];
+  GFXfont seoche = myFonts[FontName];
   vector<int> size = myImageSizes[name];
   vector<uint8_t> image = myImages[name];
   int height = size.at(0);
@@ -838,7 +846,7 @@ bool handleDrawChar(vector<string> P) {
     return false;
   }
 
-  // cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a << " with font " << font << endl;
+  // cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a << " with font " << FontName << endl;
   uint16_t offset = C - seoche.first; // index to Glyph array
   int fWidth = (seoche.glyph + offset)->width;
   int fHeight = (seoche.glyph + offset)->height;
@@ -900,6 +908,7 @@ bool handleInit(vector<string> P) {
   cout << "\t• FreeSansBold12pt7b" << endl;
   myFonts["FreeSans12pt7b"] = FreeSans12pt7b;
   cout << "\t• FreeSans12pt7b" << endl;
+  FontName = "FreeSans12pt7b";
   return true;
 }
 
@@ -916,6 +925,7 @@ pluginCommand pluginCommands[] = {
   { handlePNGTest, "PNGTest", "( -- ) Creates a PNG.", "0" },
   { handleCreateImage, "IMAGE", "( w h s -- ) Creates a blank image.", "3SII" },
   { handleSetRGBA, "DRAWRGBA", "( r g b a -- ) Sets the drawing colour.", "4IIII" },
+  { handleSetFont, "SETFONT", "( font -- ) Sets the drawing font to `font`.", "1S" },
   { handleClearImage, "FILLIMG", "( r g b s -- ) Fills Image s with rgb.", "4SIII" },
   { handleDrawPixel, "PIXEL", "( x y s -- ) Draws an RGBA pixel.", "3SII" },
   { handleDrawHLine, "HLINE", "( x y L s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
@@ -927,7 +937,7 @@ pluginCommand pluginCommands[] = {
   { handleNukeChannel, "X_CHANNEL", "( [RGB] s -- ) Nukes channel R, G, or B.", "2SS" },
   { handleGreyscale, "GREYSCALE", "( s -- ) Converts image to greyscale.", "1S" },
   { handleSetTextPXPY, "TEXTXY", "( x y -- ) Sets px:py for text drawing.", "2II" },
-  { handleDrawChar, "DRAWCHR", "( s font name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "3SSS" },
+  { handleDrawChar, "DRAWCHR", "( s name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "2SS" },
   { handleFontInfo, "FONTINFO", "( font -- ) Shows info about font `font`.", "1S" },
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
