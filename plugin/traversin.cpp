@@ -119,20 +119,13 @@ bool handleDrawPixel(vector<string> P) {
     return false;
   }
   int ix = 0;
-  // cout << "\t--------------------" << endl;
   string name = P.at(0);
-  // cout << "\t. Name: " << name << endl;
   uint8_t a = std::atoi(P.at(1).c_str());
   uint8_t b = std::atoi(P.at(2).c_str());
   uint8_t g = std::atoi(P.at(3).c_str());
   uint8_t r = std::atoi(P.at(4).c_str());
   int y = std::atoi(P.at(5).c_str());
   int x = std::atoi(P.at(6).c_str());
-  // cout << "\t. RGB: " << (int)r << ", "  << (int)g << ", "  << (int)b << ", "  << (int)a << endl;
-  // cout << "\t. XY: " << x << ", "  << y << endl;
-  // cout << "\t. WH: " << width << ", "  << width << endl;
-  // cout << "\t--------------------" << endl;
-  // cout << "Looking for image " << name << endl;
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -192,7 +185,7 @@ bool handleFillRect(vector<string> P) {
   int width = size.at(1);
   if ((x + L) >= width) L = width - x;
   if ((y + H) >= height) H = height - y;
-  cout << "L: " << L << ", H: " << H << endl;
+  // cout << "L: " << L << ", H: " << H << endl;
   for (int jx = 0; jx < H; jx++) {
     // line by line, calculate the start position
     int position = (y + jx) * width * 4 + x * 4;
@@ -562,16 +555,10 @@ bool handleClearImage(vector<string> P) {
     return false;
   }
   int ix = 0;
-  // cout << "\t--------------------" << endl;
   string name = P.at(0);
-  // cout << "\t. Name: " << name << endl;
   uint8_t b = std::atoi(P.at(1).c_str());
   uint8_t g = std::atoi(P.at(2).c_str());
   uint8_t r = std::atoi(P.at(3).c_str());
-  // cout << "\t. RGBA: " << (int)r << ", "  << (int)g << ", "  << (int)b << endl;
-  // cout << "\t. WH: " << width << ", "  << width << endl;
-  // cout << "\t--------------------" << endl;
-  // cout << "Looking for image " << name << endl;
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -610,7 +597,6 @@ bool handleNukeChannel(vector<string> P) {
     return false;
   }
   int ix = 0;
-  // cout << "\t--------------------" << endl;
   string name = P.at(0);
   string channel = P.at(1);
   if (channel != "R" && channel != "G" && channel != "B") {
@@ -658,7 +644,6 @@ bool handleGreyscale(vector<string> P) {
     return false;
   }
   int ix = 0;
-  // cout << "\t--------------------" << endl;
   string name = P.at(0);
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
@@ -843,8 +828,7 @@ bool handleDrawChar(vector<string> P) {
     return false;
   }
 
-  cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a <<
-  " with font " << font << endl;
+  // cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a << " with font " << font << endl;
   uint16_t offset = C - seoche.first; // index to Glyph array
   int fWidth = (seoche.glyph + offset)->width;
   int fHeight = (seoche.glyph + offset)->height;

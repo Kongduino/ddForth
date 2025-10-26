@@ -19,8 +19,8 @@ DUP 0 DO
 LOOP
 
 clear s" K o n g d u i n o" ssplit
+294 273 TEXTXY
 DUP 0 DO
-  I 16 * 294 + 273 TEXTXY
   255 0 0 255
   I pick s" FreeSansBold12pt7b" s" map"
   DRAWCHR
