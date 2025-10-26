@@ -11,22 +11,19 @@ s" ABCD" s" map" drawstr
 s" map" s" map_text.png" savepng
 
 clear
+s" FreeMonoBold18pt7b" SETFONT
 120 240 TEXTXY
 255 0 0 127 DRAWRGBA
-s" FreeMonoBold18pt7b" SETFONT
 s" ABCD" s" map" drawstr
+600 450 TEXTXY
+255 0 0 255 DRAWRGBA
+s" OVERFLOW xy" s" map" drawstr
 
 clear
 320 280 TEXTXY
 255 0 0 255 DRAWRGBA
 s" FreeSansBold12pt7b" SETFONT
 s" Kongduino" s" map" drawstr
-
-clear
-600 450 TEXTXY
-255 0 0 255 DRAWRGBA
-s" FreeMonoBold18pt7b" SETFONT
-s" OVERFLOW xy" s" map" drawstr
 
 s" map" s" map_textA.png" savepng
 clear
