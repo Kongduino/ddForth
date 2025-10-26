@@ -23,6 +23,8 @@ std::map<string, vector<uint8_t>> myImages;
 std::map<string, vector<int>> myImageSizes;
 // Making px:py for text global, so we can draw characters without having to decide the position
 int textPX = 0, textPY = 0;
+vector<int> RGBA = { 0, 0, 0, 255 };
+
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
@@ -81,6 +83,16 @@ bool handleCreateImage(vector<string> P) {
   return true;
 }
 
+bool handleSetRGBA(vector<string> P) {
+  if (P.size() != 4) {
+    cout << "handleSetRGBA: Invalid number of args!\n";
+    return false;
+  }
+  for (int i = 0; i < 4; i++)
+    RGBA.at(i) = std::atoi(P.at(i).c_str());
+  return true;
+}
+
 bool handlePNGTest(vector<string> P) {
   const char *filename = "test.png";
   /*generate some image*/
@@ -113,19 +125,19 @@ vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, 
 }
 
 bool handleDrawPixel(vector<string> P) {
-  // x y r g b a name PIXEL
-  if (P.size() != 7) {
+  // x y name PIXEL
+  if (P.size() != 3) {
     cout << "handleDrawPixel: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int y = std::atoi(P.at(5).c_str());
-  int x = std::atoi(P.at(6).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int y = std::atoi(P.at(1).c_str());
+  int x = std::atoi(P.at(2).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -150,21 +162,21 @@ bool handleDrawPixel(vector<string> P) {
 }
 
 bool handleFillRect(vector<string> P) {
-  // x y L H r g b a name FILLRECT
-  if (P.size() != 9) {
+  // x y L H name FILLRECT
+  if (P.size() != 5) {
     cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int H = std::atoi(P.at(5).c_str());
-  int L = std::atoi(P.at(6).c_str());
-  int y = std::atoi(P.at(7).c_str());
-  int x = std::atoi(P.at(8).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int H = std::atoi(P.at(1).c_str());
+  int L = std::atoi(P.at(2).c_str());
+  int y = std::atoi(P.at(3).c_str());
+  int x = std::atoi(P.at(4).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -206,21 +218,21 @@ bool handleFillRect(vector<string> P) {
 }
 
 bool handleDrawRect(vector<string> P) {
-  // x y L H r g b a name RECT
-  if (P.size() != 9) {
+  // x y L H name RECT
+  if (P.size() != 5) {
     cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int H = std::atoi(P.at(5).c_str());
-  int L = std::atoi(P.at(6).c_str());
-  int y = std::atoi(P.at(7).c_str());
-  int x = std::atoi(P.at(8).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int H = std::atoi(P.at(1).c_str());
+  int L = std::atoi(P.at(2).c_str());
+  int y = std::atoi(P.at(3).c_str());
+  int x = std::atoi(P.at(4).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -297,20 +309,20 @@ bool handleDrawRect(vector<string> P) {
 }
 
 bool handleDrawHLine(vector<string> P) {
-  // x y L r g b a name HLINE
-  if (P.size() != 8) {
+  // x y L name HLINE
+  if (P.size() != 4) {
     cout << "handleDrawHLine: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int L = std::atoi(P.at(5).c_str());
-  int y = std::atoi(P.at(6).c_str());
-  int x = std::atoi(P.at(7).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int L = std::atoi(P.at(1).c_str());
+  int y = std::atoi(P.at(2).c_str());
+  int x = std::atoi(P.at(3).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -347,20 +359,20 @@ bool handleDrawHLine(vector<string> P) {
 }
 
 bool handleDrawVLine(vector<string> P) {
-  // x y H r g b a name VLINE
-  if (P.size() != 8) {
+  // x y H name VLINE
+  if (P.size() != 4) {
     cout << "handleDrawVLine: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int H = std::atoi(P.at(5).c_str());
-  int y = std::atoi(P.at(6).c_str());
-  int x = std::atoi(P.at(7).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int H = std::atoi(P.at(1).c_str());
+  int y = std::atoi(P.at(2).c_str());
+  int x = std::atoi(P.at(3).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -398,21 +410,21 @@ bool handleDrawVLine(vector<string> P) {
 }
 
 bool handleDrawLine(vector<string> P) {
-  // x1 y1 x2 y2 r g b a name DLINE
-  if (P.size() != 9) {
+  // x1 y1 x2 y2 name DLINE
+  if (P.size() != 5) {
     cout << "handleDrawVLine: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int y2 = std::atoi(P.at(5).c_str());
-  int x2 = std::atoi(P.at(6).c_str());
-  int y1 = std::atoi(P.at(7).c_str());
-  int x1 = std::atoi(P.at(8).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int y2 = std::atoi(P.at(1).c_str());
+  int x2 = std::atoi(P.at(2).c_str());
+  int y1 = std::atoi(P.at(3).c_str());
+  int x1 = std::atoi(P.at(4).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -494,20 +506,20 @@ bool handleDrawLine(vector<string> P) {
 }
 
 bool handleDrawCircle(vector<string> P) {
-  // x y radius r g b a name CIRCLE
-  if (P.size() != 8) {
+  // x y radius name CIRCLE
+  if (P.size() != 4) {
     cout << "handleDrawCircle: Invalid number of args!\n";
     return false;
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = std::atoi(P.at(1).c_str());
-  uint8_t b = std::atoi(P.at(2).c_str());
-  uint8_t g = std::atoi(P.at(3).c_str());
-  uint8_t r = std::atoi(P.at(4).c_str());
-  int radius = std::atoi(P.at(5).c_str());
-  int y = std::atoi(P.at(6).c_str());
-  int x = std::atoi(P.at(7).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
+  int radius = std::atoi(P.at(1).c_str());
+  int y = std::atoi(P.at(1).c_str());
+  int x = std::atoi(P.at(3).c_str());
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -787,8 +799,8 @@ bool handleSetTextPXPY(vector<string> P) {
 
 
 bool handleDrawChar(vector<string> P) {
-  // r g b a s font name DRAWCHR
-  if (P.size() != 7) {
+  // s font name DRAWCHR
+  if (P.size() != 3) {
     cout << "handleDrawChar: Invalid number of args!\n";
     return false;
   }
@@ -796,12 +808,10 @@ bool handleDrawChar(vector<string> P) {
   string name = P.at(0);
   string font = P.at(1);
   string text = P.at(2);
-  uint8_t a = std::atoi(P.at(3).c_str());
-  uint8_t b = std::atoi(P.at(4).c_str());
-  uint8_t g = std::atoi(P.at(5).c_str());
-  uint8_t r = std::atoi(P.at(6).c_str());
-  // int y = textPY;
-  // int x = textPX;
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
@@ -905,18 +915,19 @@ pluginCommand pluginCommands[] = {
   { handleInit, "INIT", "( -- ) Initializes the plugin, if required.", "0" },
   { handlePNGTest, "PNGTest", "( -- ) Creates a PNG.", "0" },
   { handleCreateImage, "IMAGE", "( w h s -- ) Creates a blank image.", "3SII" },
+  { handleSetRGBA, "DRAWRGBA", "( r g b a -- ) Sets the drawing colour.", "4IIII" },
   { handleClearImage, "FILLIMG", "( r g b s -- ) Fills Image s with rgb.", "4SIII" },
-  { handleDrawPixel, "PIXEL", "( x y r g b a s -- ) Draws an RGBA pixel.", "7SIIIIII" },
-  { handleDrawHLine, "HLINE", "( x y L r g b a s -- ) Draws an RGBA horizontal line length L.", "8SIIIIIII" },
-  { handleDrawVLine, "VLINE", "( x y H r g b a s -- ) Draws an RGBA horizontal line length L.", "8SIIIIIII" },
-  { handleDrawLine, "DLINE", "( x1 y1 x2 y2 r g b a s -- ) Draws an RGBA line.", "9SIIIIIIII" },
-  { handleDrawCircle, "CIRCLE", "( x y rad r g b a s -- ) Draws an RGBA circle radius rad at x,y.", "8SIIIIIII" },
-  { handleDrawRect, "RECT", "( x y L H r g b a s -- ) Draws an RGBA Box width L height H.", "9SIIIIIIII" },
-  { handleFillRect, "FILLRECT", "( x y L H r g b a s -- ) Fills an RGBA Box width L height H.", "9SIIIIIIII" },
+  { handleDrawPixel, "PIXEL", "( x y s -- ) Draws an RGBA pixel.", "3SII" },
+  { handleDrawHLine, "HLINE", "( x y L s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
+  { handleDrawVLine, "VLINE", "( x y H s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
+  { handleDrawLine, "DLINE", "( x1 y1 x2 y2 s -- ) Draws an RGBA line.", "9SIIIIIIII" },
+  { handleDrawCircle, "CIRCLE", "( x y rad s -- ) Draws an RGBA circle radius rad at x,y.", "4SIII" },
+  { handleDrawRect, "RECT", "( x y L H s -- ) Draws an RGBA Box width L height H.", "5SIIII" },
+  { handleFillRect, "FILLRECT", "( x y L H s -- ) Fills an RGBA Box width L height H.", "5SIIII" },
   { handleNukeChannel, "X_CHANNEL", "( [RGB] s -- ) Nukes channel R, G, or B.", "2SS" },
   { handleGreyscale, "GREYSCALE", "( s -- ) Converts image to greyscale.", "1S" },
   { handleSetTextPXPY, "TEXTXY", "( x y -- ) Sets px:py for text drawing.", "2II" },
-  { handleDrawChar, "DRAWCHR", "( r g b a s font name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "7SSSIIII" },
+  { handleDrawChar, "DRAWCHR", "( s font name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "3SSS" },
   { handleFontInfo, "FONTINFO", "( font -- ) Shows info about font `font`.", "1S" },
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
