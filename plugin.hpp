@@ -10,6 +10,7 @@ struct pluginCommand {
   bool (*ptr)(vector<string>); // Function pointer
   string name;
   string help;
+  string params;
 };
 
 pluginCommand *shared_pluginCommand_ptr;
@@ -51,11 +52,11 @@ bool handleLoadPlugin() {
   pluginCommands = shared_pluginCommand_ptr;
   for (int ix = 0; ix < pluginCmdCount; ix++) {
     cout << " • " << pluginCommands[ix].name << ":\t" << pluginCommands[ix].help << endl;
-    char V = pluginCommands[ix].help.at(0);
+    char V = pluginCommands[ix].params.at(0);
     int argc = V - 48;
-    cout << "   - Arg count: " << argc << endl;
+    cout << "   - Arg count: [" << V << "] " << argc << endl;
     for (int jx = 0; jx < argc; jx++) {
-      cout << "   - Arg #" << jx << ": " << pluginCommands[ix].help.at(jx + 1) << endl;
+      cout << "   - Arg #" << jx << ": " << pluginCommands[ix].params.at(jx + 1) << endl;
     }
   }
   cout << "Calling handleInit().\n";

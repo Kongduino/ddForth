@@ -1251,11 +1251,11 @@ bool lookupPlugin(string c, bool *r) {
       // We need to check the stack for the proper parameters
       // and prepare a vector
       vector<string>params;
-      char V = pluginCommands[ix].help.at(0);
+      char V = pluginCommands[ix].params.at(0);
       int argc = V - 48;
       // cout << "   - Arg count: " << argc << endl;
       for (int jx = 0; jx < argc; jx++) {
-        char argType = pluginCommands[ix].help.at(jx + 1);
+        char argType = pluginCommands[ix].params.at(jx + 1);
         // cout << "   - Arg #" << jx << ": " << argType;
         string P;
         int I;

@@ -13,6 +13,7 @@
 #include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
+#include "Adafruit-GFX-Library/Fonts/FreeSans12pt7b.h"
 
 using namespace std;
 
@@ -20,6 +21,8 @@ char msg[256];
 std::map<string, GFXfont> myFonts;
 std::map<string, vector<uint8_t>> myImages;
 std::map<string, vector<int>> myImageSizes;
+// Making px:py for text global, so we can draw characters without having to decide the position
+int textPX = 0, textPY = 0;
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
@@ -786,9 +789,21 @@ bool handleFontInfo(vector<string> P) {
   return true;
 }
 
+bool handleSetTextPXPY(vector<string> P) {
+  // x y TEXTXY
+  if (P.size() != 2) {
+    cout << "handleSetTextPXPY: Invalid number of args!\n";
+    return false;
+  }
+  textPY = std::atoi(P.at(0).c_str());
+  textPX = std::atoi(P.at(1).c_str());
+  return true;
+}
+
+
 bool handleDrawChar(vector<string> P) {
-  // x y r g b a s font name DRAWCHR
-  if (P.size() != 9) {
+  // r g b a s font name DRAWCHR
+  if (P.size() != 7) {
     cout << "handleDrawChar: Invalid number of args!\n";
     return false;
   }
@@ -800,8 +815,8 @@ bool handleDrawChar(vector<string> P) {
   uint8_t b = std::atoi(P.at(4).c_str());
   uint8_t g = std::atoi(P.at(5).c_str());
   uint8_t r = std::atoi(P.at(6).c_str());
-  int y = std::atoi(P.at(7).c_str());
-  int x = std::atoi(P.at(8).c_str());
+  // int y = textPY;
+  // int x = textPX;
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
@@ -828,7 +843,7 @@ bool handleDrawChar(vector<string> P) {
     return false;
   }
 
-  cout << "Drawing " << C << " at " << x << ":" << y << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a <<
+  cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a <<
   " with font " << font << endl;
   uint16_t offset = C - seoche.first; // index to Glyph array
   int fWidth = (seoche.glyph + offset)->width;
@@ -837,23 +852,38 @@ bool handleDrawChar(vector<string> P) {
   int xAdvance = (seoche.glyph + offset)->xAdvance;
   int xOffset = (seoche.glyph + offset)->xOffset;
   int yOffset = (seoche.glyph + offset)->yOffset;
-  int numBytes = (fWidth * fHeight) >> 3;
-  if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
+  int yAdvance = seoche.yAdvance;
   int count = 0;
   uint8_t bit = 0;
   unsigned char n;
   for (int yy = 0; yy < fHeight; yy++) {
+    if ((textPY + yy) >= height) {
+      // Same for py. Let's make sure we draw within the confines of the image
+      // and, most importantly, of the buffer...
+      textPY = 0 - yOffset;
+    }
     for (int xx = 0; xx < fWidth; xx++) {
       if (!(bit++ & 7)) {
         n = seoche.bitmap[bitmapOffset++];
       }
+      if ((textPX + xx + xOffset) >= width) {
+        // for the moment loop around to px = 0, py += yAdvance
+        textPX = 0;
+        textPY += yAdvance;
+    if ((textPY + yy) >= height) {
+      // Same for py. Let's make sure we draw within the confines of the image
+      // and, most importantly, of the buffer...
+      textPY = 0 - yOffset;
+    }
+      }
       if (n & 0b10000000) {
-        image = putPixel(image, x + xx + xOffset, y + yy + yOffset, width, r, g, b, a);
+        image = putPixel(image, textPX + xx + xOffset, textPY + yy + yOffset, width, r, g, b, a);
       }
       n <<= 1;
       count += 1;
     }
   }
+  textPX += xAdvance;
 
   myImages[name] = image;
   myImageSizes[name] = size;
@@ -883,27 +913,29 @@ struct pluginCommand {
   bool (*ptr)(vector<string>); // Function pointer
   string name;
   string help;
+  string params;
 };
 
 pluginCommand pluginCommands[] = {
   // handleInit is compulsory, in position 0
-  { handleInit, "INIT", "0( -- ) Initializes the plugin, if required." },
-  { handlePNGTest, "PNGTest", "0( -- ) Creates a PNG." },
-  { handleCreateImage, "IMAGE", "3SII( w h s -- ) Creates a blank image." },
-  { handleClearImage, "FILLIMG", "4SIII( r g b s -- ) Fills Image s with rgb." },
-  { handleDrawPixel, "PIXEL", "7SIIIIII( x y r g b a s -- ) Draws an RGBA pixel." },
-  { handleDrawHLine, "HLINE", "8SIIIIIII( x y L r g b a s -- ) Draws an RGBA horizontal line length L." },
-  { handleDrawVLine, "VLINE", "8SIIIIIII( x y H r g b a s -- ) Draws an RGBA horizontal line length L." },
-  { handleDrawLine, "DLINE", "9SIIIIIIII( x1 y1 x2 y2 r g b a s -- ) Draws an RGBA line." },
-  { handleDrawCircle, "CIRCLE", "8SIIIIIII( x y rad r g b a s -- ) Draws an RGBA circle radius rad at x,y." },
-  { handleDrawRect, "RECT", "9SIIIIIIII( x y L H r g b a s -- ) Draws an RGBA Box width L height H." },
-  { handleFillRect, "FILLRECT", "9SIIIIIIII( x y L H r g b a s -- ) Fills an RGBA Box width L height H." },
-  { handleNukeChannel, "X_CHANNEL", "2SS( [RGB] s -- ) Nukes channel R, G, or B." },
-  { handleGreyscale, "GREYSCALE", "1S( s -- ) Converts image to greyscale." },
-  { handleDrawChar, "DRAWCHR", "9SSSIIIIII( x y r g b a s font name -- ) Draws char s in RGBA at position x y, font `font`, image `name`." },
-  { handleFontInfo, "FONTINFO", "1S( font -- ) Shows info about font `font`." },
+  { handleInit, "INIT", "( -- ) Initializes the plugin, if required.", "0" },
+  { handlePNGTest, "PNGTest", "( -- ) Creates a PNG.", "0" },
+  { handleCreateImage, "IMAGE", "( w h s -- ) Creates a blank image.", "3SII" },
+  { handleClearImage, "FILLIMG", "( r g b s -- ) Fills Image s with rgb.", "4SIII" },
+  { handleDrawPixel, "PIXEL", "( x y r g b a s -- ) Draws an RGBA pixel.", "7SIIIIII" },
+  { handleDrawHLine, "HLINE", "( x y L r g b a s -- ) Draws an RGBA horizontal line length L.", "8SIIIIIII" },
+  { handleDrawVLine, "VLINE", "( x y H r g b a s -- ) Draws an RGBA horizontal line length L.", "8SIIIIIII" },
+  { handleDrawLine, "DLINE", "( x1 y1 x2 y2 r g b a s -- ) Draws an RGBA line.", "9SIIIIIIII" },
+  { handleDrawCircle, "CIRCLE", "( x y rad r g b a s -- ) Draws an RGBA circle radius rad at x,y.", "8SIIIIIII" },
+  { handleDrawRect, "RECT", "( x y L H r g b a s -- ) Draws an RGBA Box width L height H.", "9SIIIIIIII" },
+  { handleFillRect, "FILLRECT", "( x y L H r g b a s -- ) Fills an RGBA Box width L height H.", "9SIIIIIIII" },
+  { handleNukeChannel, "X_CHANNEL", "( [RGB] s -- ) Nukes channel R, G, or B.", "2SS" },
+  { handleGreyscale, "GREYSCALE", "( s -- ) Converts image to greyscale.", "1S" },
+  { handleSetTextPXPY, "TEXTXY", "( x y -- ) Sets px:py for text drawing.", "2II" },
+  { handleDrawChar, "DRAWCHR", "( r g b a s font name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "7SSSIIII" },
+  { handleFontInfo, "FONTINFO", "( font -- ) Shows info about font `font`.", "1S" },
 
-  { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
-  { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
+  { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
+  { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);
