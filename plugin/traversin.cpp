@@ -862,10 +862,11 @@ bool handleDrawChar(vector<string> P) {
 
 bool handleInit(vector<string> P) {
   // INIT
-  if (P.size() != 0) {
-    cout << "handleInit: Invalid number of args!\n";
-    return false;
-  }
+  // if (P.size() != 0) {
+  //    cout << "handleInit: Invalid number of args!\n";
+  //    return false;
+  //  }
+  // En fait on s'en tape...
   // Map the fonts that are being used.
   myFonts["FreeMono18pt7b"] = FreeMono18pt7b;
   cout << "\t• FreeMono18pt7b" << endl;
@@ -873,6 +874,8 @@ bool handleInit(vector<string> P) {
   cout << "\t• FreeMonoBold18pt7b" << endl;
   myFonts["FreeSansBold12pt7b"] = FreeSansBold12pt7b;
   cout << "\t• FreeSansBold12pt7b" << endl;
+  myFonts["FreeSans12pt7b"] = FreeSans12pt7b;
+  cout << "\t• FreeSans12pt7b" << endl;
   return true;
 }
 
@@ -897,8 +900,8 @@ pluginCommand pluginCommands[] = {
   { handleFillRect, "FILLRECT", "9SIIIIIIII( x y L H r g b a s -- ) Fills an RGBA Box width L height H." },
   { handleNukeChannel, "X_CHANNEL", "2SS( [RGB] s -- ) Nukes channel R, G, or B." },
   { handleGreyscale, "GREYSCALE", "1S( s -- ) Converts image to greyscale." },
-  { handleDrawChar, "DRAWCHR", "9SSSIIIIII( x y r g b a s font name -- ) Draws char s in RGBA at position x y, font font, image name." },
-  { handleFontInfo, "FONTINFO", "1S( font -- ) Shows info about font font." },
+  { handleDrawChar, "DRAWCHR", "9SSSIIIIII( x y r g b a s font name -- ) Draws char s in RGBA at position x y, font `font`, image `name`." },
+  { handleFontInfo, "FONTINFO", "1S( font -- ) Shows info about font `font`." },
 
   { handleSavePNG, "SAVEPNG", "2SS( s p -- ) Saves Image s to path p." },
   { handleLoadPNG, "LOADPNG", "2SS( s p -- ) Loads Image at path p as s." },
