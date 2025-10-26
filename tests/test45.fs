@@ -8,7 +8,6 @@ clear
 255 0 0 255 DRAWRGBA
 s" FreeMono18pt7b" SETFONT
 s" ABCD" s" map" drawstr
-s" map" s" map_text.png" savepng
 
 clear
 s" FreeMonoBold18pt7b" SETFONT
@@ -25,5 +24,5 @@ clear
 s" FreeSansBold12pt7b" SETFONT
 s" Kongduino" s" map" drawstr
 
-s" map" s" map_textA.png" savepng
+s" map" s" map_text.png" savepng
 clear

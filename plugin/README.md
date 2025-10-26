@@ -65,3 +65,6 @@ The `handleInit` method is compulsory in any plugin, and will be called when loa
 
 This has to be done manually for the moment. Other plugins could use the same strategy.
 
+Run `test43` first (after getting and setting an API key, see [test43.md](../tests/test43.md)). It'll get you a `map.png` image. The next 2 tests use it. Just in case I put a copy in [assets](../assets/).
+
+![map_text](../assets/map_text.png)
