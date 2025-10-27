@@ -28,7 +28,7 @@ string FontName;
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
-  vector<unsigned char> image;  //the raw pixels
+  vector<unsigned char> image; //the raw pixels
   vector<int> size;
   unsigned width, height;
   unsigned error = lodepng::decode(image, width, height, filename.c_str());
@@ -56,7 +56,7 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
 }
 
 vector<string> handleCreateImage(vector<string> P) {
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 1) {
     R.push_back("false");
     R.push_back("handleCreateImage: Invalid number of args!\n");
@@ -87,7 +87,7 @@ vector<string> handleCreateImage(vector<string> P) {
 }
 
 vector<string> handleSetRGBA(vector<string> P) {
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleSetRGBA: Invalid number of args!\n");
@@ -99,7 +99,7 @@ vector<string> handleSetRGBA(vector<string> P) {
 }
 
 vector<string> handleSetFont(vector<string> P) {
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 1) {
     R.push_back("false");
     R.push_back("handleSetFont: Invalid number of args!\n");
@@ -110,7 +110,7 @@ vector<string> handleSetFont(vector<string> P) {
 }
 
 vector<string> handlePNGTest(vector<string> P) {
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   const char *filename = "test.png";
   /*generate some image*/
   unsigned width = 512, height = 512;
@@ -144,7 +144,7 @@ vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, 
 
 vector<string> handleDrawPixel(vector<string> P) {
   // x y name PIXEL
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 3) {
     R.push_back("false");
     R.push_back("handleDrawPixel: Invalid number of args!\n");
@@ -185,7 +185,7 @@ vector<string> handleDrawPixel(vector<string> P) {
 
 vector<string> handleFillRect(vector<string> P) {
   // x y L H name FILLRECT
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 5) {
     R.push_back("false");
     R.push_back("handleFillRect: Invalid number of args!\n");
@@ -245,7 +245,7 @@ vector<string> handleFillRect(vector<string> P) {
 
 vector<string> handleDrawRect(vector<string> P) {
   // x y L H name RECT
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 5) {
     R.push_back("false");
     R.push_back("handleDrawRect: Invalid number of args!\n");
@@ -340,7 +340,7 @@ vector<string> handleDrawRect(vector<string> P) {
 
 vector<string> handleDrawHLine(vector<string> P) {
   // x y L name HLINE
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleDrawHLine: Invalid number of args!\n");
@@ -394,7 +394,7 @@ vector<string> handleDrawHLine(vector<string> P) {
 
 vector<string> handleDrawVLine(vector<string> P) {
   // x y H name VLINE
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleDrawVLine: Invalid number of args!\n");
@@ -449,7 +449,7 @@ vector<string> handleDrawVLine(vector<string> P) {
 
 vector<string> handleDrawLine(vector<string> P) {
   // x1 y1 x2 y2 name DLINE
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 5) {
     R.push_back("false");
     R.push_back("handleDrawLine: Invalid number of args!\n");
@@ -549,7 +549,7 @@ vector<string> handleDrawLine(vector<string> P) {
 
 vector<string> handleDrawCircle(vector<string> P) {
   // x y radius name CIRCLE
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleDrawCircle: Invalid number of args!\n");
@@ -608,7 +608,7 @@ vector<string> handleDrawCircle(vector<string> P) {
 
 vector<string> handleClearImage(vector<string> P) {
   // r g b name FILL
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleClearImage: Invalid number of args!\n");
@@ -654,7 +654,7 @@ vector<string> handleClearImage(vector<string> P) {
 
 vector<string> handleNukeChannel(vector<string> P) {
   // [RGB] name X_CHANNEL
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleNukeChannel: Invalid number of args!\n");
@@ -706,7 +706,7 @@ vector<string> handleNukeChannel(vector<string> P) {
 
 vector<string> handleGreyscale(vector<string> P) {
   // [RGB] name GREYSCALE
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 1) {
     R.push_back("false");
     R.push_back("handleGreyscale: Invalid number of args!\n");
@@ -756,7 +756,7 @@ vector<string> handleGreyscale(vector<string> P) {
 
 vector<string> handleSavePNG(vector<string> P) {
   // name path SAVEPNG
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleSavePNG: Invalid number of args!\n");
@@ -791,7 +791,7 @@ vector<string> handleSavePNG(vector<string> P) {
 
 vector<string> handleLoadPNG(vector<string> P) {
   // name path LOADPNG
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleLoadPNG: Invalid number of args!\n");
@@ -821,14 +821,15 @@ vector<string> handleLoadPNG(vector<string> P) {
 }
 
 vector<string> handleFontInfo(vector<string> P) {
-  // font FONTINFO
-  vector<string> R;  // the return vector
-  if (P.size() != 1) {
+  // char font FONTINFO
+  vector<string> R; // the return vector
+  if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleFontInfo: Invalid number of args!\n");
     return R;
   }
   string font = P.at(0);
+  string myChar = P.at(1);
   std::map<string, GFXfont>::iterator itF;
   itF = myFonts.find(font);
   if (itF == myFonts.end()) {
@@ -843,7 +844,8 @@ vector<string> handleFontInfo(vector<string> P) {
     " • First char: `%c` [0x%02x], last char: `%c` [0x%02x]\n • yAdvance: %d\n",
     seoche.first, seoche.first, seoche.last, seoche.last, seoche.yAdvance);
   cout << msg;
-  uint16_t offset = 65 - seoche.first;  // index to Glyph array for 'A'
+  char C = myChar.at(0);
+  uint16_t offset = C - seoche.first; // index to Glyph array for 'A'
   int fWidth = (seoche.glyph + offset)->width;
   R.push_back("I" + std::to_string(fWidth));
   int fHeight = (seoche.glyph + offset)->height;
@@ -856,8 +858,8 @@ vector<string> handleFontInfo(vector<string> P) {
   int numBytes = (fWidth * fHeight) >> 3;
   if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
   xxxxxx = snprintf(
-    (char *)msg, 255, " # Info for `A`:\n • bitmapOffset: %d\n • Width: %d\n • height: %d\n • xAdvance: %d\n • xOffset: %d\n • yOffset: %d\n",
-    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset);
+    (char *)msg, 255, " # Info for `%c`:\n • bitmapOffset: %d\n • Width: %d\n • height: %d\n • xAdvance: %d\n • xOffset: %d\n • yOffset: %d\n",
+    C, bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset);
   cout << msg;
   xxxxxx = snprintf(
     (char *)msg, 255, " • Bytes required: %d\n", numBytes);
@@ -867,7 +869,7 @@ vector<string> handleFontInfo(vector<string> P) {
 
 vector<string> handleSetTextPXPY(vector<string> P) {
   // x y TEXTXY
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleSetTextPXPY: Invalid number of args!\n");
@@ -880,7 +882,7 @@ vector<string> handleSetTextPXPY(vector<string> P) {
 
 vector<string> handleDrawChar(vector<string> P) {
   // s name DRAWCHR
-  vector<string> R;  // the return vector
+  vector<string> R; // the return vector
   if (P.size() != 2) {
     R.push_back("false");
     R.push_back("handleDrawChar: Invalid number of args!\n");
@@ -923,7 +925,7 @@ vector<string> handleDrawChar(vector<string> P) {
   }
 
   // cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a << " with font " << FontName << endl;
-  uint16_t offset = C - seoche.first;  // index to Glyph array
+  uint16_t offset = C - seoche.first; // index to Glyph array
   int fWidth = (seoche.glyph + offset)->width;
   int fHeight = (seoche.glyph + offset)->height;
   int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
@@ -986,7 +988,7 @@ vector<string> handleInit(vector<string> P) {
 }
 
 struct pluginCommand {
-  vector<string> (*ptr)(vector<string>);  // Function pointer
+  vector<string> (*ptr)(vector<string>); // Function pointer
   string name;
   string help;
   string params;
@@ -1011,7 +1013,7 @@ pluginCommand pluginCommands[] = {
   { handleGreyscale, "GREYSCALE", "( s -- ) Converts image to greyscale.", "1S" },
   { handleSetTextPXPY, "TEXTXY", "( x y -- ) Sets px:py for text drawing.", "2II" },
   { handleDrawChar, "DRAWCHR", "( s name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "2SS" },
-  { handleFontInfo, "FONTINFO", "( font -- ) Shows info about font `font`.", "1S" },
+  { handleFontInfo, "FONTINFO", "( C font -- ) Shows info about char C in font `font`.", "2SS" },
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
