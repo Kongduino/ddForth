@@ -57,7 +57,7 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
 
 vector<string> handleCreateImage(vector<string> P) {
   vector<string> R; // the return vector
-  if (P.size() != 1) {
+  if (P.size() != 3) {
     R.push_back("false");
     R.push_back("handleCreateImage: Invalid number of args!\n");
     return R;
@@ -1034,7 +1034,7 @@ pluginCommand pluginCommands[] = {
   { handleDrawPixel, "PIXEL", "( x y s -- ) Draws an RGBA pixel.", "3SII" },
   { handleDrawHLine, "HLINE", "( x y L s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
   { handleDrawVLine, "VLINE", "( x y H s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
-  { handleDrawLine, "DLINE", "( x1 y1 x2 y2 s -- ) Draws an RGBA line.", "9SIIIIIIII" },
+  { handleDrawLine, "DLINE", "( x1 y1 x2 y2 s -- ) Draws an RGBA line.", "5SIIII" },
   { handleDrawCircle, "CIRCLE", "( x y rad s -- ) Draws an RGBA circle radius rad at x,y.", "4SIII" },
   { handleDrawRect, "RECT", "( x y L H s -- ) Draws an RGBA Box width L height H.", "5SIIII" },
   { handleFillRect, "FILLRECT", "( x y L H s -- ) Fills an RGBA Box width L height H.", "5SIIII" },

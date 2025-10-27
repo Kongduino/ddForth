@@ -21,9 +21,9 @@ bool pluginLoaded = false;
 void *pluginHandle;
 
 bool StackReturnValues(vector<string> R) {
+  if (R.size() == 0) return true;
   if (R.at(0) == "false") {
-    xxxxxx = snprintf((char *)msg, 255, "%s", R.at(1).c_str());
-    logThis();
+    cout << R.at(1);
     return false;
   }
   int count = 0;
@@ -104,10 +104,10 @@ bool handleLoadPlugin() {
 bool lookupPlugin(string c, bool *r) {
   string cc, d;
   cc = c;
-  std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
+  std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
   for (int ix = 0; ix < pluginCmdCount; ix++) {
     d = pluginCommands[ix].name;
-    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    // std::transform(d.begin(), d.end(), d.begin(), ::tolower);
     if (cc == d) {
       // We need to check the stack for the proper parameters
       // and prepare a vector
@@ -159,15 +159,17 @@ bool lookupPlugin(string c, bool *r) {
       }
       // cout << "calling " << pluginCommands[ix].name << endl;
       vector<string> R = pluginCommands[ix].ptr(params);
-      /*
-        Return values:
-        Instead of returning TRUE/FALSE, return a vector<string> containing:
-          • Either {"false", "error message"}
-          • Or return values, if any, as strings, prefixed with their type.
-            Example: {"I32", "Stagada"}
-        These values are put back on the stack.
-      */
-      return StackReturnValues(R);
+      if (R.size() > 0) {
+        /*
+          Return values:
+          Instead of returning TRUE/FALSE, return a vector<string> containing:
+            • Either {"false", "error message"}
+            • Or return values, if any, as strings, prefixed with their type.
+              Example: {"I32", "Stagada"}
+          These values are put back on the stack.
+        */
+        return StackReturnValues(R);
+      } else return true;
     }
   }
   return false;
