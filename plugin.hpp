@@ -7,7 +7,7 @@
 using namespace std;
 
 struct pluginCommand {
-  bool (*ptr)(vector<string>); // Function pointer
+  vector<string> (*ptr)(vector<string>);  // Function pointer
   string name;
   string help;
   string params;
@@ -19,6 +19,41 @@ pluginCommand *pluginCommands;
 int pluginCmdCount;
 bool pluginLoaded = false;
 void *pluginHandle;
+
+bool StackReturnValues(vector<string> R) {
+  if (R.at(0) == "false") {
+    xxxxxx = snprintf((char *)msg, 255, "%s", R.at(1).c_str());
+    logThis();
+    return false;
+  }
+  int count = 0;
+  for (std::vector<string>::iterator it = R.begin(); it != R.end(); ++it) {
+    count += 1;
+    string c = *it;
+    char Type = c.at(0);
+    c.erase(c.begin());
+    switch (Type) {
+      case 'S':
+        {
+          putStringOnStack(c);
+          break;
+        }
+      case 'I':
+        {
+          putIntegerOnStack(stoi(c));
+          break;
+        }
+      case 'F':
+        {
+          putFloatOnStack(stof(c));
+          break;
+        }
+    }
+  }
+  // to make it easy to use PICK, stack the count
+  putIntegerOnStack(count);
+  return true;
+}
 
 bool handleLoadPlugin() {
   string path;
@@ -60,9 +95,80 @@ bool handleLoadPlugin() {
     }
   }
   cout << "Calling handleInit().\n";
-  bool r;
-  vector<string>params;
-  r = pluginCommands[0].ptr(params);
+  vector<string> params;
+  vector<string> R = pluginCommands[0].ptr(params);
 
   return true;
+}
+
+bool lookupPlugin(string c, bool *r) {
+  string cc, d;
+  cc = c;
+  std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
+  for (int ix = 0; ix < pluginCmdCount; ix++) {
+    d = pluginCommands[ix].name;
+    std::transform(d.begin(), d.end(), d.begin(), ::tolower);
+    if (cc == d) {
+      // We need to check the stack for the proper parameters
+      // and prepare a vector
+      vector<string> params;
+      char V = pluginCommands[ix].params.at(0);
+      int argc = V - 48;
+      // cout << "   - Arg count: " << argc << endl;
+      for (int jx = 0; jx < argc; jx++) {
+        char argType = pluginCommands[ix].params.at(jx + 1);
+        // cout << "   - Arg #" << jx << ": " << argType;
+        string P;
+        int I;
+        float F;
+        switch (argType) {
+          case 'S':
+            {
+              if (popStringFromStack(&P) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/STR");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(P);
+              break;
+            }
+          case 'I':
+            {
+              if (popIntegerFromStack(&I) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/INT");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(std::to_string(I));
+              break;
+            }
+          case 'F':
+            {
+              if (popFloatFromStack(&F) == false) {
+                // cout << " [x]\n";
+                logStackOverflow((char *)"lookupPlugin/FLOAT");
+                return false;
+              }
+              // cout << " [√]\n";
+              params.push_back(std::to_string(F));
+              break;
+            }
+        }
+      }
+      // cout << "calling " << pluginCommands[ix].name << endl;
+      vector<string> R = pluginCommands[ix].ptr(params);
+      /*
+        Return values:
+        Instead of returning TRUE/FALSE, return a vector<string> containing:
+          • Either {"false", "error message"}
+          • Or return values, if any, as strings, prefixed with their type.
+            Example: {"I32", "Stagada"}
+        These values are put back on the stack.
+      */
+      return StackReturnValues(R);
+    }
+  }
+  return false;
 }

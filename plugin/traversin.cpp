@@ -28,7 +28,7 @@ string FontName;
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
-  vector<unsigned char> image; //the raw pixels
+  vector<unsigned char> image;  //the raw pixels
   vector<int> size;
   unsigned width, height;
   unsigned error = lodepng::decode(image, width, height, filename.c_str());
@@ -55,10 +55,12 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
   return true;
 }
 
-bool handleCreateImage(vector<string> P) {
-  if (P.size() != 3) {
-    cout << "handleCreateImage: Invalid number of args!\n";
-    return false;
+vector<string> handleCreateImage(vector<string> P) {
+  vector<string> R;  // the return vector
+  if (P.size() != 1) {
+    R.push_back("false");
+    R.push_back("handleCreateImage: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -77,32 +79,38 @@ bool handleCreateImage(vector<string> P) {
     blob.clear();
   } else {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s already exists!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
-  return true;
+  return R;
 }
 
-bool handleSetRGBA(vector<string> P) {
+vector<string> handleSetRGBA(vector<string> P) {
+  vector<string> R;  // the return vector
   if (P.size() != 4) {
-    cout << "handleSetRGBA: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleSetRGBA: Invalid number of args!\n");
+    return R;
   }
   for (int i = 0; i < 4; i++)
     RGBA.at(i) = std::atoi(P.at(i).c_str());
-  return true;
+  return R;
 }
 
-bool handleSetFont(vector<string> P) {
+vector<string> handleSetFont(vector<string> P) {
+  vector<string> R;  // the return vector
   if (P.size() != 1) {
-    cout << "handleSetFont: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleSetFont: Invalid number of args!\n");
+    return R;
   }
   FontName = P.at(0);
-  return true;
+  return R;
 }
 
-bool handlePNGTest(vector<string> P) {
+vector<string> handlePNGTest(vector<string> P) {
+  vector<string> R;  // the return vector
   const char *filename = "test.png";
   /*generate some image*/
   unsigned width = 512, height = 512;
@@ -117,7 +125,8 @@ bool handlePNGTest(vector<string> P) {
     }
   bool rslt = encodeOneStep(filename, image, width, height);
   free(image);
-  return rslt;
+  R.push_back("Stest.png");
+  return R;
 }
 
 vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
@@ -133,11 +142,13 @@ vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, 
   return image;
 }
 
-bool handleDrawPixel(vector<string> P) {
+vector<string> handleDrawPixel(vector<string> P) {
   // x y name PIXEL
+  vector<string> R;  // the return vector
   if (P.size() != 3) {
-    cout << "handleDrawPixel: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawPixel: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -151,15 +162,17 @@ bool handleDrawPixel(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -167,14 +180,16 @@ bool handleDrawPixel(vector<string> P) {
   int width = size.at(1);
   image = putPixel(image, x, y, width, r, g, b, a);
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleFillRect(vector<string> P) {
+vector<string> handleFillRect(vector<string> P) {
   // x y L H name FILLRECT
+  vector<string> R;  // the return vector
   if (P.size() != 5) {
-    cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleFillRect: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -189,16 +204,18 @@ bool handleFillRect(vector<string> P) {
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
-    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    int xxxxxx = snprintf((char *)msg, 255, "handleFillRect: Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
-    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    int xxxxxx = snprintf((char *)msg, 255, "handleFillRect: Size Record for Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -223,14 +240,16 @@ bool handleFillRect(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleDrawRect(vector<string> P) {
+vector<string> handleDrawRect(vector<string> P) {
   // x y L H name RECT
+  vector<string> R;  // the return vector
   if (P.size() != 5) {
-    cout << "handleDrawRect: Invalid number of args: " << P.size() << "!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawRect: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -246,15 +265,17 @@ bool handleDrawRect(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -314,14 +335,16 @@ bool handleDrawRect(vector<string> P) {
       jx = H;
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleDrawHLine(vector<string> P) {
+vector<string> handleDrawHLine(vector<string> P) {
   // x y L name HLINE
+  vector<string> R;  // the return vector
   if (P.size() != 4) {
-    cout << "handleDrawHLine: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawHLine: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -336,15 +359,17 @@ bool handleDrawHLine(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -364,14 +389,16 @@ bool handleDrawHLine(vector<string> P) {
       ix = L;
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleDrawVLine(vector<string> P) {
+vector<string> handleDrawVLine(vector<string> P) {
   // x y H name VLINE
+  vector<string> R;  // the return vector
   if (P.size() != 4) {
-    cout << "handleDrawVLine: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawVLine: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -386,15 +413,17 @@ bool handleDrawVLine(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -415,14 +444,16 @@ bool handleDrawVLine(vector<string> P) {
       ix = H;
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleDrawLine(vector<string> P) {
+vector<string> handleDrawLine(vector<string> P) {
   // x1 y1 x2 y2 name DLINE
+  vector<string> R;  // the return vector
   if (P.size() != 5) {
-    cout << "handleDrawVLine: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawLine: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -438,15 +469,17 @@ bool handleDrawLine(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -511,14 +544,16 @@ bool handleDrawLine(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleDrawCircle(vector<string> P) {
+vector<string> handleDrawCircle(vector<string> P) {
   // x y radius name CIRCLE
+  vector<string> R;  // the return vector
   if (P.size() != 4) {
-    cout << "handleDrawCircle: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawCircle: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -533,15 +568,17 @@ bool handleDrawCircle(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -566,14 +603,16 @@ bool handleDrawCircle(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleClearImage(vector<string> P) {
+vector<string> handleClearImage(vector<string> P) {
   // r g b name FILL
+  vector<string> R;  // the return vector
   if (P.size() != 4) {
-    cout << "handleClearImage: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleClearImage: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -584,15 +623,17 @@ bool handleClearImage(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -608,21 +649,24 @@ bool handleClearImage(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleNukeChannel(vector<string> P) {
+vector<string> handleNukeChannel(vector<string> P) {
   // [RGB] name X_CHANNEL
+  vector<string> R;  // the return vector
   if (P.size() != 2) {
-    cout << "handleNukeChannel: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleNukeChannel: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
   string channel = P.at(1);
   if (channel != "R" && channel != "G" && channel != "B") {
-    cout << "handleNukeChannel: Invalid Channel Name [RGB]!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleNukeChannel: Invalid Channel Name [RGB]!\n");
+    return R;
   }
   int channelIndex = 0;
   if (channel == "G")
@@ -633,15 +677,17 @@ bool handleNukeChannel(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -655,14 +701,22 @@ bool handleNukeChannel(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleGreyscale(vector<string> P) {
+vector<string> handleGreyscale(vector<string> P) {
   // [RGB] name GREYSCALE
+  vector<string> R;  // the return vector
+  if (P.size() != 1) {
+    R.push_back("false");
+    R.push_back("handleGreyscale: Invalid number of args!\n");
+    return R;
+  }
   if (P.size() != 1) {
     cout << "handleGreyscale: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleGreyscale: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -670,15 +724,17 @@ bool handleGreyscale(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
@@ -695,14 +751,16 @@ bool handleGreyscale(vector<string> P) {
     }
   }
   myImages[name] = image;
-  return true;
+  return R;
 }
 
-bool handleSavePNG(vector<string> P) {
+vector<string> handleSavePNG(vector<string> P) {
   // name path SAVEPNG
+  vector<string> R;  // the return vector
   if (P.size() != 2) {
-    cout << "handleSavePNG: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleSavePNG: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string path = P.at(0);
@@ -711,107 +769,122 @@ bool handleSavePNG(vector<string> P) {
   it = myImages.find(name);
   if (it == myImages.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<uint8_t> image = myImages[name];
   vector<int> size = myImageSizes[name];
   int height = size.at(0);
   int width = size.at(1);
   bool rslt = encodeOneStep(path, image.data(), width, height);
-  return rslt;
+  return R;
 }
 
-bool handleLoadPNG(vector<string> P) {
+vector<string> handleLoadPNG(vector<string> P) {
   // name path LOADPNG
+  vector<string> R;  // the return vector
   if (P.size() != 2) {
-    cout << "handleLoadPNG: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleLoadPNG: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string path = P.at(0);
   string name = P.at(1);
   bool rslt = decodeOneStep(path, name);
-  if (!rslt) return false;
+  if (!rslt) {
+    R.push_back("false");
+    R.push_back("handleLoadPNG: decodeOneStep() failed\n");
+    return R;
+  }
   std::map<string, vector<int>>::iterator itS;
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   vector<int> size = myImageSizes[name];
   int height = size.at(0);
   int width = size.at(1);
-  return rslt;
+  return R;
 }
 
-bool handleFontInfo(vector<string> P) {
+vector<string> handleFontInfo(vector<string> P) {
   // font FONTINFO
+  vector<string> R;  // the return vector
   if (P.size() != 1) {
-    cout << "handleFontInfo: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleFontInfo: Invalid number of args!\n");
+    return R;
   }
   string font = P.at(0);
   std::map<string, GFXfont>::iterator itF;
   itF = myFonts.find(font);
   if (itF == myFonts.end()) {
+    R.push_back("false");
     int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", font.c_str());
-    cout << msg;
-    return false;
+    R.push_back(msg);
+    return R;
   }
   GFXfont seoche = myFonts[font];
   int xxxxxx = snprintf(
     (char *)msg, 255,
     " • First char: `%c` [0x%02x], last char: `%c` [0x%02x]\n • yAdvance: %d\n",
-    seoche.first, seoche.first, seoche.last, seoche.last, seoche.yAdvance
-  );
+    seoche.first, seoche.first, seoche.last, seoche.last, seoche.yAdvance);
   cout << msg;
-  uint16_t offset = 65 - seoche.first; // index to Glyph array for 'A'
+  uint16_t offset = 65 - seoche.first;  // index to Glyph array for 'A'
   int fWidth = (seoche.glyph + offset)->width;
+  R.push_back("I" + std::to_string(fWidth));
   int fHeight = (seoche.glyph + offset)->height;
+  R.push_back("I" + std::to_string(fHeight));
   int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
   int xAdvance = (seoche.glyph + offset)->xAdvance;
+  R.push_back("I" + std::to_string(xAdvance));
   int xOffset = (seoche.glyph + offset)->xOffset;
   int yOffset = (seoche.glyph + offset)->yOffset;
   int numBytes = (fWidth * fHeight) >> 3;
   if ((fWidth * fHeight) % 8 > 0) numBytes += 1;
   xxxxxx = snprintf(
     (char *)msg, 255, " # Info for `A`:\n • bitmapOffset: %d\n • Width: %d\n • height: %d\n • xAdvance: %d\n • xOffset: %d\n • yOffset: %d\n",
-    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset
-  );
+    bitmapOffset, fWidth, fHeight, xAdvance, xOffset, yOffset);
   cout << msg;
   xxxxxx = snprintf(
-    (char *)msg, 255, " • Bytes required: %d\n", numBytes
-  );
+    (char *)msg, 255, " • Bytes required: %d\n", numBytes);
   cout << msg;
-  return true;
+  return R;
 }
 
-bool handleSetTextPXPY(vector<string> P) {
+vector<string> handleSetTextPXPY(vector<string> P) {
   // x y TEXTXY
+  vector<string> R;  // the return vector
   if (P.size() != 2) {
-    cout << "handleSetTextPXPY: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleSetTextPXPY: Invalid number of args!\n");
+    return R;
   }
   textPY = std::atoi(P.at(0).c_str());
   textPX = std::atoi(P.at(1).c_str());
-  return true;
+  return R;
 }
 
-
-bool handleDrawChar(vector<string> P) {
+vector<string> handleDrawChar(vector<string> P) {
   // s name DRAWCHR
+  vector<string> R;  // the return vector
   if (P.size() != 2) {
-    cout << "handleDrawChar: Invalid number of args!\n";
-    return false;
+    R.push_back("false");
+    R.push_back("handleDrawChar: Invalid number of args!\n");
+    return R;
   }
   int ix = 0;
   string name = P.at(0);
@@ -824,15 +897,17 @@ bool handleDrawChar(vector<string> P) {
   itS = myImageSizes.find(name);
   if (itS == myImageSizes.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   std::map<string, GFXfont>::iterator itF;
   itF = myFonts.find(FontName);
   if (itF == myFonts.end()) {
     int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", FontName.c_str());
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
   GFXfont seoche = myFonts[FontName];
   vector<int> size = myImageSizes[name];
@@ -842,12 +917,13 @@ bool handleDrawChar(vector<string> P) {
   char C = text.at(0);
   if (C < seoche.first || C > seoche.last) {
     int xxxxxx = snprintf((char *)msg, 255, "Char %02x doesn't exist in this font!\n", C);
-    cout << msg;
-    return false;
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
   }
 
   // cout << "Drawing " << C << " at " << textPX << ":" << textPY << " RGBA: " << (int)r << ", " << (int)g << ", " << (int)b << ", " << (int)a << " with font " << FontName << endl;
-  uint16_t offset = C - seoche.first; // index to Glyph array
+  uint16_t offset = C - seoche.first;  // index to Glyph array
   int fWidth = (seoche.glyph + offset)->width;
   int fHeight = (seoche.glyph + offset)->height;
   int bitmapOffset = (seoche.glyph + offset)->bitmapOffset;
@@ -872,11 +948,11 @@ bool handleDrawChar(vector<string> P) {
         // for the moment loop around to px = 0, py += yAdvance
         textPX = 0;
         textPY += yAdvance;
-    if ((textPY + yy) >= height) {
-      // Same for py. Let's make sure we draw within the confines of the image
-      // and, most importantly, of the buffer...
-      textPY = 0 - yOffset;
-    }
+        if ((textPY + yy) >= height) {
+          // Same for py. Let's make sure we draw within the confines of the image
+          // and, most importantly, of the buffer...
+          textPY = 0 - yOffset;
+        }
       }
       if (n & 0b10000000) {
         image = putPixel(image, textPX + xx + xOffset, textPY + yy + yOffset, width, r, g, b, a);
@@ -889,15 +965,12 @@ bool handleDrawChar(vector<string> P) {
 
   myImages[name] = image;
   myImageSizes[name] = size;
-  return true;
+  return R;
 }
 
-bool handleInit(vector<string> P) {
+vector<string> handleInit(vector<string> P) {
+  vector<string> R;
   // INIT
-  // if (P.size() != 0) {
-  //    cout << "handleInit: Invalid number of args!\n";
-  //    return false;
-  //  }
   // En fait on s'en tape...
   // Map the fonts that are being used.
   myFonts["FreeMono18pt7b"] = FreeMono18pt7b;
@@ -909,11 +982,11 @@ bool handleInit(vector<string> P) {
   myFonts["FreeSans12pt7b"] = FreeSans12pt7b;
   cout << "\t• FreeSans12pt7b" << endl;
   FontName = "FreeSans12pt7b";
-  return true;
+  return R;
 }
 
 struct pluginCommand {
-  bool (*ptr)(vector<string>); // Function pointer
+  vector<string> (*ptr)(vector<string>);  // Function pointer
   string name;
   string help;
   string params;
