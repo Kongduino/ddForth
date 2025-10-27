@@ -867,6 +867,35 @@ vector<string> handleFontInfo(vector<string> P) {
   return R;
 }
 
+vector<string> handleStringWidth(vector<string> P) {
+  // string font FONTINFO
+  vector<string> R;  // the return vector
+  if (P.size() != 2) {
+    R.push_back("false");
+    R.push_back("handleStringWidth: Invalid number of args!\n");
+    return R;
+  }
+  string font = P.at(0);
+  string myString = P.at(1);
+  std::map<string, GFXfont>::iterator itF;
+  itF = myFonts.find(font);
+  if (itF == myFonts.end()) {
+    R.push_back("false");
+    int xxxxxx = snprintf((char *)msg, 255, "Font %s doesn't exist!\n", font.c_str());
+    R.push_back(msg);
+    return R;
+  }
+  GFXfont seoche = myFonts[font];
+  int strLen = 0;
+  for (int xx = 0; xx < myString.length(); xx++) {
+    char C = myString.at(xx);
+    uint16_t offset = C - seoche.first; // index to Glyph array for C
+    strLen += (seoche.glyph + offset)->xAdvance;
+  }
+  R.push_back("I" + std::to_string(strLen));
+  return R;
+}
+
 vector<string> handleSetTextPXPY(vector<string> P) {
   // x y TEXTXY
   vector<string> R; // the return vector
@@ -1012,8 +1041,9 @@ pluginCommand pluginCommands[] = {
   { handleNukeChannel, "X_CHANNEL", "( [RGB] s -- ) Nukes channel R, G, or B.", "2SS" },
   { handleGreyscale, "GREYSCALE", "( s -- ) Converts image to greyscale.", "1S" },
   { handleSetTextPXPY, "TEXTXY", "( x y -- ) Sets px:py for text drawing.", "2II" },
-  { handleDrawChar, "DRAWCHR", "( s name -- ) Draws char s in RGBA at global position textPX, textPY, font `font`, image `name`.", "2SS" },
-  { handleFontInfo, "FONTINFO", "( C font -- ) Shows info about char C in font `font`.", "2SS" },
+  { handleDrawChar, "DRAWCHR", "( s name -- ) Draws char s in RGBA at global position textPX, textPY, `font`, image `name`.", "2SS" },
+  { handleFontInfo, "FONTINFO", "( C font -- ) Shows info about char C in `font`.", "2SS" },
+  { handleStringWidth, "STRWIDTH", "( s font -- ) Returns length in pixels of s in `font`.", "2SS" },
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
