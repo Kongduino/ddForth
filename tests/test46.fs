@@ -21,5 +21,12 @@ s" FreeSans12pt7b" SETFONT
   i 2 * 2 + pick INTSTR STR+ s" , " STR+ i 2 * 3 + pick INTSTR STR+ s" IMG"
   drawstr
 loop
+0 255 0 255 DRAWRGBA
+." Closing in black: " 0 pick 2 - dup . 1 pick dup . ." to " 58 pick 2 - dup . 59 pick dup . cr s" IMG" DLINE
+." Closing in black: " 0 pick 1 - dup . 1 pick dup . ." to " 58 pick 1 - dup . 59 pick dup . cr s" IMG" DLINE
+." Closing in black: " 0 pick dup . 1 pick dup . ." to " 58 pick dup . 59 pick dup . cr s" IMG" DLINE
+." Closing in black: " 0 pick 1 + dup . 1 pick dup . ." to " 58 pick 1 + dup . 59 pick dup . cr s" IMG" DLINE
+." Closing in black: " 0 pick 2 + dup . 1 pick dup . ." to " 58 pick 2 + dup . 59 pick dup . cr s" IMG" DLINE
+
 s" IMG" s" map_poly.png" savepng
 clear

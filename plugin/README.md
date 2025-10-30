@@ -2,6 +2,16 @@
 
 Do this before making the main project
 
+# QR Encode
+
+```
+git clone https://github.com/nayuki/QR-Code-generator
+cd QR-Code-generator/cpp/
+make
+ar -crs libqrcodegencpp.a qrcodegen.o 
+cd ../../
+```
+
 ## lodepng
 
 ```
@@ -44,7 +54,18 @@ traversin.cpp uses fonts. Here's how:
 #include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
+```
 
+Running `make` will build both traversion and qrencode:
+
+```
+% make
+g++ -O3 -g -c traversin.cpp
+g++ -dynamiclib traversin.o lodepng/lodepng.o -o traversin.dylib
+g++ -O3 -O3 -rdynamic foo.cpp -o foo -ldl
+rm *.o
+g++ -g -c qrencode.cpp
+g++ qrencode.o QR-Code-generator/cpp/qrcodegen.o -dynamiclib -o qrencode.dylib
 ```
 
 The `handleInit` method is compulsory in any plugin, and will be called when loading the plugin. In `handleInit`, traversin makes sure they are listed and usable:

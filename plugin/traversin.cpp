@@ -1,4 +1,4 @@
-#include <cmath>  // For sin, cos, tan
+#include <cmath> // For sin, cos, tan
 #include "lodepng/lodepng.h"
 #include <cstdio>
 #include <cstring>
@@ -14,8 +14,16 @@
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSans12pt7b.h"
+#include "QR-Code-generator/cpp/qrcodegen.hpp"
 
 using namespace std;
+using qrcodegen::QrCode;
+using qrcodegen::QrSegment;
+
+vector<string> handleCreateImage(vector<string>);
+vector<string> handleFillRect(vector<string>);
+vector<uint8_t> putPixel(vector<uint8_t>, int, int, int, int, int, int, int);
+vector<string> handleClearImage(vector<string>);
 
 char msg[256];
 std::map<string, GFXfont> myFonts;
@@ -25,6 +33,85 @@ std::map<string, vector<int>> myImageSizes;
 int textPX = 0, textPY = 0;
 vector<int> RGBA = { 0, 0, 0, 255 };
 string FontName;
+
+// Prints the given QRCode object to the console.
+static void saveQr(const QrCode &qr, string name, int border, int nPixels) {
+  vector<string> P;
+  int fullSize = (qr.getSize() + border + border);
+  int widthHeight = fullSize * nPixels;
+  P.push_back(name);
+  P.push_back(std::to_string(widthHeight));
+  P.push_back(std::to_string(widthHeight));
+  P = handleCreateImage(P);
+  P.clear();
+  P.push_back(name);
+  P.push_back("255");
+  P.push_back("255");
+  P.push_back("255");
+  P = handleClearImage(P);
+  // r g b name FILL
+
+  vector<uint8_t> image = myImages[name];
+  uint8_t rrggbb;
+  for (int y = -border; y < qr.getSize() + border; y++) {
+    for (int x = -border; x < qr.getSize() + border; x++) {
+      P.clear();
+      if(qr.getModule(x, y)) {
+        rrggbb = 0;
+      } else {
+        rrggbb = 255;
+      }
+      if (nPixels == 1) {
+        image = putPixel(image, x, y, widthHeight, rrggbb, rrggbb, rrggbb, 255);
+      } else {
+        RGBA.at(0) = rrggbb;
+        RGBA.at(1) = rrggbb;
+        RGBA.at(2) = rrggbb;
+        RGBA.at(3) = 255;
+        P.push_back(name);
+        P.push_back(std::to_string(nPixels));
+        P.push_back(std::to_string(nPixels));
+        P.push_back(std::to_string((y + border) * nPixels));
+        P.push_back(std::to_string((x + border) * nPixels));
+        P = handleFillRect(P);
+      }
+    }
+  }
+}
+
+// Prints the given QRCode object to the console.
+static void printQr(const QrCode &qr, int border) {
+  // int border = 4;
+  for (int y = -border; y < qr.getSize() + border; y++) {
+    for (int x = -border; x < qr.getSize() + border; x++) {
+      std::cout << (qr.getModule(x, y) ? "██" : "  ");
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+// Creates a single QR Code, then prints it to the console.
+vector<string> handleSimpleQRCode(vector<string> P) {
+  // border size name text QRCODE
+  vector<string> R; // the return vector
+  if (P.size() != 4) {
+    R.push_back("false");
+    R.push_back("handleSimpleQRCode: Invalid number of args!\n");
+    return R;
+  }
+  int ix = 0;
+  string text = P.at(0);
+  string name = P.at(1);
+  int nPixels = std::atoi(P.at(2).c_str());
+  int border = std::atoi(P.at(3).c_str());
+  const QrCode::Ecc errCorLvl = QrCode::Ecc::LOW; // Error correction level
+  // Make and print the QR Code symbol
+  const QrCode qr = QrCode::encodeText(text.c_str(), errCorLvl);
+  printQr(qr, border);
+  saveQr(qr, name, border, nPixels);
+  return R;
+}
 
 //Decode from disk to raw pixels with a single function call
 bool decodeOneStep(string filename, string name) {
@@ -131,14 +218,21 @@ vector<string> handlePNGTest(vector<string> P) {
 
 vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
   int position = y * width * 4 + x * 4;
-  image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
-  position += 1;
-  image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
-  position += 1;
-  image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
-  position += 1;
-  image[position] = (image[position] + a) / 2;
-  position += 1;
+  if (a == 255) {
+    // No computing alpha channel
+    image[position++] = r;
+    image[position++] = g;
+    image[position++] = b;
+    image[position++] = a;
+  } else {
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+  }
   return image;
 }
 
@@ -185,7 +279,7 @@ vector<string> handleDrawPixel(vector<string> P) {
 
 vector<string> handleFillRect(vector<string> P) {
   // x y L H name FILLRECT
-  vector<string> R; // the return vector
+  vector<string> R;  // the return vector
   if (P.size() != 5) {
     R.push_back("false");
     R.push_back("handleFillRect: Invalid number of args!\n");
@@ -193,14 +287,14 @@ vector<string> handleFillRect(vector<string> P) {
   }
   int ix = 0;
   string name = P.at(0);
-  uint8_t a = RGBA.at(3);
-  uint8_t b = RGBA.at(2);
-  uint8_t g = RGBA.at(1);
-  uint8_t r = RGBA.at(0);
   int H = std::atoi(P.at(1).c_str());
   int L = std::atoi(P.at(2).c_str());
   int y = std::atoi(P.at(3).c_str());
   int x = std::atoi(P.at(4).c_str());
+  uint8_t a = RGBA.at(3);
+  uint8_t b = RGBA.at(2);
+  uint8_t g = RGBA.at(1);
+  uint8_t r = RGBA.at(0);
   std::map<string, vector<uint8_t>>::iterator it;
   it = myImages.find(name);
   if (it == myImages.end()) {
@@ -229,14 +323,21 @@ vector<string> handleFillRect(vector<string> P) {
     int position = (y + jx) * width * 4 + x * 4;
     for (int ix = 0; ix < L; ix++) {
       // Draw a line
-      image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
-      position += 1;
-      image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
-      position += 1;
-      image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
-      position += 1;
-      image[position] = (image[position] + a) / 2;
-      position += 1;
+      if (a == 255) {
+        // No computing alpha channel
+        image[position++] = r;
+        image[position++] = g;
+        image[position++] = b;
+        image[position++] = a;
+      } else {
+        image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+        position += 1;
+        image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+        position += 1;
+        image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+        position += 1;
+        image[position] = (image[position] + a) / 2;
+      }
     }
   }
   myImages[name] = image;
@@ -1044,6 +1145,7 @@ pluginCommand pluginCommands[] = {
   { handleDrawChar, "DRAWCHR", "( s name -- ) Draws char s in RGBA at global position textPX, textPY, `font`, image `name`.", "2SS" },
   { handleFontInfo, "FONTINFO", "( C font -- ) Shows info about char C in `font`.", "2SS" },
   { handleStringWidth, "STRWIDTH", "( s font -- ) Returns length in pixels of s in `font`.", "2SS" },
+  { handleSimpleQRCode, "QRCODE", "( border size name text -- ) Creates a simple QR code.", "4SSII" },
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
