@@ -228,6 +228,48 @@ int GetINTaddress(string name) {
   }
 }
 
+bool handleFilterStrings() {
+  // [data] num s" text" FILSTR
+  // s" Riri Fifi Loulou" SSPLIT
+  // --> Riri Fifi Loulou 3
+  // s" i" FILSTR
+  // --> Riri Fifi 2
+  string text;
+  if (popStringFromStack(&text) == false) {
+    logStackOverflow((char *)"handleFilterStrings/0");
+    return false;
+  }
+  int number;
+  if (popIntegerFromStack(&number) == false) {
+    logStackOverflow((char *)"handleFilterStrings/1");
+    return false;
+  }
+  int ix;
+  // check we have enough data
+  if (number < dataStack.size()) {
+    logStackOverflow((char *)"handleVARRAY/2");
+    return false;
+  }
+  // So we have a series of strings; Let's pop them and them then to a vector
+  // IF they match
+  vector<string>Result;
+  string currentStr;
+  for (ix = 0; ix < number; ix++) {
+    if (popStringFromStack(&currentStr) == false) {
+      logStackOverflow((char *)"handleFilterStrings/4");
+      return false;
+    }
+    if (currentStr.find(text) != std::string::npos) {
+      Result.push_back(currentStr);
+    }
+  }
+  for (ix = 0; ix < Result.size(); ix++) {
+    putStringOnStack(Result.at(Result.size() - ix - 1));
+  }
+  putIntegerOnStack(Result.size());
+  return true;
+}
+
 bool handleVARRAY() {
   // [data] num "name" VARRAY
   // s" Riri Fifi Loulou" SSPLIT s" PLAYERS" VARRAY
