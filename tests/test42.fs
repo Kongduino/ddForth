@@ -1,4 +1,4 @@
-s" plugin/traversin.dylib" plugin
+s" traversin" plugin
 640 640 s" IMG" IMAGE
 255 255 255 s" IMG" FILLIMG
 639 0 do

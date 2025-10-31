@@ -26,7 +26,7 @@ bool showStack(int posx, int py) {
     cout << "Stack empty!\n";
     return true;
   }
-  cout << "STACK" ;
+  cout << "STACK @ " << posx << ":" << posy ;
   int x = dataStack.size() - 1;
   int myInts = userIntegers.size() - 1;
   int myFloats = userFloats.size() - 1;
@@ -39,7 +39,7 @@ bool showStack(int posx, int py) {
   cout << "\tmyStrings\t" << (myStrings + 1);
 #endif
   gotoXY(posx, posy++);
-  cout << "+--------------------------------------------------------+";
+  cout << "+--------------------------------------------------------+\n";
   while (x > -1) {
     int type0 = dataStack.at(x);
     xxxxxx = snprintf((char *)msg, 255, "| %-5zu\t", (dataStack.size() - count++ - 1));

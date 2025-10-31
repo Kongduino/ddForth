@@ -45,3 +45,7 @@ all: ddforth debug sdl small
 
 install: ddforth
 	sudo cp bin/ddforth /usr/local/bin/
+	mkdir -p ~/.ddForthPlugins
+	cp ./plugin/*.dylib ~/.ddForthPlugins/
+	ls -al ~/.ddForthPlugins/
+	

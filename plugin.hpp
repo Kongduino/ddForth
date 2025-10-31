@@ -3,6 +3,7 @@
 #include <string>
 #include <dlfcn.h>
 #include <iostream>
+#include <cstdlib> // For getenv
 
 using namespace std;
 
@@ -56,14 +57,22 @@ bool StackReturnValues(vector<string> R) {
 }
 
 bool handleLoadPlugin() {
+  const char* u = std::getenv("USER");
+  if (!u) {
+    std::cerr << "Failed to get username (USER environment variable not found)." << std::endl;
+    return false;
+  }
+  string username = u;
   string path;
   if (popStringFromStack(&path) == false) {
     logStackOverflow((char *)"handleLoadPlugin");
     return false;
   }
+  string pluginPath = "/Users/" + username + "/.ddForthPlugins/" + path + ".dylib";
+  // cout << " ==> Loading " << pluginPath << endl;
   // This needs to happen BEFORE dlopen(), IF a library was already opened.
   if (pluginLoaded) dlclose(pluginHandle);
-  pluginHandle = dlopen(path.c_str(), RTLD_LAZY);
+  pluginHandle = dlopen(pluginPath.c_str(), RTLD_LAZY);
   if (!pluginHandle) {
     fprintf(stderr, "handleLoadPlugin: %s\n", dlerror());
     exit(EXIT_FAILURE);

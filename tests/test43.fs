@@ -1,4 +1,4 @@
-s" plugin/traversin.dylib" plugin
+s" traversin" plugin
 s" map.png"
 s" tests/test43.prefs" fload
 s" https://maptoolkit.p.rapidapi.com/staticmap/?maptype=terrain&size=640x480&center=22.473167,113.960138&zoom=10&rapidapi-key="

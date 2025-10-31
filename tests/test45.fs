@@ -1,6 +1,6 @@
 : drawstr VAR tempIMGname s" " splitd DUP 0 DO I pick tempIMGname @ DRAWCHR LOOP 0 DO drop loop s" tempIMGname" forget ;
 
-s" plugin/traversin.dylib" plugin
+s" traversin" plugin
 s" map" s" map.png" loadpng
 
 clear

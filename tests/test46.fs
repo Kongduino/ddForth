@@ -1,5 +1,5 @@
 : drawstr VAR tempIMGname s" " splitd DUP 0 DO I strpick tempIMGname @ DRAWCHR LOOP 0 DO drop loop s" tempIMGname" forget ;
-s" plugin/traversin.dylib" plugin
+s" traversin" plugin
 800 800 s" IMG" IMAGE
 255 255 255 s" IMG" FILLIMG
 s" FreeSans12pt7b" SETFONT

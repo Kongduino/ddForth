@@ -1,4 +1,4 @@
-s" plugin/traversin.dylib" plugin
+s" traversin" plugin
 s" map" s" map.png" loadpng
 
 s" R" s" map" x_channel
