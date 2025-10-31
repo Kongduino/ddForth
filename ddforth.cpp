@@ -270,6 +270,49 @@ bool handleFilterStrings() {
   return true;
 }
 
+bool handleSortSTR() {
+  // [data] num SORTSTR
+  int number;
+  if (popIntegerFromStack(&number) == false) {
+    logStackOverflow((char *)"handleFilterStrings/1");
+    return false;
+  }
+  int ix;
+  // check we have enough data
+  if (number < dataStack.size()) {
+    logStackOverflow((char *)"handleVARRAY/2");
+    return false;
+  }
+  // So we have a series of strings; Let's pop them and them then to a vector
+  // IF they match
+  vector<string>Result;
+  string currentStr;
+  for (ix = 0; ix < number; ix++) {
+    if (popStringFromStack(&currentStr) == false) {
+      logStackOverflow((char *)"handleFilterStrings/4");
+      return false;
+    }
+    Result.push_back(currentStr);
+  }
+  std::sort(Result.begin(), Result.end(), [](string a, string b) {
+    if (needsReverse)
+      return a > b; // Returns true if 'a' should come before 'b'
+    else
+      return a < b; // Returns true if 'b' should come before 'a'
+  });
+  for (ix = 0; ix < Result.size(); ix++) {
+    putStringOnStack(Result.at(Result.size() - ix - 1));
+  }
+  putIntegerOnStack(Result.size());
+  needsReverse = false;
+  return true;
+}
+
+bool handleSortReverseSTR() {
+  needsReverse = true;
+  return handleSortSTR();
+}
+
 bool handleVARRAY() {
   // [data] num "name" VARRAY
   // s" Riri Fifi Loulou" SSPLIT s" PLAYERS" VARRAY

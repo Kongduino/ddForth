@@ -172,6 +172,8 @@ bool handleCFILL();
 
 bool handleVARRAY();
 bool handleFilterStrings();
+bool handleSortSTR();
+bool handleSortReverseSTR();
 bool handleSortVARRAY();
 bool handleSortReverseVARRAY();
 bool handleFindVARRAY();
@@ -426,6 +428,8 @@ nativeCommand nativeCommands[] = {
 
   { handleVARRAY, "VARRAY", "( a b c d... num name -- ) Creates an array with data a, b, c, d etc, making sure there are num data pieces." },
   { handleFilterStrings, "FILSTR", "( [data] num text -- ) Filters an array with dataleaving only those that have text in them." },
+  { handleSortSTR, "SORTSTR", "( [name] number -- ) Sorts strings on stack." },
+  { handleSortReverseSTR, "RSORTSTR", "( [name] number -- ) Reverse-sorts strings on stack." },
   { handleSortVARRAY, "SORTV", "( name -- ) Sorts varray name." },
   { handleSortReverseVARRAY, "RSORTV", "( name -- ) Sorts varray name in reverse." },
   { handleFindVARRAY, "FINDV", "( value name -- ) Looks for value in varray name." },
