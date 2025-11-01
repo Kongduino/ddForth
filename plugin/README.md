@@ -65,6 +65,15 @@ const uint8_t FreeMono...Bitmaps[] /* PROGMEM */ = {
 
 const GFXglyph FreeMono...Glyphs[] /* PROGMEM */ = {
 ```
+This can be achieved with the `fontClean.sh` command in the plugin folder:
+
+```sh
+#!/bin/sh
+perl -pi -e 's/^#include /\/\/#include /' Adafruit-GFX-Library/Fonts/*.h
+perl -pi -e 's/\] PROGMEM = \{/\] = \{/' Adafruit-GFX-Library/Fonts/*.h
+```
+
+I still love Perl a little...
 
 `traversin.cpp` uses fonts. Here's how:
 
