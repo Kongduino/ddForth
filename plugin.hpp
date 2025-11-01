@@ -82,7 +82,8 @@ bool handleLoadPlugin() {
   pluginHandle = dlopen(pluginPath.c_str(), RTLD_LAZY);
   if (!pluginHandle) {
     fprintf(stderr, "handleLoadPlugin: %s\n", dlerror());
-    exit(EXIT_FAILURE);
+    // exit(EXIT_FAILURE);
+    return false;
   }
   dlerror(); /* Clear any existing error */
   pluginCmdCount_ptr = (int *)dlsym(pluginHandle, "pluginCmdCount");
