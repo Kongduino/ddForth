@@ -170,5 +170,12 @@ Plugin Commands:
 
 Plugins have their own directory and their own [README](plugin/README.md), but describing the process of making a plugin probably requires a separate page, its own [Tutorial](plugin/Tutorial.md).
 
+## So what is new in 1.3.0?
 
+* Plugins, obviously. Including QR Codes. Originally I wanted to do a separate plugin, but it's easier to include into traversin, instead of trying to get yet again lodepng to work with this one.
 
+* Text words like `FILSTR`, FILterSTRing; `[R]SORTSTR`, (Reverse) Sort String; The R version of the latter can also be achieved with `SREVERSE`.
+
+* Vernacularisation: `ROT` and `OVER` became native Forth words. `AGAIN` is just `1 WHILE`. `drawstr` is a word defined in test46, but should probably be put into [ExtraCommands](ExtraCommands.hpp). Achieving the same result in C++ would be a major PITA for all these words.
+
+* cURL works fine for loading content. See test40a – which uses a Python one-liner for a server to talk to.

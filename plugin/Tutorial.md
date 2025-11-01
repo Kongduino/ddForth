@@ -68,3 +68,94 @@ loop
 ```
 
 A VARRAY called `myLS` is created with the filtered out list of `.cpp` files, and can now be manipulated at will.
+
+Here's test48 and the output:
+
+```
+s" ls" plugin
+s" ./" ls
+s" .cpp" FILSTR
+( Only *.cpp files are now on the stack )
+s" myLS" varray s" myLS" sortv
+( Let's use this to create a VARRAY: file0 file1 file2 file3 file4 5 s" vName" VARRAY )
+
+s" myLS" len> 0 do
+  ( From 0 to length of varray )
+  i . ( Prints number )
+  i s" myLS" IX> . cr ( Prints line I and CR )
+loop
+
+% ddforth -f tests/test48.fs 
+ddForth v1.2.93
+ • Read: s" ls" plugin
+ • Read: s" ./" ls
+ • Read: s" .cpp" FILSTR
+ • Read: ( Only *.cpp files are now on the stack )
+ • Read: s" myLS" varray s" myLS" sortv
+ • Read: ( Let's use this to create a VARRAY: file0 file1 file2 file3 file4 5 s" vName" VARRAY )
+ • Read: 
+ • Read: s" myLS" len> 0 do
+ • Read:   ( From 0 to length of varray )
+ • Read:   i . ( Prints number )
+ • Read:   i s" myLS" IX> . cr ( Prints line I and CR )
+ • Read: loop
+Read: 12 lines, chunks: 29
+ • INIT:	( -- ) Initializes the plugin, if required.
+   - Arg count: [0] 0
+ • LS:	( path -- ) Lists file on path
+   - Arg count: [1] 1
+   - Arg #0: S
+Calling handleInit().
+Listing contents of: ./
+./ipc.cpp
+./incrementVersion.py
+./.DS_Store
+./LICENSE
+./bin
+./esp_ddforth
+./erase.cpp
+./getinmemory.hpp
+./ddforth.hpp
+./Makefile
+./plugin.hpp
+./Files.hpp
+./myversion.hpp
+./Terminal.hpp
+./tests
+./plugin
+./esp32v4_ddforth
+./.plugins
+./server
+./IPC GUI.md
+./Numbers.hpp
+./Debugger.hpp
+./ExtraCommands.hpp
+./sdl.cpp
+./README.md
+./ddforth.cpp
+./Strings.hpp
+./random.hpp
+./Tutorial.md
+./Stack.hpp
+./USB_UART.hpp
+./cardputer_ddforth
+./.git
+./insert.cpp
+./Fonts
+./lowercase.py
+./assets
+./pico_ddforth
+./addAll.sh
+./sdl_helpers
+./in.sh
+0 ./ddforth.cpp
+1 ./erase.cpp
+2 ./insert.cpp
+3 ./ipc.cpp
+4 ./sdl.cpp
+
+
+OK 
+```
+The `ls` command prints everything out, I will remove that in 1.3.0.
+
