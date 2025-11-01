@@ -2,7 +2,9 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <filesystem>
+
 namespace fs = std::filesystem;
 
 using namespace std;

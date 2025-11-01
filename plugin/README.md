@@ -1,28 +1,50 @@
 # PLUGINS Extra Steps
 
-Do this before making the main project
+Do this before making the main project.
 
-# QR Encode
+## cURL
+
+### Linux:
+
+```
+sudo apt-get install libcurl-dev #(will install the default alternative)
+sudo apt-get install libcurl4-openssl-dev #(the OpenSSL variant)
+sudo apt-get install libcurl4-gnutls-dev #(the gnutls variant)
+```
+
+### Mac OS X:
+
+It should be pre-installed, If you want the latest:
+
+```
+brew install curl
+```
+
+## QR Encode
+
+We only need that one bin.
 
 ```
 git clone https://github.com/nayuki/QR-Code-generator
 cd QR-Code-generator/cpp/
-make
-ar -crs libqrcodegencpp.a qrcodegen.o 
+g++ -fPIC -std=c++11 -O3 -c -o qrcodegen.o -MMD -MF .deps/qrcodegen.d qrcodegen.cpp
 cd ../../
 ```
 
+
 ## lodepng
+
+We only need that one bin. plugin.hpp uses `lodepng.o`.
 
 ```
 git clone https://github.com/lvandeve/lodepng
 cd lodepng
-make
+g++ -fPIC -I ./ -W -Wall -Wextra -ansi -pedantic -O3 -c lodepng.cpp -o lodepng.o
 ```
 
-plugin.hpp uses `lodepng.o`.
-
 ## Adafruit-GFX
+
+No compilation needed: we want the fonts.
 
 ```
 git clone https://github.com/adafruit/Adafruit-GFX-Library
@@ -36,7 +58,7 @@ git clone https://github.com/adafruit/Adafruit-GFX-Library
 //#include <Adafruit_GFX.h>
 ```
 
-* Comment out PROGMEM:
+* Comment out (or remove) PROGMEM:
 
 ```
 const uint8_t FreeMono...Bitmaps[] /* PROGMEM */ = {
@@ -44,29 +66,18 @@ const uint8_t FreeMono...Bitmaps[] /* PROGMEM */ = {
 const GFXglyph FreeMono...Glyphs[] /* PROGMEM */ = {
 ```
 
-traversin.cpp uses fonts. Here's how:
+`traversin.cpp` uses fonts. Here's how:
 
 ```
 #include "Adafruit-GFX-Library/gfxfont.h"
-// Include the fonts you want
-// comment out #include <Adafruit_GFX.h>
-// Remove ` PROGMEM`
+
 #include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
+#include "Adafruit-GFX-Library/Fonts/FreeSans12pt7b.h"
 ```
 
-Running `make` will build both traversion and qrencode:
-
-```
-% make
-g++ -O3 -g -c traversin.cpp
-g++ -dynamiclib traversin.o lodepng/lodepng.o -o traversin.dylib
-g++ -O3 -O3 -rdynamic foo.cpp -o foo -ldl
-rm *.o
-g++ -g -c qrencode.cpp
-g++ qrencode.o QR-Code-generator/cpp/qrcodegen.o -dynamiclib -o qrencode.dylib
-```
+Running `make` on Mac, or `make -f Makefile.linux` will build both traversin and ls:
 
 The `handleInit` method is compulsory in any plugin, and will be called when loading the plugin. In `handleInit`, traversin makes sure they are listed and usable:
 
@@ -89,3 +100,17 @@ This has to be done manually for the moment. Other plugins could use the same st
 Run `test43` first (after getting and setting an API key, see [test43.md](../tests/test43.md)). It'll get you a `map.png` image. The next 2 tests use it. Just in case I put a copy in [assets](../assets/).
 
 ![map_text](../assets/map_text.png)
+
+## Making
+
+For Linux and Mac OS X `make` alone should work fine. It does, on my computers. :-)
+
+```sh
+~/ddForth/plugin$ make
+g++ -O3 -fPIC -g -c traversin.cpp
+g++ -shared traversin.o lodepng/lodepng.o QR-Code-generator/cpp/qrcodegen.o -o traversin.so
+g++ -O3 -fPIC -std=c++17 -g -c ls.cpp
+g++ -shared ls.o -o ls.so
+rm *.o
+```
+On Ubuntu and Mac I get the same output.

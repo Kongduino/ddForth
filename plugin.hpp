@@ -21,6 +21,13 @@ int pluginCmdCount;
 bool pluginLoaded = false;
 void *pluginHandle;
 
+string dylibSuffix = ".so";
+#ifdef __MACH__
+  string HOME_DIR = "/Users/";
+#else
+  string HOME_DIR = "/home/";
+#endif
+
 bool StackReturnValues(vector<string> R) {
   if (R.size() == 0) return true;
   if (R.at(0) == "false") {
@@ -68,7 +75,7 @@ bool handleLoadPlugin() {
     logStackOverflow((char *)"handleLoadPlugin");
     return false;
   }
-  string pluginPath = "/Users/" + username + "/.ddForthPlugins/" + path + ".dylib";
+  string pluginPath = HOME_DIR + username + "/.ddForthPlugins/" + path + dylibSuffix;
   // cout << " ==> Loading " << pluginPath << endl;
   // This needs to happen BEFORE dlopen(), IF a library was already opened.
   if (pluginLoaded) dlclose(pluginHandle);

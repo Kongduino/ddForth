@@ -4,11 +4,61 @@ A minimal implementation of the Forth language in (mostly) C++. When I was a kid
 
 Surprisingly, it went well, beyond expectations, and I can run quite a few of the examples in my book. So I decided to keep pushing. I runs on my computer, as they say, which happens to be a Macbook Pro with an Apple M4 Pro CPU (and a 2018 Mac Mini Intel Core 7!). The compiled binary is still quite small (260 KB on ARM).
 
-This README itself is outdated. Run `./ddforth "WORDS"` to get the list of words that have been implemented. See below. It's a huge update compared to the last time I edited this README. Among other things, string manipulations are now quite advanced. The stack operations by and large support all 3 types of data seamlessly. USB basic functions work – I focused so far on reading.
+The original README was outdated, and possibly confusing. I am trying to rewrite it so that it helps you start with ddForth without losing too much hair. For the language itself, and especially this dialect of Forth, which has a strong accent... see the [Tutorial](Tutorial.md).
 
---- THIS README WILL BE COMPLETELY REWRITTEN SOON ---
+## Various versions
 
-When code fails, the interpreter tries to be helpful, and shows context (a couple of words before and after the culprit) and the stack – before nuking it. Example:
+Until a while ago I tried developing the main version alongside with:
+
+* An SDL version;
+* Various IOT versions, including:
+	* A Pico version;
+	* A CardPuter version;
+	* A couple of esp32 versions
+* An IPC socket-based GUI version, which might work out better than the SDL version. But development has been suspended for now.
+
+These are terribly outdated now, and should not be used, really. I will probably make a backup, and remove them from the repo.
+
+## INSTALLING
+
+A bunch of subversions ago, I launched a plugin system, which seems to work well. The development directory is called `plugin`, no surprise here. However, compiled plugins go into `~/.ddForthPlugins/` – at least on Linux and Mac OS X. No idea how to do that on Windows.
+
+Read the plugin directory's [README](plugin/README.md) to build the plugins properly, which you will need to do before building ddForth proper.
+
+### Compiling
+
+```sh~/ddForth$ make install
+mkdir -p bin
+g++ -O3 -c ddforth.cpp -o bin/ddforth.o
+g++ -o bin/ddforth bin/ddforth.o -lcurl
+#rm -f bin/*.o
+sudo cp bin/ddforth /usr/local/bin/
+mkdir -p ~/.ddForthPlugins
+cp ./plugin/*.so ~/.ddForthPlugins/
+ls -al ~/.ddForthPlugins/
+total 2356
+drwxrwxr-x  2 kongduino kongduino    4096 Nov  1 14:32 .
+drwxr-xr-x 19 kongduino kongduino    4096 Nov  1 15:16 ..
+-rwxrwxr-x  1 kongduino kongduino  412944 Nov  1 15:17 ls.so
+-rwxrwxr-x  1 kongduino kongduino 1987704 Nov  1 15:17 traversin.so
+```
+
+On Linux you might get some (harmless) warnings – I will work on removing them (by solving the issue!). The plugins are copied to `~/.ddForthPlugins/` (which will be created if it doesn't exist yet). This is where ddForth will look for them. Calling a non-existent plugin crashes hard (punishment!) but this will change too.
+
+### Launching
+
+`make install` copies ddForth to `/usr/local/bin/` so it should be available right away:
+
+```sh
+$ ddforth 
+ddForth v1.2.91
+
+
+OK 
+```
+
+Generally, when code fails, the interpreter tries to be helpful, and shows context (a couple of words before and after the culprit) and the stack – before nuking it. Example:
+
 
 ```
 OK s" This is a string" s" \ " splitd 5 strpick cs cr
@@ -30,25 +80,9 @@ OK
 
 Yeah dude, there are only 4 chunks...
 
-### NOTE
+See the [Tutorial](Tutorial.md), which needs an upgrade, too, and the `tests` directory. There are close to 50 examples so far.
 
-For IoT versions, you might need to edit the `platform.txt` file to remove `-fno-exceptions` and/or set `-fexceptions` in the `compiler.cpp.flags` section.
 
-They are mildly to very outdated as of now. I'll work on updates. The less outdated is probably the CardPuter one.
-
-### Fonts
-
-* [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
-* [Roboto](https://fonts.google.com/specimen/Roboto)
-
-### SDL demo
-
-```sh
-./bin/ddForth_SDL
-```
-![MacMini.gif](assets/MacMini.gif)
-
-![help.gif](assets/help.gif)
 
 ```
 	.V WORDS

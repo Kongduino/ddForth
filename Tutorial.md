@@ -1061,7 +1061,4 @@ loop cr
 
 ![Debugger_Demo](assets/Debugger_Demo.gif)
 
-
-
-
 VAZY TITI !!!

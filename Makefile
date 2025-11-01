@@ -1,7 +1,9 @@
 CPP=g++
 CFLAGS=-O3
 CFLAGSMALL=-Oz
-LDFLAGS=-Wl -lcurl
+LDFLAGS=-lcurl
+DYLIB_SUFFIX=so
+SHARED_CMD=-shared
 TEST="-10 BEGIN DUP . 1 + DUP 0 <> WHILE . CR 10 DUP U. FACT U."
 
 ddforth: ddforth.cpp
@@ -46,6 +48,5 @@ all: ddforth debug sdl small
 install: ddforth
 	sudo cp bin/ddforth /usr/local/bin/
 	mkdir -p ~/.ddForthPlugins
-	cp ./plugin/*.dylib ~/.ddForthPlugins/
+	cp ./plugin/*.$(DYLIB_SUFFIX) ~/.ddForthPlugins/
 	ls -al ~/.ddForthPlugins/
-	
