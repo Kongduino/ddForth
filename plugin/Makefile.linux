@@ -1,0 +1,9 @@
+plugin: plugin.cpp traversin.cpp ls.cpp
+	g++ -O3 -fPIC -g -c traversin.cpp
+	g++ -shared traversin.o QR-Code-generator/cpp/qrcodegen.o lodepng/lodepng.o -o traversin.so
+	g++ -O3 -fPIC -std=c++17 -g -c ls.cpp
+	g++ -shared ls.o -o ls.so
+	rm *.o
+
+clean:
+	rm -f *.o *.so

@@ -6,6 +6,11 @@ DYLIB_SUFFIX=so
 SHARED_CMD=-shared
 TEST="-10 BEGIN DUP . 1 + DUP 0 <> WHILE . CR 10 DUP U. FACT U."
 
+plugins: plugin/plugin.cpp
+	cd plugin; make clean; make
+	cd ../
+	cp ./plugin/*.$(DYLIB_SUFFIX) ~/.ddForthPlugins/
+
 ddforth: ddforth.cpp
 	mkdir -p bin
 	$(CPP) $(CFLAGS) -c ddforth.cpp -o bin/ddforth.o
