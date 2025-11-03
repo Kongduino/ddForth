@@ -35,6 +35,10 @@ int textPX = 0, textPY = 0;
 vector<int> RGBA = { 0, 0, 0, 255 };
 string FontName;
 
+// --------------------------------------------------------
+// Helper Functions
+// --------------------------------------------------------
+
 // Prints the given QRCode object to the console.
 static void saveQr(const QrCode &qr, string name, int border, int nPixels) {
   vector<string> P;
@@ -143,6 +147,30 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
   return true;
 }
 
+vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
+  int position = y * width * 4 + x * 4;
+  if (a == 255) {
+    // No computing alpha channel
+    image[position++] = r;
+    image[position++] = g;
+    image[position++] = b;
+    image[position++] = a;
+  } else {
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+  }
+  return image;
+}
+
+// --------------------------------------------------------
+// Main Code
+// --------------------------------------------------------
+
 vector<string> handleCreateImage(vector<string> P) {
   vector<string> R; // the return vector
   if (P.size() != 3) {
@@ -171,6 +199,39 @@ vector<string> handleCreateImage(vector<string> P) {
     R.push_back(msg);
     return R;
   }
+  return R;
+}
+
+vector<string> handleGetSize(vector<string> P) {
+  vector<string> R; // the return vector
+  if (P.size() != 1) {
+    R.push_back("false");
+    R.push_back("handleGetSize: Invalid number of args!\n");
+    return R;
+  }
+  string name = P.at(0);
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  R.push_back("I" + std::to_string(height));
+  R.push_back("I" + std::to_string(width));
   return R;
 }
 
@@ -217,26 +278,6 @@ vector<string> handlePNGTest(vector<string> P) {
   return R;
 }
 
-vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
-  int position = y * width * 4 + x * 4;
-  if (a == 255) {
-    // No computing alpha channel
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
-  } else {
-    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
-    position += 1;
-    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
-    position += 1;
-    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
-    position += 1;
-    image[position] = (image[position] + a) / 2;
-  }
-  return image;
-}
-
 vector<string> handleDrawPixel(vector<string> P) {
   // x y name PIXEL
   vector<string> R; // the return vector
@@ -275,6 +316,50 @@ vector<string> handleDrawPixel(vector<string> P) {
   int width = size.at(1);
   image = putPixel(image, x, y, width, r, g, b, a);
   myImages[name] = image;
+  return R;
+}
+
+vector<string> handleGetPixel(vector<string> P) {
+  // x y name PIXEL?
+  vector<string> R; // the return vector
+  if (P.size() != 3) {
+    R.push_back("false");
+    R.push_back("handleGetPixel: Invalid number of args!\n");
+    return R;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  int y = std::atoi(P.at(1).c_str());
+  int x = std::atoi(P.at(2).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  int position = y * 4 * width + (x * 4);
+  uint8_t r = image.at(position++);
+  uint8_t g = image.at(position++);
+  uint8_t b = image.at(position++);
+  uint8_t a = image.at(position);
+  R.push_back("I" + std::to_string(a));
+  R.push_back("I" + std::to_string(b));
+  R.push_back("I" + std::to_string(g));
+  R.push_back("I" + std::to_string(r));
   return R;
 }
 
@@ -1130,10 +1215,12 @@ pluginCommand pluginCommands[] = {
   { handleInit, "INIT", "( -- ) Initializes the plugin, if required.", "0" },
   { handlePNGTest, "PNGTest", "( -- ) Creates a PNG.", "0" },
   { handleCreateImage, "IMAGE", "( w h s -- ) Creates a blank image.", "3SII" },
+  { handleGetSize, "IMGSIZE", "( -- w h s ) Puts image's width and height on stack.", "1S" },
   { handleSetRGBA, "DRAWRGBA", "( r g b a -- ) Sets the drawing colour.", "4IIII" },
   { handleSetFont, "SETFONT", "( font -- ) Sets the drawing font to `font`.", "1S" },
   { handleClearImage, "FILLIMG", "( r g b s -- ) Fills Image s with rgb.", "4SIII" },
   { handleDrawPixel, "PIXEL", "( x y s -- ) Draws an RGBA pixel.", "3SII" },
+  { handleGetPixel, "PIXEL?", "( x y s -- r g b a ) Puts RGBA value of a pixel on the stack.", "3SII" },
   { handleDrawHLine, "HLINE", "( x y L s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
   { handleDrawVLine, "VLINE", "( x y H s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
   { handleDrawLine, "DLINE", "( x1 y1 x2 y2 s -- ) Draws an RGBA line.", "5SIIII" },
