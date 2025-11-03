@@ -10,6 +10,7 @@
 // Include the fonts you want
 // comment out #include <Adafruit_GFX.h>
 // Remove ` PROGMEM`
+#define PROGMEM
 #include "Adafruit-GFX-Library/Fonts/FreeMono18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeMonoBold18pt7b.h"
 #include "Adafruit-GFX-Library/Fonts/FreeSansBold12pt7b.h"
