@@ -351,7 +351,8 @@ vector<string> handleGetPixel(vector<string> P) {
   vector<int> size = myImageSizes[name];
   int height = size.at(0);
   int width = size.at(1);
-  int position = y * 4 * width + (x * 4);
+  //int position = y * 4 * width + (x * 4);
+  int position = (y * width * 4) + (x * 4);
   uint8_t r = image.at(position++);
   uint8_t g = image.at(position++);
   uint8_t b = image.at(position++);
