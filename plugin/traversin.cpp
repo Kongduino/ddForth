@@ -1187,6 +1187,85 @@ vector<string> handleDrawChar(vector<string> P) {
   return R;
 }
 
+vector<string> handleCopyImage(vector<string> P) {
+  // x y name1 name0 PIXEL
+  // copy image name0 onto image name1 at x, y
+  vector<string> R; // the return vector
+  if (P.size() != 4) {
+    R.push_back("false");
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Invalid number of args [%zu]!\n", P.size());
+    R.push_back(msg);
+    return R;
+  }
+  int ix = 0;
+  string name0 = P.at(0);
+  string name1 = P.at(1);
+  int y = std::atoi(P.at(2).c_str());
+  int x = std::atoi(P.at(3).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  std::map<string, vector<int>>::iterator itS;
+  it = myImages.find(name0);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name0);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Size Record for Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image0 = myImages[name0];
+  vector<int> size0 = myImageSizes[name0];
+  int height0 = size0.at(0);
+  int width0 = size0.at(1);
+
+  it = myImages.find(name1);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name1);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Size Record for Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image1 = myImages[name1];
+  vector<int> size1 = myImageSizes[name1];
+  int height1 = size1.at(0);
+  int width1 = size1.at(1);
+  
+  // We now have the two images.
+  // Check that image0 fits into image1
+  if ((x + width0) >= width1 || (y + height0) >= height1) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't fit into Image %s! %d x %d vs %d x %d\n", name0.c_str(), name1.c_str(), (x + width0), (y + height0), height1, width1);
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  
+  int position0 = 0;
+  int position1 = 0;
+  for (int jx = 0; jx < height0; jx++) {
+    position1 = (jx * width1 * 4) + (x * 4);
+    for (int ix = 0; ix < width0; ix++) {
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+    }
+  }
+  myImages[name1] = image1;
+  return R;
+}
+
 vector<string> handleInit(vector<string> P) {
   vector<string> R;
   // INIT
@@ -1238,5 +1317,6 @@ pluginCommand pluginCommands[] = {
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
+  { handleCopyImage, "COPYIMG", "( x y name1 name0 -- ) Copies image name0 onto image name1 at x, y.", "4SSII" },
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);
