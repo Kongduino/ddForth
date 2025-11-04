@@ -2365,7 +2365,7 @@ void evaluate(vector<string> chunks) {
     } else {
       if (lookup(c, &r)) {
         if (r == false) {
-          cout << "ERROR! " << c << " returned false. Aborting!" << endl;
+          cout << "Lookup ERROR! " << c << " returned false. Aborting!" << endl;
           executionPointer -= 2;
           if (executionPointer < 0) executionPointer = 0;
           int limit = executionPointer + 5;
@@ -2421,21 +2421,21 @@ void evaluate(vector<string> chunks) {
           removeBP = true;
         }
         executionPointer += 1;
-      } else if (lookupPlugin(c, &r)) {
-        if (r == false) {
-          cout << "ERROR! " << c << " returned false. Aborting!" << endl;
-          executionPointer -= 2;
-          if (executionPointer < 0) executionPointer = 0;
-          int limit = executionPointer + 5;
-          if (limit >= chunks.size()) limit = chunks.size();
-          cout << "\nCONTEXT: Steps " << executionPointer << " to " << limit << "\n        ";
-          for (int xx = executionPointer; xx < limit; xx++)
-            cout << chunks.at(xx) << " ";
-          cout << "        " << endl;
-          bool r = showStack();
-          cleanup();
-          return;
-        }
+      } else if (lookupPlugin(c)) {
+//         if (r == false) {
+//           cout << "ERROR! " << c << " returned false. Aborting!" << endl;
+//           executionPointer -= 2;
+//           if (executionPointer < 0) executionPointer = 0;
+//           int limit = executionPointer + 5;
+//           if (limit >= chunks.size()) limit = chunks.size();
+//           cout << "\nCONTEXT: Steps " << executionPointer << " to " << limit << "\n        ";
+//           for (int xx = executionPointer; xx < limit; xx++)
+//             cout << chunks.at(xx) << " ";
+//           cout << "        " << endl;
+//           bool r = showStack();
+//           cleanup();
+//           return;
+//         }
         if (includeON) {
           chunks.erase(chunks.begin() + executionPointer - 2, chunks.begin() + executionPointer + 1);
           cout << endl;

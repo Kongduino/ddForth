@@ -240,10 +240,13 @@ vector<string> handleSetRGBA(vector<string> P) {
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleSetRGBA: Invalid number of args!\n");
+    cout << "handleSetRGBA: Invalid number of args!\n";
     return R;
   }
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     RGBA.at(i) = std::atoi(P.at(i).c_str());
+    cout << "RGBA.at(" << i << ") = " << P.at(i) << endl;
+  }
   return R;
 }
 
