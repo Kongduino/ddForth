@@ -130,7 +130,7 @@ bool lookupPlugin(string c) {
     if (cc == d) {
       // We need to check the stack for the proper parameters
       // and prepare a vector
-      cout << "Preparing stack for " << cc << endl;
+      // cout << "Preparing stack for " << cc << endl;
       vector<string> params;
       char V = pluginCommands[ix].params.at(0);
       int argc = V - 48;
