@@ -29,7 +29,7 @@ string dylibSuffix = ".so";
 #endif
 
 bool StackReturnValues(vector<string> R) {
-  cout << "StackReturnValues\n";
+  // cout << "StackReturnValues\n";
   if (R.size() == 0) return true;
   if (R.at(0) == "false") {
     cout << "## R is false! " << R.at(1);
@@ -41,7 +41,7 @@ bool StackReturnValues(vector<string> R) {
     string c = *it;
     char Type = c.at(0);
     c.erase(c.begin());
-    cout << " * Adding " << c << endl;
+    // cout << " * Adding " << c << endl;
     switch (Type) {
       case 'S':
         {
