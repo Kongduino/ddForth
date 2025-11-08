@@ -8,6 +8,13 @@ The original README was outdated, and possibly confusing. I am trying to rewrite
 
 ## Various versions
 
+### Main version
+
+It works on (my! ;-) Mac, and on Linux. Beta tester (and mentor) Jaypee made sure of it. Big thanks to him.
+The current version is 1.3.0. See at the bottom.
+
+### IoT etc
+
 Until a while ago I tried developing the main version alongside with:
 
 * An SDL version;

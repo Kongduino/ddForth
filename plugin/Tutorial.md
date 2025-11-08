@@ -157,5 +157,5 @@ Listing contents of: ./
 
 OK 
 ```
-The `ls` command prints everything out, I will remove that in 1.3.0.
+The `ls` command prints everything out, I will remove that in 1.3.x.
 
