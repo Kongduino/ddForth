@@ -42,6 +42,7 @@ bool handleDifferent();
 bool handleDiv();
 bool handleWITHIN();
 bool handleEqual();
+bool handleMultipleEqual();
 bool handleStringEqual();
 bool handleFact();
 bool handleGreater();
@@ -463,6 +464,7 @@ nativeCommand nativeCommands[] = {
   { handleShowVars, ".V", "( -- ) Shows existing vars by type" },
   { handleWITHIN, "WITHIN", "( n0 n1 n2 -- [01] ) Puts the result of (n0 >= n1 && n0 <= n2) on top of the stack." },
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
+  { handleMultipleEqual, "==", "( a[1, 2, n] b[1, 2, n] n -- [01] ) Like =, but on a series of numbers." },
   { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
   { handleLower, "<", "( a b -- [01] ) Puts the result of (a < b) on top of the stack." },
   { handleLowerEqual, "<=", "( a b -- [01] ) Puts the result of (a <= b) on top of the stack." },

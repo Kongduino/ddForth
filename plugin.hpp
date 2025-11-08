@@ -29,9 +29,10 @@ string dylibSuffix = ".so";
 #endif
 
 bool StackReturnValues(vector<string> R) {
+  cout << "StackReturnValues\n";
   if (R.size() == 0) return true;
   if (R.at(0) == "false") {
-    cout << R.at(1);
+    cout << "## R is false! " << R.at(1);
     return false;
   }
   int count = 0;
@@ -40,6 +41,7 @@ bool StackReturnValues(vector<string> R) {
     string c = *it;
     char Type = c.at(0);
     c.erase(c.begin());
+    cout << " * Adding " << c << endl;
     switch (Type) {
       case 'S':
         {
@@ -118,7 +120,7 @@ bool handleLoadPlugin() {
   return true;
 }
 
-bool lookupPlugin(string c, bool *r) {
+bool lookupPlugin(string c) {
   string cc, d;
   cc = c;
   std::transform(cc.begin(), cc.end(), cc.begin(), ::toupper);
@@ -128,6 +130,7 @@ bool lookupPlugin(string c, bool *r) {
     if (cc == d) {
       // We need to check the stack for the proper parameters
       // and prepare a vector
+      cout << "Preparing stack for " << cc << endl;
       vector<string> params;
       char V = pluginCommands[ix].params.at(0);
       int argc = V - 48;
@@ -174,7 +177,6 @@ bool lookupPlugin(string c, bool *r) {
             }
         }
       }
-      // cout << "calling " << pluginCommands[ix].name << endl;
       vector<string> R = pluginCommands[ix].ptr(params);
       if (R.size() > 0) {
         /*

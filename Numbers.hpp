@@ -451,6 +451,44 @@ bool handleEqual() {
   return handle2Nums(math_EQUAL);
 }
 
+bool handleMultipleEqual() {
+  // This has to be done manually...
+  int ix, n, v;
+  vector<int>a;
+  vector<int>b;
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleMultipleEqual/0");
+    return false;
+  }
+  if(n < 2) {
+    logStackOverflow((char *)"handleMultipleEqual/1");
+    return false;
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (popIntegerFromStack(&v) == false) {
+      logStackOverflow((char *)"handleMultipleEqual/2");
+      return false;
+    }
+    a.push_back(v);
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (popIntegerFromStack(&v) == false) {
+      logStackOverflow((char *)"handleMultipleEqual/2");
+      return false;
+    }
+    b.push_back(v);
+  }
+  bool r = true;
+  for (ix = 0; ix < n; ix++) {
+    if (a.at(ix) != b.at(ix)) {
+      putIntegerOnStack(0);
+      return true;
+    }
+  }
+  putIntegerOnStack(1);
+  return true;
+}
+
 bool handleDifferent() {
   return handle2Nums(math_EQUAL);
 }

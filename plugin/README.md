@@ -123,3 +123,9 @@ g++ -shared ls.o -o ls.so
 rm *.o
 ```
 On Ubuntu and Mac I get the same output.
+
+## New in Plugins
+
+### Traversin
+
+* PIXEL? `( x y s -- r g b a )` Puts the RGBA value of a pixel on the stack.

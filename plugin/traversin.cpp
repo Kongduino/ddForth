@@ -35,6 +35,10 @@ int textPX = 0, textPY = 0;
 vector<int> RGBA = { 0, 0, 0, 255 };
 string FontName;
 
+// --------------------------------------------------------
+// Helper Functions
+// --------------------------------------------------------
+
 // Prints the given QRCode object to the console.
 static void saveQr(const QrCode &qr, string name, int border, int nPixels) {
   vector<string> P;
@@ -143,6 +147,30 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
   return true;
 }
 
+vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
+  int position = y * width * 4 + x * 4;
+  if (a == 255) {
+    // No computing alpha channel
+    image[position++] = r;
+    image[position++] = g;
+    image[position++] = b;
+    image[position++] = a;
+  } else {
+    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
+    position += 1;
+    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
+    position += 1;
+    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
+    position += 1;
+    image[position] = (image[position] + a) / 2;
+  }
+  return image;
+}
+
+// --------------------------------------------------------
+// Main Code
+// --------------------------------------------------------
+
 vector<string> handleCreateImage(vector<string> P) {
   vector<string> R; // the return vector
   if (P.size() != 3) {
@@ -174,15 +202,51 @@ vector<string> handleCreateImage(vector<string> P) {
   return R;
 }
 
+vector<string> handleGetSize(vector<string> P) {
+  vector<string> R; // the return vector
+  if (P.size() != 1) {
+    R.push_back("false");
+    R.push_back("handleGetSize: Invalid number of args!\n");
+    return R;
+  }
+  string name = P.at(0);
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  R.push_back("I" + std::to_string(height));
+  R.push_back("I" + std::to_string(width));
+  return R;
+}
+
 vector<string> handleSetRGBA(vector<string> P) {
   vector<string> R; // the return vector
   if (P.size() != 4) {
     R.push_back("false");
     R.push_back("handleSetRGBA: Invalid number of args!\n");
+    cout << "handleSetRGBA: Invalid number of args!\n";
     return R;
   }
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     RGBA.at(i) = std::atoi(P.at(i).c_str());
+    cout << "RGBA.at(" << i << ") = " << P.at(i) << endl;
+  }
   return R;
 }
 
@@ -215,26 +279,6 @@ vector<string> handlePNGTest(vector<string> P) {
   free(image);
   R.push_back("Stest.png");
   return R;
-}
-
-vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
-  int position = y * width * 4 + x * 4;
-  if (a == 255) {
-    // No computing alpha channel
-    image[position++] = r;
-    image[position++] = g;
-    image[position++] = b;
-    image[position++] = a;
-  } else {
-    image[position] = (r * a / 255 + image[position] * image[position + 3] / 255) / 2;
-    position += 1;
-    image[position] = (g * a / 255 + image[position] * image[position + 2] / 255) / 2;
-    position += 1;
-    image[position] = (b * a / 255 + image[position] * image[position + 1] / 255) / 2;
-    position += 1;
-    image[position] = (image[position] + a) / 2;
-  }
-  return image;
 }
 
 vector<string> handleDrawPixel(vector<string> P) {
@@ -275,6 +319,51 @@ vector<string> handleDrawPixel(vector<string> P) {
   int width = size.at(1);
   image = putPixel(image, x, y, width, r, g, b, a);
   myImages[name] = image;
+  return R;
+}
+
+vector<string> handleGetPixel(vector<string> P) {
+  // x y name PIXEL?
+  vector<string> R; // the return vector
+  if (P.size() != 3) {
+    R.push_back("false");
+    R.push_back("handleGetPixel: Invalid number of args!\n");
+    return R;
+  }
+  int ix = 0;
+  string name = P.at(0);
+  int y = std::atoi(P.at(1).c_str());
+  int x = std::atoi(P.at(2).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  it = myImages.find(name);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  std::map<string, vector<int>>::iterator itS;
+  itS = myImageSizes.find(name);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "Size Record for Image %s doesn't exist!\n", name.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image = myImages[name];
+  vector<int> size = myImageSizes[name];
+  int height = size.at(0);
+  int width = size.at(1);
+  //int position = y * 4 * width + (x * 4);
+  int position = (y * width * 4) + (x * 4);
+  uint8_t r = image.at(position++);
+  uint8_t g = image.at(position++);
+  uint8_t b = image.at(position++);
+  uint8_t a = image.at(position);
+  R.push_back("I" + std::to_string(a));
+  R.push_back("I" + std::to_string(b));
+  R.push_back("I" + std::to_string(g));
+  R.push_back("I" + std::to_string(r));
   return R;
 }
 
@@ -1101,6 +1190,85 @@ vector<string> handleDrawChar(vector<string> P) {
   return R;
 }
 
+vector<string> handleCopyImage(vector<string> P) {
+  // x y name1 name0 PIXEL
+  // copy image name0 onto image name1 at x, y
+  vector<string> R; // the return vector
+  if (P.size() != 4) {
+    R.push_back("false");
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Invalid number of args [%zu]!\n", P.size());
+    R.push_back(msg);
+    return R;
+  }
+  int ix = 0;
+  string name0 = P.at(0);
+  string name1 = P.at(1);
+  int y = std::atoi(P.at(2).c_str());
+  int x = std::atoi(P.at(3).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  std::map<string, vector<int>>::iterator itS;
+  it = myImages.find(name0);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name0);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Size Record for Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image0 = myImages[name0];
+  vector<int> size0 = myImageSizes[name0];
+  int height0 = size0.at(0);
+  int width0 = size0.at(1);
+
+  it = myImages.find(name1);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name1);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Size Record for Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image1 = myImages[name1];
+  vector<int> size1 = myImageSizes[name1];
+  int height1 = size1.at(0);
+  int width1 = size1.at(1);
+  
+  // We now have the two images.
+  // Check that image0 fits into image1
+  if ((x + width0) >= width1 || (y + height0) >= height1) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't fit into Image %s! %d x %d vs %d x %d\n", name0.c_str(), name1.c_str(), (x + width0), (y + height0), height1, width1);
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  
+  int position0 = 0;
+  int position1 = 0;
+  for (int jx = 0; jx < height0; jx++) {
+    position1 = (jx * width1 * 4) + (x * 4);
+    for (int ix = 0; ix < width0; ix++) {
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+    }
+  }
+  myImages[name1] = image1;
+  return R;
+}
+
 vector<string> handleInit(vector<string> P) {
   vector<string> R;
   // INIT
@@ -1130,10 +1298,12 @@ pluginCommand pluginCommands[] = {
   { handleInit, "INIT", "( -- ) Initializes the plugin, if required.", "0" },
   { handlePNGTest, "PNGTest", "( -- ) Creates a PNG.", "0" },
   { handleCreateImage, "IMAGE", "( w h s -- ) Creates a blank image.", "3SII" },
+  { handleGetSize, "IMGSIZE", "( -- w h s ) Puts image's width and height on stack.", "1S" },
   { handleSetRGBA, "DRAWRGBA", "( r g b a -- ) Sets the drawing colour.", "4IIII" },
   { handleSetFont, "SETFONT", "( font -- ) Sets the drawing font to `font`.", "1S" },
   { handleClearImage, "FILLIMG", "( r g b s -- ) Fills Image s with rgb.", "4SIII" },
   { handleDrawPixel, "PIXEL", "( x y s -- ) Draws an RGBA pixel.", "3SII" },
+  { handleGetPixel, "PIXEL?", "( x y s -- r g b a ) Puts RGBA value of a pixel on the stack.", "3SII" },
   { handleDrawHLine, "HLINE", "( x y L s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
   { handleDrawVLine, "VLINE", "( x y H s -- ) Draws an RGBA horizontal line length L.", "4SIII" },
   { handleDrawLine, "DLINE", "( x1 y1 x2 y2 s -- ) Draws an RGBA line.", "5SIIII" },
@@ -1150,5 +1320,6 @@ pluginCommand pluginCommands[] = {
 
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
+  { handleCopyImage, "COPYIMG", "( x y name1 name0 -- ) Copies image name0 onto image name1 at x, y.", "4SSII" },
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);
