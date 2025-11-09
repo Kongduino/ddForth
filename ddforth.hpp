@@ -44,6 +44,7 @@ bool handleWITHIN();
 bool handleEqual();
 bool handleMultipleEqual();
 bool handleStringEqual();
+bool handleMultipleStringEqual();
 bool handleFact();
 bool handleGreater();
 bool handleGreaterEqual();
@@ -381,9 +382,9 @@ nativeCommand nativeCommands[] = {
   { handleASIN, "ASIN", "( a -- x ) Puts asin(a) on top of the stack." },
   { handleACOS, "ACOS", "( a -- x ) Puts acos(a) on top of the stack." },
   { handleATAN, "ATAN", "( a -- x ) Puts atan(a) on top of the stack." },
-  { handleSINH, "SINH", "( a -- x ) Puts sinch(a) on top of the stack." },
-  { handleCOSH, "COSH", "( a -- x ) Puts cosch(a) on top of the stack." },
-  { handleTANH, "TANH", "( a -- x ) Puts tanch(a) on top of the stack." },
+  { handleSINH, "SINH", "( a -- x ) Puts sinh(a) on top of the stack." },
+  { handleCOSH, "COSH", "( a -- x ) Puts cosh(a) on top of the stack." },
+  { handleTANH, "TANH", "( a -- x ) Puts tanh(a) on top of the stack." },
   { handleLOG, "LOG", "( a -- x ) Puts log(a) on top of the stack." },
   { handleLOG10, "LOG10", "( a -- x ) Puts log10(a) on top of the stack." },
   { handleROUND, "ROUND", "( a -- x ) Puts round(a) on top of the stack." },
@@ -466,6 +467,7 @@ nativeCommand nativeCommands[] = {
   { handleEqual, "=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack." },
   { handleMultipleEqual, "==", "( a[1, 2, n] b[1, 2, n] n -- [01] ) Like =, but on a series of numbers." },
   { handleStringEqual, "S=", "( a b -- [01] ) Puts the result of (a == b) on top of the stack for strings." },
+  { handleMultipleStringEqual, "S==", "( a[0, 1, 2, n] b[0, 1, 2, n] n -- [01] ) Like == for strings." },
   { handleLower, "<", "( a b -- [01] ) Puts the result of (a < b) on top of the stack." },
   { handleLowerEqual, "<=", "( a b -- [01] ) Puts the result of (a <= b) on top of the stack." },
   { handleGreater, ">", "( a b -- [01] ) Puts the result of (a > b) on top of the stack." },

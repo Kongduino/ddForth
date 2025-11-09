@@ -434,6 +434,45 @@ bool handleStringEqual() {
   return true;
 }
 
+bool handleMultipleStringEqual() {
+  // This has to be done manually...
+  int ix, n;
+  string v;
+  vector<string>a;
+  vector<string>b;
+  if (popIntegerFromStack(&n) == false) {
+    logStackOverflow((char *)"handleMultipleStringEqual/0");
+    return false;
+  }
+  if(n < 2) {
+    logStackOverflow((char *)"handleMultipleStringEqual/1");
+    return false;
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (popStringFromStack(&v) == false) {
+      logStackOverflow((char *)"handleMultipleStringEqual/2");
+      return false;
+    }
+    a.push_back(v);
+  }
+  for (ix = 0; ix < n; ix++) {
+    if (popStringFromStack(&v) == false) {
+      logStackOverflow((char *)"handleMultipleStringEqual/2");
+      return false;
+    }
+    b.push_back(v);
+  }
+  bool r = true;
+  for (ix = 0; ix < n; ix++) {
+    if (a.at(ix) != b.at(ix)) {
+      putIntegerOnStack(0);
+      return true;
+    }
+  }
+  putIntegerOnStack(1);
+  return true;
+}
+
 bool handleDINSERT() {
   string s0, s1, fnStr;
   int ix, n, ln;

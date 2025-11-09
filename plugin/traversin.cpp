@@ -149,7 +149,8 @@ bool encodeOneStep(string filename, const unsigned char *image, unsigned width, 
 
 vector<uint8_t> putPixel(vector<uint8_t> image, int x, int y, int width, int r, int g, int b, int a) {
   int position = y * width * 4 + x * 4;
-  if (a == 255) {
+  if (a == 0) return image; // discard
+  else if (a == 255) {
     // No computing alpha channel
     image[position++] = r;
     image[position++] = g;
