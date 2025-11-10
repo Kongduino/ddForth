@@ -245,7 +245,7 @@ vector<string> handleSetRGBA(vector<string> P) {
     return R;
   }
   for (int i = 0; i < 4; i++) {
-    RGBA.at(i) = std::atoi(P.at(i).c_str());
+    RGBA.at(3 - i) = std::atoi(P.at(i).c_str());
     // cout << "RGBA.at(" << i << ") = " << P.at(i) << endl;
   }
   return R;
