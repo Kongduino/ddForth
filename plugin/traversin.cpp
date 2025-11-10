@@ -1185,7 +1185,6 @@ vector<string> handleDrawChar(vector<string> P) {
     }
   }
   textPX += xAdvance;
-
   myImages[name] = image;
   myImageSizes[name] = size;
   return R;
@@ -1258,7 +1257,7 @@ vector<string> handleCopyImage(vector<string> P) {
   int position0 = 0;
   int position1 = 0;
   for (int jx = 0; jx < height0; jx++) {
-    position1 = (jx * width1 * 4) + (x * 4);
+    position1 = ((jx + y) * width1 * 4) + (x * 4);
     for (int ix = 0; ix < width0; ix++) {
       image1[position1++] = image0[position0++];
       image1[position1++] = image0[position0++];
@@ -1267,6 +1266,71 @@ vector<string> handleCopyImage(vector<string> P) {
     }
   }
   myImages[name1] = image1;
+  return R;
+}
+
+vector<string> handleResizeImage(vector<string> P) {
+  // w h name0 name1 PIXEL
+  // resize image name0 to w, h as name1
+  vector<string> R; // the return vector
+  if (P.size() != 4) {
+    R.push_back("false");
+    int xxxxxx = snprintf((char *)msg, 255, "handleResizeImage: Invalid number of args [%zu]!\n", P.size());
+    R.push_back(msg);
+    return R;
+  }
+  int ix = 0;
+  string name1 = P.at(0);
+  string name0 = P.at(1);
+  int height1 = std::atoi(P.at(2).c_str());
+  int width1 = std::atoi(P.at(3).c_str());
+  cout << " • Requested size: " << width1 << " : " << height1 << endl;
+  std::map<string, vector<uint8_t>>::iterator it;
+  std::map<string, vector<int>>::iterator itS;
+  it = myImages.find(name0);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleResizeImage: Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name0);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleResizeImage: Size Record for Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image0 = myImages[name0];
+  vector<int> size0 = myImageSizes[name0];
+  vector<uint8_t> image1;
+  vector<int> size1;
+  int height0 = size0.at(0);
+  int width0 = size0.at(1);
+  float r0 = width0 / width1;
+  float r1 = height0 / height1;
+  cout << " • r0: " << (float)r0 << ", r1: " << (float)r1 << endl;
+//  if (r1 > r0) r0 = r1;
+//   width1 = width0 / r0;
+//   height1 = height0 / r0;
+  size1.push_back(height1);
+  size1.push_back(width1);
+  int increment = r0;
+  int position1 = 0;
+  
+  for (float jx = 0.0; jx < height0; jx += r1) {
+    for (float ix = 0.0; ix < width0; ix += increment) {
+      int position0 = (jx * width0 * 4) + (ix * 4);
+      image1.push_back(image0[position0++]);
+      image1.push_back(image0[position0++]);
+      image1.push_back(image0[position0++]);
+      image1.push_back(image0[position0++]);
+    }
+  }
+  myImages[name1] = image1;
+  myImageSizes[name1] = size1;
+  R.push_back("I" + std::to_string(height1));
+  R.push_back("I" + std::to_string(width1));
   return R;
 }
 
@@ -1322,5 +1386,6 @@ pluginCommand pluginCommands[] = {
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
   { handleCopyImage, "COPYIMG", "( x y name1 name0 -- ) Copies image name0 onto image name1 at x, y.", "4SSII" },
+  { handleResizeImage, "RESIZEIMG", "( w h name0 name1 -- ) Resizes image name0 to name1 w, h.", "4SSII" },  
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);

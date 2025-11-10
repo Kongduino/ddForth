@@ -14,11 +14,12 @@ plugins: plugin/plugin.cpp ddForthPluginsDir
 	cd ../
 	cp ./plugin/*.$(DYLIB_SUFFIX) ~/.ddForthPlugins/
 
+bin:
+    mkdir -p bin
+
 ddforth: bin bin/ddforth.o
-	mkdir -p bin
-	$(CPP) $(CFLAGS) -c ddforth.cpp -o bin/ddforth.o
-	$(CPP) -o bin/ddforth bin/ddforth.o $(LDFLAGS)
-	#rm -f bin/*.o
+    $(CPP) $(CFLAGS) -c ddforth.cpp -o bin/ddforth.o
+    $(CPP) -o bin/ddforth bin/ddforth.o $(LDFLAGS)
 
 bin/ddforth.o : ddforth.cpp
 

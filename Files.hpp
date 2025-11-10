@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>  // For system()
 
 extern char code[256];
 extern int xxxxxx;
@@ -94,6 +95,24 @@ bool handleFSAVE() {
   myfile << cd;
   myfile.close();
   cout << "File " << fn << " saved!" << endl;
+  return true;
+}
+
+bool handleFOpen() {
+// name fopen
+  string fn;
+  if (popStringFromStack(&fn) == false) {
+    logStackOverflow((char *)"handleFOpen/0");
+    return false;
+  }
+#ifdef __linux__
+  string f = "xdg-open " + fn;
+  system(f.c_str());
+#endif
+#ifdef __APPLE__
+  string f = "open " + fn;
+  system(f.c_str());
+#endif
   return true;
 }
 
