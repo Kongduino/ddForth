@@ -1247,7 +1247,7 @@ vector<string> handleCopyImage(vector<string> P) {
   
   // We now have the two images.
   // Check that image0 fits into image1
-  if ((x + width0) >= width1 || (y + height0) >= height1) {
+  if ((x + width0) > width1 || (y + height0) > height1) {
     int xxxxxx = snprintf((char *)msg, 255, "handleCopyImage: Image %s doesn't fit into Image %s! %d x %d vs %d x %d\n", name0.c_str(), name1.c_str(), (x + width0), (y + height0), height1, width1);
     R.push_back("false");
     R.push_back(msg);

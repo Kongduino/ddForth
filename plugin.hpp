@@ -105,14 +105,15 @@ bool handleLoadPlugin() {
   pluginLoaded = true;
   pluginCommands = shared_pluginCommand_ptr;
   for (int ix = 0; ix < pluginCmdCount; ix++) {
-    cout << " • " << pluginCommands[ix].name << ":\t" << pluginCommands[ix].help << endl;
+    // cout << " • " << pluginCommands[ix].name << ":\t" << pluginCommands[ix].help << endl;
     char V = pluginCommands[ix].params.at(0);
     int argc = V - 48;
-    cout << "   - Arg count: [" << V << "] " << argc << endl;
-    for (int jx = 0; jx < argc; jx++) {
-      cout << "   - Arg #" << jx << ": " << pluginCommands[ix].params.at(jx + 1) << endl;
-    }
+    // cout << "   - Arg count: [" << V << "] " << argc << endl;
+    // for (int jx = 0; jx < argc; jx++) {
+    //   cout << "   - Arg #" << jx << ": " << pluginCommands[ix].params.at(jx + 1) << endl;
+    // }
   }
+  cout << "Cmd Count: " << pluginCmdCount << endl;
   cout << "Calling handleInit().\n";
   vector<string> params;
   vector<string> R = pluginCommands[0].ptr(params);
