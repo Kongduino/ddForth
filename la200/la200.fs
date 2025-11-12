@@ -28,17 +28,27 @@ s" CALM" s" logo" COPYIMG
 
 s" CALM" s" la200/CALM0.png" savepng
 
-s" CALM" IMGSIZE drop drop 2 / 20 +
+s" temp" IMGSIZE drop drop 40 + DUP
+s" CALM1" image
+255 255 255 s" CALM1" FILLIMG
+39 dup s" CALM1" s" temp" COPYIMG
+68 32 TEXTXY
+255 0 0 127 DRAWRGBA
+s" A chaque fois" s" CALM1" drawstr
+0 0 255 255 DRAWRGBA
+s" Tu oublies !" s" " SPLITD dup
+0 do 22 i 24 * 98 + TEXTXY i pick s" CALM1" DRAWCHR loop clear
+
+s" CALM1" IMGSIZE drop drop 2 / 20 +
 ( center of image with offset: 20 = offset 40 ÷ 2 )
-( remember: qr codes are square only need one size and DUP )
 s" logo1" s" la200/OuAlors.png" loadpng
 s" logo1" IMGSIZE drop drop 2 / - DUP
 ( half the size of "square" )
-s" CALM" s" logo1" COPYIMG
+s" CALM1" s" logo1" COPYIMG
 ." Copy CALM1\n"
-s" CALM" IMGSIZE drop drop 0 s" final" s" CALM" COPYIMG
+s" CALM1" IMGSIZE drop drop 0 s" final" s" CALM1" COPYIMG
 
-s" CALM" s" la200/CALM1.png" savepng
+s" CALM1" s" la200/CALM1.png" savepng
 s" final" s" la200/CALM2.png" savepng
 s" la200/CALM2.png" fopen
 
