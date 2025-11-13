@@ -1269,6 +1269,100 @@ vector<string> handleCopyImage(vector<string> P) {
   return R;
 }
 
+vector<string> handleCopyRect(vector<string> P) {
+  // x1 y1 x0 y0 w h name1 name0
+  // Copies image name0 onto image name1 at x, y, constricted to w h, starting at x0 y0.
+  vector<string> R; // the return vector
+  if (P.size() != 8) {
+    R.push_back("false");
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Invalid number of args [%zu]!\n", P.size());
+    R.push_back(msg);
+    return R;
+  }
+  int ix = 0;
+  string name0 = P.at(0);
+  string name1 = P.at(1);
+  int h = std::atoi(P.at(2).c_str());
+  int w = std::atoi(P.at(3).c_str());
+  int y0 = std::atoi(P.at(4).c_str());
+  int x0 = std::atoi(P.at(5).c_str());
+  int y = std::atoi(P.at(6).c_str());
+  int x = std::atoi(P.at(7).c_str());
+  std::map<string, vector<uint8_t>>::iterator it;
+  std::map<string, vector<int>>::iterator itS;
+  it = myImages.find(name0);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name0);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Size Record for Image %s doesn't exist!\n", name0.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image0 = myImages[name0];
+  vector<int> size0 = myImageSizes[name0];
+  int height0 = size0.at(0);
+  int width0 = size0.at(1);
+  if ((w + x0) > width0) w = width0 - x0;
+  if ((h + y0) > height0) h = height0 - y0;
+  if (x0 == 0 && w == width0 && y0 == 0 && h == height0) {
+    // Let's outsource that to handleCopyImage
+    P.erase(P.begin() + 2); // remove y0
+    P.erase(P.begin() + 2); // remove x0
+    P.erase(P.begin() + 2); // remove h
+    P.erase(P.begin() + 2); // remove w
+    return handleCopyImage(P);
+  }
+  width0 = w;
+  height0 = h;
+  it = myImages.find(name1);
+  if (it == myImages.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  itS = myImageSizes.find(name1);
+  if (itS == myImageSizes.end()) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Size Record for Image %s doesn't exist!\n", name1.c_str());
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  vector<uint8_t> image1 = myImages[name1];
+  vector<int> size1 = myImageSizes[name1];
+  int height1 = size1.at(0);
+  int width1 = size1.at(1);
+  
+  // We now have the two images.
+  // Check that image0 fits into image1
+  if ((x + x0 + width0) > width1 || (y + y0 + height0) > height1) {
+    int xxxxxx = snprintf((char *)msg, 255, "handleCopyRect: Image %s doesn't fit into Image %s! %d x %d vs %d x %d\n", name0.c_str(), name1.c_str(), (x + width0), (y + height0), height1, width1);
+    R.push_back("false");
+    R.push_back(msg);
+    return R;
+  }
+  
+  int position0 = 0;
+  int position1 = 0;
+  for (int jx = 0; jx < height0; jx++) {
+    position1 = (((jx + y0) + y) * width1 * 4) + ((x + x0) * 4);
+    for (int ix = 0; ix < width0; ix++) {
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+      image1[position1++] = image0[position0++];
+    }
+  }
+  myImages[name1] = image1;
+  return R;
+}
+
 vector<string> handleResizeImage(vector<string> P) {
   // w h name0 name1 PIXEL
   // resize image name0 to w, h as name1
@@ -1386,6 +1480,7 @@ pluginCommand pluginCommands[] = {
   { handleSavePNG, "SAVEPNG", "( s p -- ) Saves Image s to path p.", "2SS" },
   { handleLoadPNG, "LOADPNG", "( s p -- ) Loads Image at path p as s.", "2SS" },
   { handleCopyImage, "COPYIMG", "( x y name1 name0 -- ) Copies image name0 onto image name1 at x, y.", "4SSII" },
+  { handleCopyRect, "COPYRECT", "( x1 y1 x0 y0 w h name1 name0 -- ) Copies image name0 onto image name1 at x, y, constricted to w h, starting at x0 y0.", "8SSIIIIII" },
   { handleResizeImage, "RESIZEIMG", "( w h name0 name1 -- ) Resizes image name0 to name1 w, h.", "4SSII" },  
 };
 int pluginCmdCount = sizeof(pluginCommands) / sizeof(pluginCommand);
