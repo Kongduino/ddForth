@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cmath>  // For std::sqrt
 #include <fcntl.h>
 #include <iostream>
