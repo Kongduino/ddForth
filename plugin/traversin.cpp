@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cmath> // For sin, cos, tan
 #include "lodepng/lodepng.h"
 #include <cstdio>

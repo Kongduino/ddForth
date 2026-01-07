@@ -1,4 +1,5 @@
-#include <cmath>  // For std::sqrt
+#include <cstdint>
+#include <cmath>  /#include <cstdint>/ For std::sqrt
 #include <fcntl.h>
 #include <iostream>
 #include <map>

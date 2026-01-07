@@ -24,7 +24,7 @@ AdafruitGFX:
 QRencode:
 	rm -rf QR-Code-generator
 	git clone https://github.com/nayuki/QR-Code-generator
-	cd QR-code-generator/cpp && g++ -fPIC -std=c++11 -O3 -c -o qrcodegen.o -MMD -MF .deps/qrcodegen.d qrcodegen.cpp
+	cd QR-Code-generator/cpp && make && g++ -fPIC -std=c++11 -O3 -c -o qrcodegen.o -MMD -MF .deps/qrcodegen.d qrcodegen.cpp
 
 clean:
 	rm -f *.o *.$(DYLIB_SUFFIX)
